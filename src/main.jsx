@@ -7,6 +7,7 @@ import "./index.css";
 import Root from "./routes/root.jsx";
 import ErrorPage from "./routes/ErrorPage.jsx";
 import SignIn from "./routes/SignIn.jsx";
+import SignUp from "./routes/SignUp.jsx";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: "login",
     element: <SignIn />,
+  },
+  {
+    path: "register",
+    element: <SignUp />,
   },
 ]);
 
