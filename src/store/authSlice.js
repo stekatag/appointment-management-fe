@@ -1,25 +1,34 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// Simulate backend with JSON
-const demoUsers = [
-  {
-    email: "user1@example.com",
-    password: "password123",
-    firstName: "John",
-    lastName: "Doe",
-  },
-  {
-    email: "user2@example.com",
-    password: "password456",
-    firstName: "Jane",
-    lastName: "Doe",
-  },
-];
+const API_URL = "http://localhost:5175/users";
+
+const fetchUsers = async () => {
+  const response = await fetch(API_URL);
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return await response.json();
+};
+
+const addUser = async (user) => {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  });
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return await response.json();
+};
 
 export const login = createAsyncThunk(
   "auth/login",
   async ({ email, password }) => {
-    const user = demoUsers.find(
+    const users = await fetchUsers();
+    const user = users.find(
       (u) => u.email === email && u.password === password
     );
     if (user) {
@@ -33,9 +42,9 @@ export const login = createAsyncThunk(
 export const register = createAsyncThunk(
   "auth/register",
   async ({ firstName, lastName, email, password }) => {
-    const user = { firstName, lastName, email, password };
-    demoUsers.push(user);
-    return user;
+    const newUser = { firstName, lastName, email, password };
+    const addedUser = await addUser(newUser);
+    return addedUser;
   }
 );
 

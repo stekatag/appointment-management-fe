@@ -50,11 +50,15 @@ export default function SignUp() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const result = await dispatch(
-      register({ firstName, lastName, email, password })
-    );
-    if (register.fulfilled.match(result)) {
-      navigate("/dashboard");
+    if (firstName && lastName && email && password) {
+      const result = await dispatch(
+        register({ firstName, lastName, email, password })
+      );
+      if (register.fulfilled.match(result)) {
+        navigate("/dashboard");
+      }
+    } else {
+      alert("Please fill in all fields");
     }
   };
 
