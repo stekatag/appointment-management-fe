@@ -1,4 +1,9 @@
-import * as React from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+import { login } from "../store/authSlice";
+
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -36,15 +41,18 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const auth = useSelector((state) => state.auth);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log({
-      email: email,
-      password: password,
-    });
+    const result = await dispatch(login({ email, password }));
+    if (login.fulfilled.match(result)) {
+      navigate("/dashboard");
+    }
   };
 
   return (
@@ -108,6 +116,7 @@ export default function SignIn() {
                 </Link>
               </Grid>
             </Grid>
+            {auth.error && <Typography color="error">{auth.error}</Typography>}
             <Button
               type="submit"
               fullWidth

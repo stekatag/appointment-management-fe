@@ -1,4 +1,8 @@
-import * as React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { register } from "../store/authSlice";
+
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -36,20 +40,24 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function SignUp() {
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const auth = useSelector((state) => state.auth);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log({
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      password: password,
-    });
+    const result = await dispatch(
+      register({ firstName, lastName, email, password })
+    );
+    if (register.fulfilled.match(result)) {
+      navigate("/dashboard");
+    }
   };
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
