@@ -1,12 +1,27 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
-import { store } from './app/store'
-import { Provider } from 'react-redux'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { store } from "./app/store";
+import { Provider } from "react-redux";
+import "./index.css";
+import Root from "./routes/root.jsx";
+import ErrorPage from "./routes/ErrorPage.jsx";
+import SignIn from "./routes/SignIn.jsx";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "login",
+    element: <SignIn />,
+  },
+]);
+
+ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <App />
+    <RouterProvider router={router} />
   </Provider>
-)
+);
