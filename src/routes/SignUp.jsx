@@ -1,7 +1,6 @@
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { register } from "../store/authSlice";
+import { useAddUserMutation } from "../services/api";
 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -40,7 +39,7 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function SignUp() {
-  const dispatch = useDispatch();
+  const [addUser] = useAddUserMutation();
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -50,10 +49,9 @@ export default function SignUp() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (firstName && lastName && email && password) {
-      const result = await dispatch(
-        register({ firstName, lastName, email, password })
-      );
-      if (register.fulfilled.match(result)) {
+      const result = await addUser({ firstName, lastName, email, password });
+      if (result.data) {
+        localStorage.setItem("token", "dummy-token"); // Store a dummy token or the real token if available
         navigate("/dashboard");
       }
     } else {

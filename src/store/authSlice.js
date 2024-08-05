@@ -1,52 +1,5 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
-const API_URL = "http://localhost:5175/users";
-
-const fetchUsers = async () => {
-  const response = await fetch(API_URL);
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return await response.json();
-};
-
-const addUser = async (user) => {
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(user),
-  });
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return await response.json();
-};
-
-export const login = createAsyncThunk(
-  "auth/login",
-  async ({ email, password }) => {
-    const users = await fetchUsers();
-    const user = users.find(
-      (u) => u.email === email && u.password === password
-    );
-    if (user) {
-      return user;
-    } else {
-      throw new Error("Invalid credentials");
-    }
-  }
-);
-
-export const register = createAsyncThunk(
-  "auth/register",
-  async ({ firstName, lastName, email, password }) => {
-    const newUser = { firstName, lastName, email, password };
-    const addedUser = await addUser(newUser);
-    return addedUser;
-  }
-);
+import { createSlice } from "@reduxjs/toolkit";
+import { api } from "../services/api";
 
 const authSlice = createSlice({
   name: "auth",
@@ -56,23 +9,24 @@ const authSlice = createSlice({
   },
   reducers: {
     logout: (state) => {
+      localStorage.removeItem("token");
       state.user = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(login.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.error = null;
+      .addMatcher(api.endpoints.loginUser.matchFulfilled, (state, action) => {
+        state.user = action.payload.length ? action.payload[0] : null;
+        state.error = action.payload.length ? null : "Invalid credentials";
       })
-      .addCase(login.rejected, (state, action) => {
+      .addMatcher(api.endpoints.loginUser.matchRejected, (state, action) => {
         state.error = action.error.message;
       })
-      .addCase(register.fulfilled, (state, action) => {
+      .addMatcher(api.endpoints.addUser.matchFulfilled, (state, action) => {
         state.user = action.payload;
         state.error = null;
       })
-      .addCase(register.rejected, (state, action) => {
+      .addMatcher(api.endpoints.addUser.matchRejected, (state, action) => {
         state.error = action.error.message;
       });
   },

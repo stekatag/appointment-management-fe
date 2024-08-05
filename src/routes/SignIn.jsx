@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-
-import { login } from "../store/authSlice";
+import { useLoginUserQuery } from "../services/api";
 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -41,17 +39,21 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const auth = useSelector((state) => state.auth);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { data, error, isLoading } = useLoginUserQuery(
+    { email, password },
+    { skip: !email || !password }
+  );
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const result = await dispatch(login({ email, password }));
-    if (login.fulfilled.match(result)) {
+    if (data && data.length) {
+      localStorage.setItem("token", "dummy-token"); // Store a dummy token
       navigate("/dashboard");
+    } else {
+      alert(error || "Invalid credentials");
     }
   };
 
@@ -116,7 +118,7 @@ export default function SignIn() {
                 </Link>
               </Grid>
             </Grid>
-            {auth.error && <Typography color="error">{auth.error}</Typography>}
+            {error && <Typography color="error">{error}</Typography>}
             <Button
               type="submit"
               fullWidth

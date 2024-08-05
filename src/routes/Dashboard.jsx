@@ -1,4 +1,9 @@
 import * as React from "react";
+import { useDispatch } from "react-redux";
+import { logout } from "../store/authSlice";
+import { useNavigate } from "react-router-dom";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiDrawer from "@mui/material/Drawer";
@@ -85,6 +90,14 @@ const Drawer = styled(MuiDrawer, {
 const defaultTheme = createTheme();
 
 export default function Dashboard() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
+
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
@@ -125,6 +138,9 @@ export default function Dashboard() {
               <Badge badgeContent={4} color="secondary">
                 <NotificationsIcon />
               </Badge>
+            </IconButton>
+            <IconButton color="inherit" onClick={handleLogout}>
+              <ExitToAppIcon />
             </IconButton>
           </Toolbar>
         </AppBar>

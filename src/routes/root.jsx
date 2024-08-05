@@ -4,6 +4,7 @@ import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import Dashboard from "./Dashboard";
 import ErrorPage from "./ErrorPage";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 export default function Root() {
   return (
@@ -12,7 +13,14 @@ export default function Root() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<SignIn />} />
       <Route path="/register" element={<SignUp />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
