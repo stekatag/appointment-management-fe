@@ -1,6 +1,7 @@
 import { useState } from "react";
 import useRedirectByRole from "../utils/redirectByRole";
 import { useLoginUserQuery } from "../services/api";
+import useForm from "../hooks/useForm";
 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -40,22 +41,29 @@ const defaultTheme = createTheme();
 
 export default function SignIn() {
   const redirectByRole = useRedirectByRole();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formState, handleInputChange] = useForm({ email: "", password: "" });
   const { data, error, isLoading } = useLoginUserQuery(
-    { email, password },
-    { skip: !email || !password }
+    { email: formState.email, password: formState.password },
+    { skip: !formState.email || !formState.password }
   );
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const form = event.currentTarget;
+
+    if (form.checkValidity() === false) {
+      form.reportValidity();
+      return;
+    }
+
     if (data && data.length) {
       localStorage.setItem("token", "dummy-token"); // Store a dummy token
       const user = data[0];
       localStorage.setItem("user", JSON.stringify(user));
       redirectByRole(user.role);
     } else {
-      alert(error || "Invalid credentials");
+      setErrorMsg(error || "Invalid credentials");
     }
   };
 
@@ -88,12 +96,13 @@ export default function SignIn() {
               required
               fullWidth
               id="email"
+              type="email"
               label="Email Address"
               name="email"
               autoComplete="email"
               autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formState.email}
+              onChange={handleInputChange}
             />
             <TextField
               margin="normal"
@@ -104,8 +113,8 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formState.password}
+              onChange={handleInputChange}
             />
             <Grid container alignItems="center" justifyContent="space-between">
               <Grid item>
@@ -120,7 +129,7 @@ export default function SignIn() {
                 </Link>
               </Grid>
             </Grid>
-            {error && <Typography color="error">{error}</Typography>}
+            {errorMsg && <Typography color="error">{errorMsg}</Typography>}
             <Button
               type="submit"
               fullWidth

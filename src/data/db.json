@@ -23,6 +23,14 @@
       "email": "splay333@gmail.com",
       "password": "123",
       "role": "admin"
+    },
+    {
+      "id": "5f10",
+      "firstName": "Стефан",
+      "lastName": "Гогов",
+      "email": "admin@gmail.com",
+      "password": "123",
+      "role": "admin"
     }
   ]
 }
