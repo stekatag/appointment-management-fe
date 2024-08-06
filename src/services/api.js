@@ -22,8 +22,19 @@ export const api = createApi({
         method: "GET",
       }),
     }),
+    createAppointment: builder.mutation({
+      query: (newAppointment) => ({
+        url: "/appointments",
+        method: "POST",
+        body: newAppointment,
+      }),
+    }),
   }),
 });
 
-export const { useFetchUsersQuery, useAddUserMutation, useLoginUserQuery } =
-  api;
+export const {
+  useFetchUsersQuery,
+  useAddUserMutation,
+  useLoginUserQuery,
+  useCreateAppointmentMutation,
+} = api;

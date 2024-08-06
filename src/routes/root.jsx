@@ -4,8 +4,10 @@ import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import ErrorPage from "./ErrorPage";
 import ProtectedRoute from "../auth/ProtectedRoute";
+import DashboardLayout from "../layouts/DashboardLayout";
 import AdminDashboard from "./AdminDashboard";
 import UserDashboard from "./UserDashboard";
+import AppointmentForm from "../components/AppointmentForm";
 
 export default function Root() {
   return (
@@ -17,7 +19,9 @@ export default function Root() {
         path="/admin/dashboard"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
-            <AdminDashboard />
+            <DashboardLayout>
+              <AdminDashboard />
+            </DashboardLayout>
           </ProtectedRoute>
         }
       />
@@ -25,7 +29,19 @@ export default function Root() {
         path="/user/dashboard"
         element={
           <ProtectedRoute allowedRoles={["user"]}>
-            <UserDashboard />
+            <DashboardLayout>
+              <UserDashboard />
+            </DashboardLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/appointments/create"
+        element={
+          <ProtectedRoute allowedRoles={["admin", "user"]}>
+            <DashboardLayout>
+              <AppointmentForm />
+            </DashboardLayout>
           </ProtectedRoute>
         }
       />

@@ -1,10 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { api } from "../services/api";
 
+// Initialize user from local storage
+const storedUser = JSON.parse(localStorage.getItem("user"));
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
+    user: storedUser || null,
     error: null,
   },
   reducers: {
