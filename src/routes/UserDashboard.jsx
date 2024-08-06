@@ -89,7 +89,7 @@ const Drawer = styled(MuiDrawer, {
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function Dashboard() {
+export default function UserDashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -185,7 +185,7 @@ export default function Dashboard() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard page
+              User Dashboard page
             </Typography>
             <Copyright sx={{ pt: 4 }} />
           </Container>

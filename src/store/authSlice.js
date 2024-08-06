@@ -10,6 +10,7 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       state.user = null;
     },
   },
@@ -17,6 +18,10 @@ const authSlice = createSlice({
     builder
       .addMatcher(api.endpoints.loginUser.matchFulfilled, (state, action) => {
         state.user = action.payload.length ? action.payload[0] : null;
+        if (state.user) {
+          localStorage.setItem("token", "dummy-token"); // Store a dummy token
+          localStorage.setItem("user", JSON.stringify(state.user)); // Store user info
+        }
         state.error = action.payload.length ? null : "Invalid credentials";
       })
       .addMatcher(api.endpoints.loginUser.matchRejected, (state, action) => {
@@ -24,6 +29,10 @@ const authSlice = createSlice({
       })
       .addMatcher(api.endpoints.addUser.matchFulfilled, (state, action) => {
         state.user = action.payload;
+        if (state.user) {
+          localStorage.setItem("token", "dummy-token"); // Store a dummy token
+          localStorage.setItem("user", JSON.stringify(state.user)); // Store user info
+        }
         state.error = null;
       })
       .addMatcher(api.endpoints.addUser.matchRejected, (state, action) => {

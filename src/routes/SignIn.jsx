@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import useRedirectByRole from "../utils/redirectByRole";
 import { useLoginUserQuery } from "../services/api";
 
 import Avatar from "@mui/material/Avatar";
@@ -39,7 +39,7 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function SignIn() {
-  const navigate = useNavigate();
+  const redirectByRole = useRedirectByRole();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { data, error, isLoading } = useLoginUserQuery(
@@ -51,7 +51,9 @@ export default function SignIn() {
     event.preventDefault();
     if (data && data.length) {
       localStorage.setItem("token", "dummy-token"); // Store a dummy token
-      navigate("/dashboard");
+      const user = data[0];
+      localStorage.setItem("user", JSON.stringify(user));
+      redirectByRole(user.role);
     } else {
       alert(error || "Invalid credentials");
     }

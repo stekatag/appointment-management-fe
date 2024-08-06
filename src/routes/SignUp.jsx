@@ -1,6 +1,6 @@
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useAddUserMutation } from "../services/api";
+import { useAddUserMutation, useFetchUsersQuery } from "../services/api";
+import useRedirectByRole from "../utils/redirectByRole";
 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -40,22 +40,36 @@ const defaultTheme = createTheme();
 
 export default function SignUp() {
   const [addUser] = useAddUserMutation();
-  const navigate = useNavigate();
+  const { data: users } = useFetchUsersQuery();
+  const redirectByRole = useRedirectByRole();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (firstName && lastName && email && password) {
-      const result = await addUser({ firstName, lastName, email, password });
-      if (result.data) {
-        localStorage.setItem("token", "dummy-token"); // Store a dummy token or the real token if available
-        navigate("/dashboard");
-      }
-    } else {
-      alert("Please fill in all fields");
+
+    // Check if email already exists
+    const existingUser = users.find((user) => user.email === email);
+    if (existingUser) {
+      alert("Email already exists. Please try with a different email.");
+      return;
+    }
+
+    const role = isAdmin ? "admin" : "user"; // Determine the role
+    const result = await addUser({
+      firstName,
+      lastName,
+      email,
+      password,
+      role,
+    });
+    if (result.data) {
+      localStorage.setItem("token", "dummy-token"); // Store a dummy token
+      localStorage.setItem("user", JSON.stringify(result.data)); // Store user info
+      redirectByRole(result.data.role);
     }
   };
 
@@ -137,9 +151,13 @@ export default function SignUp() {
               <Grid item xs={12}>
                 <FormControlLabel
                   control={
-                    <Checkbox value="allowExtraEmails" color="primary" />
+                    <Checkbox
+                      checked={isAdmin}
+                      onChange={(e) => setIsAdmin(e.target.checked)}
+                      color="primary"
+                    />
                   }
-                  label="I want to receive inspiration, marketing promotions and updates via email."
+                  label="Register as Admin"
                 />
               </Grid>
             </Grid>
