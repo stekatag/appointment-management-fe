@@ -11,7 +11,14 @@ const useForm = (initialState = {}) => {
     }));
   };
 
-  return [formState, handleInputChange];
+  const handleDateChange = (newValue) => {
+    setFormState((prevState) => ({
+      ...prevState,
+      appointmentDateTime: newValue,
+    }));
+  };
+
+  return [formState, handleInputChange, handleDateChange];
 };
 
 export default useForm;

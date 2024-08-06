@@ -32,5 +32,6 @@
       "password": "123",
       "role": "admin"
     }
-  ]
+  ],
+  "appointments": []
 }

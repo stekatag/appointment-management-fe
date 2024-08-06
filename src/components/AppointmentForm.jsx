@@ -1,7 +1,10 @@
 import { useState } from "react";
 import useForm from "../hooks/useForm";
 import { useSelector } from "react-redux";
-import { useCreateAppointmentMutation } from "../services/api";
+import {
+  useCreateAppointmentMutation,
+  useFetchAppointmentsQuery,
+} from "../services/api";
 import {
   Box,
   TextField,
@@ -15,11 +18,12 @@ import {
 } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 import "dayjs/locale/en-gb"; // Import the en-gb locale
 
 const AppointmentForm = () => {
   const user = useSelector((state) => state.auth.user);
-  const [formState, handleInputChange] = useForm({
+  const [formState, handleInputChange, handleDateChange] = useForm({
     firstName: user ? user.firstName : "",
     lastName: user ? user.lastName : "",
     contactNumber: "",
@@ -33,13 +37,11 @@ const AppointmentForm = () => {
 
   const [createAppointment, { isLoading, isError }] =
     useCreateAppointmentMutation();
-  const [dateError, setDateError] = useState(null);
+  const { data: appointments, isLoading: isLoadingAppointments } =
+    useFetchAppointmentsQuery(user ? user.id : null);
 
-  const handleDateChange = (newValue) => {
-    handleInputChange({
-      target: { name: "appointmentDateTime", value: newValue },
-    });
-  };
+  const [dateError, setDateError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -50,12 +52,11 @@ const AppointmentForm = () => {
     createAppointment(formState)
       .unwrap()
       .then(() => {
-        // Handle success (e.g., show a success message, reset form, etc.)
-        console.log("Appointment booked successfully!");
+        setSuccessMessage("Appointment booked successfully!");
+        // Optionally, reset the form here
       })
       .catch((error) => {
-        // Handle error (e.g., show an error message)
-        console.error(error);
+        console.error("Error booking appointment:", error);
       });
   };
 
@@ -75,8 +76,19 @@ const AppointmentForm = () => {
     return false;
   };
 
+  const isDateTimeBooked = (dateTime) => {
+    if (!appointments) return false;
+    return appointments.some((appt) =>
+      dayjs(appt.appointmentDateTime).isSame(dateTime, "minute")
+    );
+  };
+
   if (!user) {
     return <p>Loading user data...</p>;
+  }
+
+  if (isLoadingAppointments) {
+    return <p>Loading appointments...</p>;
   }
 
   return (
@@ -132,7 +144,12 @@ const AppointmentForm = () => {
               value={formState.appointmentDateTime}
               onChange={handleDateChange}
               shouldDisableDate={disableMonday}
-              shouldDisableTime={disableTime}
+              shouldDisableTime={(timeValue, view) => {
+                if (view === "hours" || view === "minutes") {
+                  return disableTime(timeValue) || isDateTimeBooked(timeValue);
+                }
+                return false;
+              }}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -203,6 +220,11 @@ const AppointmentForm = () => {
               <Typography color="error">
                 Error occurred while booking the appointment
               </Typography>
+            </Grid>
+          )}
+          {successMessage && (
+            <Grid item xs={12}>
+              <Typography color="primary">{successMessage}</Typography>
             </Grid>
           )}
         </Grid>

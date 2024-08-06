@@ -29,6 +29,9 @@ export const api = createApi({
         body: newAppointment,
       }),
     }),
+    fetchAppointments: builder.query({
+      query: (userId) => `/appointments?userId=${userId}`,
+    }),
   }),
 });
 
@@ -37,4 +40,5 @@ export const {
   useAddUserMutation,
   useLoginUserQuery,
   useCreateAppointmentMutation,
+  useFetchAppointmentsQuery,
 } = api;
