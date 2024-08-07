@@ -1,6 +1,8 @@
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useAddUserMutation } from "../services/api";
+import { useAddUserMutation, useFetchUsersQuery } from "../services/api";
+import useRedirectByRole from "../utils/redirectByRole";
+import { validateEmail } from "../utils/validateEmail";
+import useForm from "../hooks/useForm";
 
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -40,22 +42,44 @@ const defaultTheme = createTheme();
 
 export default function SignUp() {
   const [addUser] = useAddUserMutation();
-  const navigate = useNavigate();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { data: users } = useFetchUsersQuery();
+  const redirectByRole = useRedirectByRole();
+  const [formState, handleInputChange] = useForm({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    isAdmin: false,
+  });
+  const [error, setError] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (firstName && lastName && email && password) {
-      const result = await addUser({ firstName, lastName, email, password });
-      if (result.data) {
-        localStorage.setItem("token", "dummy-token"); // Store a dummy token or the real token if available
-        navigate("/dashboard");
-      }
-    } else {
-      alert("Please fill in all fields");
+    const form = event.currentTarget;
+
+    if (form.checkValidity() === false) {
+      form.reportValidity();
+      return;
+    }
+
+    const emailError = validateEmail(formState.email, users);
+    if (emailError) {
+      setError(emailError);
+      return;
+    }
+
+    const role = formState.isAdmin ? "admin" : "user"; // Determine the role
+    const { isAdmin, ...userData } = formState; // Remove isAdmin from the final payload
+
+    const result = await addUser({
+      ...userData,
+      role,
+    });
+
+    if (result.data) {
+      localStorage.setItem("token", "dummy-token"); // Store a dummy token
+      localStorage.setItem("user", JSON.stringify(result.data)); // Store user info
+      redirectByRole(result.data.role);
     }
   };
 
@@ -93,8 +117,8 @@ export default function SignUp() {
                   id="firstName"
                   label="First Name"
                   autoFocus
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
+                  value={formState.firstName}
+                  onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -105,20 +129,21 @@ export default function SignUp() {
                   label="Last Name"
                   name="lastName"
                   autoComplete="family-name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
+                  value={formState.lastName}
+                  onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
+                  type="email"
                   fullWidth
                   id="email"
                   label="Email Address"
                   name="email"
                   autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formState.email}
+                  onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -130,19 +155,25 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formState.password}
+                  onChange={handleInputChange}
                 />
               </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
                   control={
-                    <Checkbox value="allowExtraEmails" color="primary" />
+                    <Checkbox
+                      checked={formState.isAdmin}
+                      onChange={handleInputChange}
+                      name="isAdmin"
+                      color="primary"
+                    />
                   }
-                  label="I want to receive inspiration, marketing promotions and updates via email."
+                  label="Register as Admin"
                 />
               </Grid>
             </Grid>
+            {error && <Typography color="error">{error}</Typography>}
             <Button
               type="submit"
               fullWidth
