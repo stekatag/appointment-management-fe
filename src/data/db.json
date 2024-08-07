@@ -33,5 +33,42 @@
       "role": "admin"
     }
   ],
-  "appointments": []
+  "appointments": [
+    {
+      "id": "0f2f",
+      "serviceType": "Service 2",
+      "preferredHairdresser": "Hairdresser 1",
+      "appointmentDateTime": "2024-08-08T07:00:00.000Z",
+      "email": "splay333@gmail.com",
+      "contactNumber": "0894703251",
+      "lastName": "Гогов",
+      "firstName": "Стефан",
+      "additionalNotes": "",
+      "userId": "8690"
+    },
+    {
+      "id": "2e5d",
+      "serviceType": "Service 2",
+      "preferredHairdresser": "Hairdresser 2",
+      "appointmentDateTime": "2024-08-09T09:00:00.000Z",
+      "email": "splay333@gmail.com",
+      "contactNumber": "0894603251",
+      "lastName": "Гогов",
+      "firstName": "Стефан",
+      "additionalNotes": "",
+      "userId": "8690"
+    },
+    {
+      "id": "84f6",
+      "serviceType": "Service 2",
+      "preferredHairdresser": "Hairdresser 1",
+      "appointmentDateTime": "2024-08-08T07:30:00.000Z",
+      "email": "splay333@gmail.com",
+      "contactNumber": "0894703251",
+      "lastName": "Гогов",
+      "firstName": "Стефан",
+      "additionalNotes": "",
+      "userId": "8690"
+    }
+  ]
 }
