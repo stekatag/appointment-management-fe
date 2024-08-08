@@ -1,5 +1,6 @@
 import { Grid, IconButton, Typography } from "@mui/material";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import dayjs from "dayjs";
 import PropTypes from "prop-types";
 
 DaySlider.propTypes = {
@@ -8,8 +9,12 @@ DaySlider.propTypes = {
 };
 
 export default function DaySlider({ currentDay, setCurrentDay }) {
+  const isAfterToday = currentDay.isAfter(dayjs(), "day");
+
   const handlePreviousDay = () => {
-    setCurrentDay(currentDay.subtract(1, "day"));
+    if (isAfterToday) {
+      setCurrentDay(currentDay.subtract(1, "day"));
+    }
   };
 
   const handleNextDay = () => {
@@ -21,11 +26,15 @@ export default function DaySlider({ currentDay, setCurrentDay }) {
       container
       alignItems="center"
       justifyContent="space-between"
-      sx={{ mb: 3 }}
+      sx={{ mb: 1 }}
     >
-      <IconButton onClick={handlePreviousDay}>
-        <ArrowBack />
-      </IconButton>
+      {isAfterToday ? (
+        <IconButton onClick={handlePreviousDay}>
+          <ArrowBack />
+        </IconButton>
+      ) : (
+        <div style={{ width: "48px" }} /> // Placeholder to center the date
+      )}
       <Typography variant="h6">{currentDay.format("DD MMMM YYYY")}</Typography>
       <IconButton onClick={handleNextDay}>
         <ArrowForward />

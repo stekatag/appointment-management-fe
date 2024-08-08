@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 AppointmentCalendar.propTypes = {
   appointments: PropTypes.array.isRequired,
   onSlotSelect: PropTypes.func.isRequired,
-  selectedDay: PropTypes.string.isRequired,
+  selectedDay: PropTypes.object.isRequired,
 };
 
 const slots = [];
