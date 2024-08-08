@@ -23,7 +23,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import AppointmentCalendar from "./AppointmentCalendar";
+import AppointmentCalendar from "./AppointmentCalendar/AppointmentCalendar";
 import DaySlider from "./DaySlider";
 
 const schema = yup.object().shape({
@@ -59,6 +59,7 @@ const AppointmentForm = () => {
     handleSubmit,
     formState: { errors },
     setError,
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -106,6 +107,7 @@ const AppointmentForm = () => {
           type: "success",
           message: "Appointment booked successfully!",
         });
+        reset();
       })
       .catch((error) => {
         setAlert({

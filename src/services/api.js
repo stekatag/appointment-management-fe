@@ -5,6 +5,7 @@ const API_URL = "http://localhost:5175";
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({ baseUrl: API_URL }),
+  tagTypes: ["Appointment"],
   endpoints: (builder) => ({
     fetchUsers: builder.query({
       query: () => "/users",
@@ -28,9 +29,11 @@ export const api = createApi({
         method: "POST",
         body: newAppointment,
       }),
+      invalidatesTags: ["Appointment"],
     }),
     fetchAppointments: builder.query({
       query: (userId) => `/appointments?userId=${userId}`,
+      providesTags: ["Appointment"],
     }),
   }),
 });

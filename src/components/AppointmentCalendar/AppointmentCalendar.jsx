@@ -1,9 +1,17 @@
 import { useState } from "react";
-import { Grid, Paper, Typography, Button } from "@mui/material";
+import { Grid, Typography, Button } from "@mui/material";
 import dayjs from "dayjs";
+import StyledSlot from "./AppointmentCalendar.styles";
+import PropTypes from "prop-types";
+
+AppointmentCalendar.propTypes = {
+  appointments: PropTypes.array.isRequired,
+  onSlotSelect: PropTypes.func.isRequired,
+  selectedDay: PropTypes.string.isRequired,
+};
 
 const slots = [];
-
+// Generate time slots from 10:00 to 19:30
 for (let hour = 10; hour <= 19; hour++) {
   for (let minute = 0; minute <= 30; minute += 30) {
     slots.push(
@@ -14,7 +22,11 @@ for (let hour = 10; hour <= 19; hour++) {
   }
 }
 
-const AppointmentCalendar = ({ appointments, onSlotSelect, selectedDay }) => {
+export default function AppointmentCalendar({
+  appointments,
+  onSlotSelect,
+  selectedDay,
+}) {
   const [selectedSlot, setSelectedSlot] = useState(null);
 
   const isSlotBooked = (time) => {
@@ -39,20 +51,13 @@ const AppointmentCalendar = ({ appointments, onSlotSelect, selectedDay }) => {
   };
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} mb={5}>
       {slots.map((time) => (
-        <Grid item xs={3} key={time}>
-          <Paper
+        <Grid item xs={12} sm={6} lg={3} key={time}>
+          <StyledSlot
             elevation={3}
-            sx={{
-              padding: 2,
-              textAlign: "center",
-              backgroundColor: isSlotBooked(time)
-                ? "#ccc"
-                : selectedSlot === time
-                ? "#90caf9"
-                : "#fff",
-            }}
+            isBooked={isSlotBooked(time)}
+            isSelected={selectedSlot === time}
           >
             <Button
               fullWidth
@@ -60,16 +65,16 @@ const AppointmentCalendar = ({ appointments, onSlotSelect, selectedDay }) => {
               onClick={() => handleSlotClick(time)}
               disabled={isSlotBooked(time)}
             >
-              <Typography variant="h6">{time}</Typography>
+              <Typography mr={1} variant="h6">
+                {time}
+              </Typography>
               <Typography variant="body2">
                 {isSlotBooked(time) ? "Booked" : "Open Slot"}
               </Typography>
             </Button>
-          </Paper>
+          </StyledSlot>
         </Grid>
       ))}
     </Grid>
   );
-};
-
-export default AppointmentCalendar;
+}

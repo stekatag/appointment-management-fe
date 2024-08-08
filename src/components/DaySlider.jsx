@@ -1,7 +1,13 @@
 import { Grid, IconButton, Typography } from "@mui/material";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
+import PropTypes from "prop-types";
 
-const DaySlider = ({ currentDay, setCurrentDay }) => {
+DaySlider.propTypes = {
+  currentDay: PropTypes.object.isRequired,
+  setCurrentDay: PropTypes.func.isRequired,
+};
+
+export default function DaySlider({ currentDay, setCurrentDay }) {
   const handlePreviousDay = () => {
     setCurrentDay(currentDay.subtract(1, "day"));
   };
@@ -26,6 +32,4 @@ const DaySlider = ({ currentDay, setCurrentDay }) => {
       </IconButton>
     </Grid>
   );
-};
-
-export default DaySlider;
+}
