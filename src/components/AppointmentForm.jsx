@@ -29,6 +29,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import AppointmentCalendar from "./AppointmentCalendar/AppointmentCalendar";
 import DaySlider from "./DaySlider";
 
+// Extend the validation schema to include slot selection
 const schema = yup.object().shape({
   firstName: yup
     .string()
@@ -53,6 +54,10 @@ const schema = yup.object().shape({
     .string()
     .required("Preferred hairdresser is required"),
   serviceType: yup.string().required("Service type is required"),
+  appointmentDateTime: yup
+    .string()
+    .nullable()
+    .required("Please select a time slot"),
 });
 
 const AppointmentForm = ({ appointmentToEdit }) => {
@@ -66,7 +71,6 @@ const AppointmentForm = ({ appointmentToEdit }) => {
     control,
     handleSubmit,
     formState: { errors },
-    setError,
     reset,
     setValue,
   } = useForm({
@@ -80,6 +84,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
       serviceType: "",
       additionalNotes: "",
       userId: user ? user.id : null,
+      appointmentDateTime: null,
     },
   });
 
@@ -123,22 +128,16 @@ const AppointmentForm = ({ appointmentToEdit }) => {
       setValue("additionalNotes", additionalNotes);
       setSelectedDay(dayjs(appointmentDateTime));
       setSelectedSlot(dayjs(appointmentDateTime).toISOString());
+      setValue("appointmentDateTime", dayjs(appointmentDateTime).toISOString());
     }
   }, [appointmentToEdit, setValue]);
 
   const handleSlotSelect = (time) => {
     setSelectedSlot(time);
+    setValue("appointmentDateTime", time);
   };
 
   const onSubmit = async (data) => {
-    if (!selectedSlot) {
-      setError("appointmentDateTime", {
-        type: "manual",
-        message: "Please select a time slot",
-      });
-      return;
-    }
-
     const appointmentData = {
       ...data,
       appointmentDateTime: selectedSlot,
@@ -207,7 +206,15 @@ const AppointmentForm = ({ appointmentToEdit }) => {
             appointments={appointments}
             onSlotSelect={handleSlotSelect}
             selectedDay={selectedDay}
+            initialSlot={
+              selectedSlot ? dayjs(selectedSlot).format("HH:mm") : ""
+            }
           />
+          {errors.appointmentDateTime && (
+            <Typography color="error">
+              {errors.appointmentDateTime.message}
+            </Typography>
+          )}
         </Grid>
         <Grid item xs={6}>
           <Controller

@@ -8,7 +8,7 @@ AppointmentCalendar.propTypes = {
   appointments: PropTypes.array.isRequired,
   onSlotSelect: PropTypes.func.isRequired,
   selectedDay: PropTypes.object.isRequired,
-  initialSlot: PropTypes.string, // Add this prop
+  initialSlot: PropTypes.string,
 };
 
 const slots = [];
@@ -27,7 +27,7 @@ export default function AppointmentCalendar({
   appointments,
   onSlotSelect,
   selectedDay,
-  initialSlot, // Use the prop
+  initialSlot,
 }) {
   const [selectedSlot, setSelectedSlot] = useState(initialSlot || null);
 
