@@ -1,8 +1,10 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector } from "react-redux";
 import {
   useCreateAppointmentMutation,
+  useUpdateAppointmentMutation,
   useFetchAppointmentsByUserQuery,
   useFetchAppointmentsByDayQuery,
 } from "../services/api";
@@ -53,7 +55,7 @@ const schema = yup.object().shape({
   serviceType: yup.string().required("Service type is required"),
 });
 
-const AppointmentForm = () => {
+const AppointmentForm = ({ appointmentToEdit }) => {
   const user = useSelector((state) => state.auth.user);
 
   const [selectedDay, setSelectedDay] = useState(dayjs());
@@ -66,6 +68,7 @@ const AppointmentForm = () => {
     formState: { errors },
     setError,
     reset,
+    setValue,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -80,7 +83,10 @@ const AppointmentForm = () => {
     },
   });
 
-  const [createAppointment, { isLoading }] = useCreateAppointmentMutation();
+  const [createAppointment, { isLoading: isCreating }] =
+    useCreateAppointmentMutation();
+  const [updateAppointment, { isLoading: isUpdating }] =
+    useUpdateAppointmentMutation();
   const { data: userAppointments, isLoading: isLoadingUserAppointments } =
     useFetchAppointmentsByUserQuery(user ? user.id : null);
 
@@ -94,6 +100,31 @@ const AppointmentForm = () => {
       refetchDayAppointments();
     }
   }, [selectedDay, refetchDayAppointments]);
+
+  useEffect(() => {
+    if (appointmentToEdit) {
+      const {
+        firstName,
+        lastName,
+        contactNumber,
+        email,
+        preferredHairdresser,
+        serviceType,
+        additionalNotes,
+        appointmentDateTime,
+      } = appointmentToEdit;
+
+      setValue("firstName", firstName);
+      setValue("lastName", lastName);
+      setValue("contactNumber", contactNumber);
+      setValue("email", email);
+      setValue("preferredHairdresser", preferredHairdresser);
+      setValue("serviceType", serviceType);
+      setValue("additionalNotes", additionalNotes);
+      setSelectedDay(dayjs(appointmentDateTime));
+      setSelectedSlot(dayjs(appointmentDateTime).toISOString());
+    }
+  }, [appointmentToEdit, setValue]);
 
   const handleSlotSelect = (time) => {
     setSelectedSlot(time);
@@ -113,21 +144,32 @@ const AppointmentForm = () => {
       appointmentDateTime: selectedSlot,
     };
 
-    createAppointment(appointmentData)
-      .unwrap()
-      .then(() => {
+    try {
+      if (appointmentToEdit) {
+        await updateAppointment({
+          id: appointmentToEdit.id,
+          ...appointmentData,
+        }).unwrap();
+        setAlert({
+          type: "success",
+          message: "Appointment updated successfully!",
+        });
+      } else {
+        await createAppointment(appointmentData).unwrap();
         setAlert({
           type: "success",
           message: "Appointment booked successfully!",
         });
-        reset();
-      })
-      .catch((error) => {
-        setAlert({
-          type: "error",
-          message: `Error occurred while booking the appointment: ${error}`,
-        });
+      }
+      reset();
+    } catch (error) {
+      setAlert({
+        type: "error",
+        message: `Error occurred while ${
+          appointmentToEdit ? "updating" : "booking"
+        } the appointment: ${error}`,
       });
+    }
   };
 
   if (!user || isLoadingUserAppointments) {
@@ -143,7 +185,9 @@ const AppointmentForm = () => {
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Typography variant="h6">Create Appointment</Typography>
+          <Typography variant="h6">
+            {appointmentToEdit ? "Edit Appointment" : "Create Appointment"}
+          </Typography>
         </Grid>
         {alert.message && (
           <Grid item xs={12}>
@@ -295,10 +339,14 @@ const AppointmentForm = () => {
             type="submit"
             variant="contained"
             color="primary"
-            disabled={isLoading}
+            disabled={isCreating || isUpdating}
             fullWidth
           >
-            {isLoading ? "Booking..." : "Book Appointment"}
+            {isCreating || isUpdating
+              ? "Submitting..."
+              : appointmentToEdit
+              ? "Update Appointment"
+              : "Book Appointment"}
           </Button>
         </Grid>
       </Grid>

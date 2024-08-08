@@ -31,12 +31,24 @@ export const api = createApi({
       }),
       invalidatesTags: ["Appointment"],
     }),
+    updateAppointment: builder.mutation({
+      query: ({ id, ...updatedAppointment }) => ({
+        url: `/appointments/${id}`,
+        method: "PUT",
+        body: updatedAppointment,
+      }),
+      invalidatesTags: ["Appointment"],
+    }),
     fetchAppointmentsByUser: builder.query({
       query: (userId) => `/appointments?userId=${userId}`,
       providesTags: ["Appointment"],
     }),
     fetchAppointmentsByDay: builder.query({
-      query: (date) => `/appointments?date=${date}`,
+      query: (day) => `/appointments?day=${day}`,
+      providesTags: ["Appointment"],
+    }),
+    fetchAppointmentById: builder.query({
+      query: (id) => `/appointments/${id}`,
       providesTags: ["Appointment"],
     }),
   }),
@@ -47,6 +59,8 @@ export const {
   useAddUserMutation,
   useLoginUserQuery,
   useCreateAppointmentMutation,
+  useUpdateAppointmentMutation,
   useFetchAppointmentsByUserQuery,
   useFetchAppointmentsByDayQuery,
+  useFetchAppointmentByIdQuery, // New Hook
 } = api;

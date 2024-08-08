@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Grid, Typography, Button } from "@mui/material";
 import dayjs from "dayjs";
 import StyledSlot from "./AppointmentCalendar.styles";
@@ -8,6 +8,7 @@ AppointmentCalendar.propTypes = {
   appointments: PropTypes.array.isRequired,
   onSlotSelect: PropTypes.func.isRequired,
   selectedDay: PropTypes.object.isRequired,
+  initialSlot: PropTypes.string, // Add this prop
 };
 
 const slots = [];
@@ -26,8 +27,15 @@ export default function AppointmentCalendar({
   appointments,
   onSlotSelect,
   selectedDay,
+  initialSlot, // Use the prop
 }) {
-  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedSlot, setSelectedSlot] = useState(initialSlot || null);
+
+  useEffect(() => {
+    if (initialSlot) {
+      setSelectedSlot(initialSlot);
+    }
+  }, [initialSlot]);
 
   const isSlotBooked = (time) => {
     return appointments.some((appt) =>

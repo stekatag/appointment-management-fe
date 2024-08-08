@@ -5,9 +5,13 @@ import SignUp from "./SignUp";
 import ErrorPage from "./ErrorPage";
 import ProtectedRoute from "../auth/ProtectedRoute";
 import DashboardLayout from "../layouts/DashboardLayout";
+
 import AdminDashboard from "./AdminDashboard";
 import UserDashboard from "./UserDashboard";
+
 import AppointmentForm from "../components/AppointmentForm";
+import EditAppointment from "../components/EditAppointment";
+
 import AdminBase from "./base/AdminBase";
 import UserBase from "./base/UserBase";
 import AppointmentsBase from "./base/AppointmentsBase";
@@ -74,6 +78,14 @@ export default function Root() {
           element={
             <DashboardLayout>
               <AppointmentForm />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="edit/:appointmentId"
+          element={
+            <DashboardLayout>
+              <EditAppointment />
             </DashboardLayout>
           }
         />
