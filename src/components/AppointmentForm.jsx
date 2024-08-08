@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector } from "react-redux";
 import {
   useCreateAppointmentMutation,
-  useFetchAppointmentsQuery,
+  useFetchAppointmentsByUserQuery,
+  useFetchAppointmentsByDayQuery,
 } from "../services/api";
 import {
   Box,
@@ -54,6 +55,11 @@ const schema = yup.object().shape({
 
 const AppointmentForm = () => {
   const user = useSelector((state) => state.auth.user);
+
+  const [selectedDay, setSelectedDay] = useState(dayjs());
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [alert, setAlert] = useState({ type: "", message: "" });
+
   const {
     control,
     handleSubmit,
@@ -74,13 +80,20 @@ const AppointmentForm = () => {
     },
   });
 
-  const [createAppointment, { isLoading, isError }] =
-    useCreateAppointmentMutation();
-  const { data: appointments, isLoading: isLoadingAppointments } =
-    useFetchAppointmentsQuery(user ? user.id : null);
-  const [alert, setAlert] = useState({ type: "", message: "" });
-  const [selectedDay, setSelectedDay] = useState(dayjs());
-  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [createAppointment, { isLoading }] = useCreateAppointmentMutation();
+  const { data: userAppointments, isLoading: isLoadingUserAppointments } =
+    useFetchAppointmentsByUserQuery(user ? user.id : null);
+
+  const { data: dayAppointments, refetch: refetchDayAppointments } =
+    useFetchAppointmentsByDayQuery(selectedDay.format("YYYY-MM-DD"), {
+      skip: !selectedDay,
+    });
+
+  useEffect(() => {
+    if (selectedDay) {
+      refetchDayAppointments();
+    }
+  }, [selectedDay, refetchDayAppointments]);
 
   const handleSlotSelect = (time) => {
     setSelectedSlot(time);
@@ -117,9 +130,14 @@ const AppointmentForm = () => {
       });
   };
 
-  if (!user || isLoadingAppointments) {
+  if (!user || isLoadingUserAppointments) {
     return <CircularProgress disableShrink />;
   }
+
+  const appointments = [
+    ...(userAppointments || []),
+    ...(dayAppointments || []),
+  ];
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
@@ -283,13 +301,6 @@ const AppointmentForm = () => {
             {isLoading ? "Booking..." : "Book Appointment"}
           </Button>
         </Grid>
-        {isError && (
-          <Grid item xs={12}>
-            <Typography color="error">
-              Error occurred while booking the appointment
-            </Typography>
-          </Grid>
-        )}
       </Grid>
     </Box>
   );

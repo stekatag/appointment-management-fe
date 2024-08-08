@@ -31,8 +31,12 @@ export const api = createApi({
       }),
       invalidatesTags: ["Appointment"],
     }),
-    fetchAppointments: builder.query({
+    fetchAppointmentsByUser: builder.query({
       query: (userId) => `/appointments?userId=${userId}`,
+      providesTags: ["Appointment"],
+    }),
+    fetchAppointmentsByDay: builder.query({
+      query: (date) => `/appointments?date=${date}`,
       providesTags: ["Appointment"],
     }),
   }),
@@ -43,5 +47,6 @@ export const {
   useAddUserMutation,
   useLoginUserQuery,
   useCreateAppointmentMutation,
-  useFetchAppointmentsQuery,
+  useFetchAppointmentsByUserQuery,
+  useFetchAppointmentsByDayQuery,
 } = api;
