@@ -31,9 +31,22 @@ export default function AppointmentCalendar({
 }) {
   const [selectedSlot, setSelectedSlot] = useState(initialSlot || null);
 
+  // Reset selectedSlot whenever selectedDay changes, unless the selectedDay matches the day of initialSlot
   useEffect(() => {
     if (initialSlot) {
-      setSelectedSlot(initialSlot);
+      const initialSlotDay = dayjs(selectedDay).isSame(dayjs(), "day");
+      if (initialSlotDay) {
+        setSelectedSlot(initialSlot); // initialSlot is already in HH:mm format
+      } else {
+        setSelectedSlot(null);
+      }
+    }
+  }, [selectedDay, initialSlot]);
+
+  // Set initial slot when the component first mounts or when initialSlot changes
+  useEffect(() => {
+    if (initialSlot) {
+      setSelectedSlot(initialSlot); // initialSlot is already in HH:mm format
     }
   }, [initialSlot]);
 
@@ -46,8 +59,15 @@ export default function AppointmentCalendar({
     );
   };
 
+  const isSlotInPast = (time) => {
+    const slotDateTime = dayjs(selectedDay)
+      .hour(time.split(":")[0])
+      .minute(time.split(":")[1]);
+    return slotDateTime.isBefore(dayjs());
+  };
+
   const handleSlotClick = (time) => {
-    if (!isSlotBooked(time)) {
+    if (!isSlotBooked(time) && !isSlotInPast(time)) {
       setSelectedSlot(time);
       onSlotSelect(
         dayjs(selectedDay)
@@ -71,13 +91,17 @@ export default function AppointmentCalendar({
               fullWidth
               variant="text"
               onClick={() => handleSlotClick(time)}
-              disabled={isSlotBooked(time)}
+              disabled={isSlotBooked(time) || isSlotInPast(time)}
             >
               <Typography mr={1} variant="h6">
                 {time}
               </Typography>
               <Typography variant="body2">
-                {isSlotBooked(time) ? "Booked" : "Open Slot"}
+                {isSlotBooked(time)
+                  ? "Booked"
+                  : isSlotInPast(time)
+                  ? "Past Slot"
+                  : "Open Slot"}
               </Typography>
             </Button>
           </StyledSlot>

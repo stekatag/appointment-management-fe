@@ -207,7 +207,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
             onSlotSelect={handleSlotSelect}
             selectedDay={selectedDay}
             initialSlot={
-              selectedSlot ? dayjs(selectedSlot).format("HH:mm") : ""
+              selectedSlot ? dayjs(selectedSlot).format("HH:mm") : null
             }
           />
           {errors.appointmentDateTime && (

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Button, Typography, Container } from "@mui/material";
+import { Button, Typography, Container, Grid } from "@mui/material";
 
 export default function AdminDashboard() {
   return (
@@ -13,15 +13,28 @@ export default function AdminDashboard() {
       >
         Admin Dashboard page
       </Typography>
-      <Button
-        component={Link}
-        to="/appointments/create"
-        variant="contained"
-        color="primary"
-      >
-        Create Appointment
-      </Button>
-      {/* Other dashboard content */}
+      <Grid container spacing={2}>
+        <Grid item>
+          <Button
+            component={Link}
+            to="/appointments/create"
+            variant="contained"
+            color="primary"
+          >
+            Create Appointment
+          </Button>
+        </Grid>
+        <Grid item>
+          <Button
+            component={Link}
+            to="/appointments/edit/50bb"
+            variant="contained"
+            color="primary"
+          >
+            Edit Appointment
+          </Button>
+        </Grid>
+      </Grid>
     </Container>
   );
 }
