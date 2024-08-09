@@ -1,8 +1,7 @@
 import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import useRedirectByRole from "../utils/redirectByRole";
 import { useLoginUserQuery } from "../services/api";
-import useForm from "../hooks/useForm";
-
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -16,6 +15,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+const defaultTheme = createTheme();
 
 function Copyright(props) {
   return (
@@ -35,37 +36,32 @@ function Copyright(props) {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-
-const defaultTheme = createTheme();
-
 export default function SignIn() {
   const redirectByRole = useRedirectByRole();
-  const [formState, handleInputChange] = useForm({ email: "", password: "" });
-  const { data, error, isLoading } = useLoginUserQuery(
-    { email: formState.email, password: formState.password },
-    { skip: !formState.email || !formState.password }
-  );
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const [errorMsg, setErrorMsg] = useState("");
+  const [loginQueryArgs, setLoginQueryArgs] = useState(null);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
+  const { data, error, isLoading } = useLoginUserQuery(loginQueryArgs, {
+    skip: !loginQueryArgs,
+  });
 
-    if (form.checkValidity() === false) {
-      form.reportValidity();
-      return;
-    }
-
-    if (data && data.length) {
-      localStorage.setItem("token", "dummy-token"); // Store a dummy token
-      const user = data[0];
-      localStorage.setItem("user", JSON.stringify(user));
-      redirectByRole(user.role);
-    } else {
-      setErrorMsg(error || "Invalid credentials");
-    }
+  const onSubmit = async (formData) => {
+    setLoginQueryArgs(formData);
   };
+
+  if (data && data.length) {
+    localStorage.setItem("token", "dummy-token");
+    const user = data[0];
+    localStorage.setItem("user", JSON.stringify(user));
+    redirectByRole(user.role);
+  } else if (error) {
+    setErrorMsg(error.message);
+  }
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -87,49 +83,50 @@ export default function SignIn() {
           </Typography>
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             noValidate
             sx={{ mt: 1 }}
           >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              type="email"
-              label="Email Address"
+            <Controller
               name="email"
-              autoComplete="email"
-              autoFocus
-              value={formState.email}
-              onChange={handleInputChange}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-              value={formState.password}
-              onChange={handleInputChange}
-            />
-            <Grid container alignItems="center" justifyContent="space-between">
-              <Grid item>
-                <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
+              control={control}
+              defaultValue=""
+              render={({ field }) => (
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  label="Email Address"
+                  autoComplete="email"
+                  autoFocus
+                  error={!!errors.email}
+                  helperText={errors.email ? "Email is required" : ""}
+                  {...field}
                 />
-              </Grid>
-              <Grid item>
-                <Link href="register" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
-            {errorMsg && <Typography color="error">{errorMsg}</Typography>}
+              )}
+            />
+            <Controller
+              name="password"
+              control={control}
+              defaultValue=""
+              render={({ field }) => (
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  label="Password"
+                  type="password"
+                  autoComplete="current-password"
+                  error={!!errors.password}
+                  helperText={errors.password ? "Password is required" : ""}
+                  {...field}
+                />
+              )}
+            />
+            <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+            />
             <Button
               type="submit"
               fullWidth
@@ -138,6 +135,14 @@ export default function SignIn() {
             >
               Sign In
             </Button>
+            <Grid container alignItems="center" justifyContent="space-between">
+              <Grid item>
+                <Link href="register" variant="body2">
+                  {"Don't have an account? Sign Up"}
+                </Link>
+              </Grid>
+            </Grid>
+            {errorMsg && <Typography color="error">{errorMsg}</Typography>}
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />

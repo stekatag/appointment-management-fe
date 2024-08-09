@@ -5,6 +5,7 @@ const API_URL = "http://localhost:5175";
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({ baseUrl: API_URL }),
+  tagTypes: ["Appointment"],
   endpoints: (builder) => ({
     fetchUsers: builder.query({
       query: () => "/users",
@@ -28,9 +29,27 @@ export const api = createApi({
         method: "POST",
         body: newAppointment,
       }),
+      invalidatesTags: ["Appointment"],
     }),
-    fetchAppointments: builder.query({
+    updateAppointment: builder.mutation({
+      query: ({ id, ...updatedAppointment }) => ({
+        url: `/appointments/${id}`,
+        method: "PUT",
+        body: updatedAppointment,
+      }),
+      invalidatesTags: ["Appointment"],
+    }),
+    fetchAppointmentsByUser: builder.query({
       query: (userId) => `/appointments?userId=${userId}`,
+      providesTags: ["Appointment"],
+    }),
+    fetchAppointmentsByDay: builder.query({
+      query: (day) => `/appointments?day=${day}`,
+      providesTags: ["Appointment"],
+    }),
+    fetchAppointmentById: builder.query({
+      query: (id) => `/appointments/${id}`,
+      providesTags: ["Appointment"],
     }),
   }),
 });
@@ -40,5 +59,8 @@ export const {
   useAddUserMutation,
   useLoginUserQuery,
   useCreateAppointmentMutation,
-  useFetchAppointmentsQuery,
+  useUpdateAppointmentMutation,
+  useFetchAppointmentsByUserQuery,
+  useFetchAppointmentsByDayQuery,
+  useFetchAppointmentByIdQuery, // New Hook
 } = api;

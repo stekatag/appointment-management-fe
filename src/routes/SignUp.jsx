@@ -1,9 +1,8 @@
 import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { useAddUserMutation, useFetchUsersQuery } from "../services/api";
 import useRedirectByRole from "../utils/redirectByRole";
 import { validateEmail } from "../utils/validateEmail";
-import useForm from "../hooks/useForm";
-
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -17,6 +16,8 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+const defaultTheme = createTheme();
 
 function Copyright(props) {
   return (
@@ -36,49 +37,32 @@ function Copyright(props) {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
-
-const defaultTheme = createTheme();
-
 export default function SignUp() {
   const [addUser] = useAddUserMutation();
   const { data: users } = useFetchUsersQuery();
   const redirectByRole = useRedirectByRole();
-  const [formState, handleInputChange] = useForm({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    isAdmin: false,
-  });
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const [error, setError] = useState("");
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-
-    if (form.checkValidity() === false) {
-      form.reportValidity();
-      return;
-    }
-
-    const emailError = validateEmail(formState.email, users);
+  const onSubmit = async (formData) => {
+    const emailError = validateEmail(formData.email, users);
     if (emailError) {
       setError(emailError);
       return;
     }
 
-    const role = formState.isAdmin ? "admin" : "user"; // Determine the role
-    const { isAdmin, ...userData } = formState; // Remove isAdmin from the final payload
+    const role = formData.isAdmin ? "admin" : "user";
+    const { isAdmin, ...userData } = formData;
 
-    const result = await addUser({
-      ...userData,
-      role,
-    });
+    const result = await addUser({ ...userData, role });
 
     if (result.data) {
-      localStorage.setItem("token", "dummy-token"); // Store a dummy token
-      localStorage.setItem("user", JSON.stringify(result.data)); // Store user info
+      localStorage.setItem("token", "dummy-token");
+      localStorage.setItem("user", JSON.stringify(result.data));
       redirectByRole(result.data.role);
     }
   };
@@ -104,72 +88,100 @@ export default function SignUp() {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="given-name"
+                <Controller
                   name="firstName"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
-                  value={formState.firstName}
-                  onChange={handleInputChange}
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <TextField
+                      autoComplete="given-name"
+                      required
+                      fullWidth
+                      label="First Name"
+                      autoFocus
+                      error={!!errors.firstName}
+                      helperText={
+                        errors.firstName ? "First name is required" : ""
+                      }
+                      {...field}
+                    />
+                  )}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
+                <Controller
                   name="lastName"
-                  autoComplete="family-name"
-                  value={formState.lastName}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  type="email"
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  value={formState.email}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  value={formState.password}
-                  onChange={handleInputChange}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={formState.isAdmin}
-                      onChange={handleInputChange}
-                      name="isAdmin"
-                      color="primary"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <TextField
+                      required
+                      fullWidth
+                      label="Last Name"
+                      autoComplete="family-name"
+                      error={!!errors.lastName}
+                      helperText={
+                        errors.lastName ? "Last name is required" : ""
+                      }
+                      {...field}
                     />
-                  }
-                  label="Register as Admin"
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Controller
+                  name="email"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <TextField
+                      required
+                      fullWidth
+                      type="email"
+                      label="Email Address"
+                      autoComplete="email"
+                      error={!!errors.email}
+                      helperText={errors.email ? "Email is required" : ""}
+                      {...field}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Controller
+                  name="password"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <TextField
+                      required
+                      fullWidth
+                      type="password"
+                      label="Password"
+                      autoComplete="new-password"
+                      error={!!errors.password}
+                      helperText={errors.password ? "Password is required" : ""}
+                      {...field}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Controller
+                  name="isAdmin"
+                  control={control}
+                  defaultValue={false}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={<Checkbox {...field} color="primary" />}
+                      label="Register as Admin"
+                    />
+                  )}
                 />
               </Grid>
             </Grid>
