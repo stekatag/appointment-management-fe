@@ -1,19 +1,6 @@
-import { AppBar, Toolbar, Container, Button, Grid } from "@mui/material";
-import { styled } from "@mui/material";
-
-const NavBarContainer = styled(AppBar)(() => ({
-  backgroundColor: "transparent",
-  boxShadow: "none",
-  borderBottom: "1px solid #ccc", // Optional: adds a bottom border to the navbar
-}));
-
-const NavLink = styled(Button)(({ theme }) => ({
-  color: "black",
-  margin: theme.spacing(1),
-  "&:hover": {
-    color: "#af8447", // Hover color effect
-  },
-}));
+import { Toolbar, Container, Grid } from "@mui/material";
+import { NavBarContainer, NavLink } from "./NavBar.styles";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   return (
@@ -22,16 +9,20 @@ export default function Navbar() {
         <Toolbar disableGutters>
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item>
-              <NavLink>HOME</NavLink>
-              <NavLink>ABOUT US</NavLink>
-              <NavLink>SERVICES</NavLink>
-              <NavLink>BLOG</NavLink>
-              <NavLink>PAGES</NavLink>
-              <NavLink>SHOP</NavLink>
-              <NavLink>CONTACT</NavLink>
+              <NavLink>Home</NavLink>
+              <NavLink>About us</NavLink>
+              <NavLink>Barbers</NavLink>
+              <NavLink>Services</NavLink>
+              <NavLink>Contact us</NavLink>
             </Grid>
             <Grid item>
-              <NavLink variant="outlined">BOOKING</NavLink>
+              <NavLink>
+                <Link to="/login">Sign In</Link>
+              </NavLink>
+              <NavLink>
+                <Link to="/register">Sign Up</Link>
+              </NavLink>
+              <NavLink variant="outlined">Book Now</NavLink>
             </Grid>
           </Grid>
         </Toolbar>

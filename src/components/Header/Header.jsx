@@ -1,4 +1,3 @@
-import React from "react";
 import TopBar from "../TopBar/TopBar";
 import Navbar from "../NavBar/NavBar";
 import { Box } from "@mui/material";
