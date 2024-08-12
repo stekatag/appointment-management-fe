@@ -4,7 +4,6 @@ import useRedirectByRole from "../utils/redirectByRole";
 import { useLoginUserQuery } from "../services/api";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -14,9 +13,6 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-
-const defaultTheme = createTheme();
 
 function Copyright(props) {
   return (
@@ -64,89 +60,86 @@ export default function SignIn() {
   }
 
   return (
-    <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <LockOutlinedIcon />
+        </Avatar>
+        <Typography component="h1" variant="h5">
+          Sign in
+        </Typography>
         <Box
-          sx={{
-            marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          sx={{ mt: 1 }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
-          </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            noValidate
-            sx={{ mt: 1 }}
+          <Controller
+            name="email"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                label="Email Address"
+                autoComplete="email"
+                autoFocus
+                error={!!errors.email}
+                helperText={errors.email ? "Email is required" : ""}
+                {...field}
+              />
+            )}
+          />
+          <Controller
+            name="password"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                label="Password"
+                type="password"
+                autoComplete="current-password"
+                error={!!errors.password}
+                helperText={errors.password ? "Password is required" : ""}
+                {...field}
+              />
+            )}
+          />
+          <FormControlLabel
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
           >
-            <Controller
-              name="email"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  label="Email Address"
-                  autoComplete="email"
-                  autoFocus
-                  error={!!errors.email}
-                  helperText={errors.email ? "Email is required" : ""}
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              name="password"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  label="Password"
-                  type="password"
-                  autoComplete="current-password"
-                  error={!!errors.password}
-                  helperText={errors.password ? "Password is required" : ""}
-                  {...field}
-                />
-              )}
-            />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
-            </Button>
-            <Grid container alignItems="center" justifyContent="space-between">
-              <Grid item>
-                <Link href="register" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
+            Sign In
+          </Button>
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid item>
+              <Link href="register" variant="body2">
+                {"Don't have an account? Sign Up"}
+              </Link>
             </Grid>
-            {errorMsg && <Typography color="error">{errorMsg}</Typography>}
-          </Box>
+          </Grid>
+          {errorMsg && <Typography color="error">{errorMsg}</Typography>}
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
-      </Container>
-    </ThemeProvider>
+      </Box>
+      <Copyright sx={{ mt: 8, mb: 4 }} />
+    </Container>
   );
 }
