@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useAddUserMutation, useFetchUsersQuery } from "../services/api";
 import useRedirectByRole from "../utils/redirectByRole";
 import { validateEmail } from "../utils/validateEmail";
@@ -14,6 +16,20 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+
+// Define Yup validation schema
+const schema = yup.object().shape({
+  firstName: yup.string().required("First name is required"),
+  lastName: yup.string().required("Last name is required"),
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  password: yup.string().required("Password is required"),
+  isAdmin: yup.boolean(),
+});
 
 function Copyright(props) {
   return (
@@ -37,29 +53,40 @@ export default function SignUp() {
   const [addUser] = useAddUserMutation();
   const { data: users } = useFetchUsersQuery();
   const redirectByRole = useRedirectByRole();
+  const [alert, setAlert] = useState({ type: "", message: "" });
+
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm();
-  const [error, setError] = useState("");
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
   const onSubmit = async (formData) => {
     const emailError = validateEmail(formData.email, users);
     if (emailError) {
-      setError(emailError);
+      setAlert({ type: "error", message: emailError });
       return;
     }
 
     const role = formData.isAdmin ? "admin" : "user";
     const { isAdmin, ...userData } = formData;
 
-    const result = await addUser({ ...userData, role });
+    try {
+      const result = await addUser({ ...userData, role }).unwrap();
 
-    if (result.data) {
-      localStorage.setItem("token", "dummy-token");
-      localStorage.setItem("user", JSON.stringify(result.data));
-      redirectByRole(result.data.role);
+      if (result) {
+        localStorage.setItem("token", "dummy-token");
+        localStorage.setItem("user", JSON.stringify(result));
+        redirectByRole(result.role);
+        setAlert({ type: "success", message: "User registered successfully!" });
+      }
+    } catch (error) {
+      setAlert({
+        type: "error",
+        message: `Registration failed: ${error.data.message || error.message}`,
+      });
     }
   };
 
@@ -85,6 +112,14 @@ export default function SignUp() {
           onSubmit={handleSubmit(onSubmit)}
           sx={{ mt: 3 }}
         >
+          {alert.message && (
+            <Alert severity={alert.type} sx={{ mb: 3 }}>
+              <AlertTitle>
+                {alert.type === "success" ? "Success" : "Error"}
+              </AlertTitle>
+              {alert.message}
+            </Alert>
+          )}
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <Controller
@@ -93,16 +128,14 @@ export default function SignUp() {
                 defaultValue=""
                 render={({ field }) => (
                   <TextField
-                    autoComplete="given-name"
-                    required
-                    fullWidth
-                    label="First Name"
-                    autoFocus
-                    error={!!errors.firstName}
-                    helperText={
-                      errors.firstName ? "First name is required" : ""
-                    }
                     {...field}
+                    label="First Name"
+                    fullWidth
+                    autoComplete="given-name"
+                    error={!!errors.firstName}
+                    helperText={errors.firstName?.message}
+                    required
+                    autoFocus
                   />
                 )}
               />
@@ -114,13 +147,13 @@ export default function SignUp() {
                 defaultValue=""
                 render={({ field }) => (
                   <TextField
-                    required
-                    fullWidth
+                    {...field}
                     label="Last Name"
+                    fullWidth
                     autoComplete="family-name"
                     error={!!errors.lastName}
-                    helperText={errors.lastName ? "Last name is required" : ""}
-                    {...field}
+                    helperText={errors.lastName?.message}
+                    required
                   />
                 )}
               />
@@ -132,14 +165,13 @@ export default function SignUp() {
                 defaultValue=""
                 render={({ field }) => (
                   <TextField
-                    required
-                    fullWidth
-                    type="email"
+                    {...field}
                     label="Email Address"
+                    fullWidth
                     autoComplete="email"
                     error={!!errors.email}
-                    helperText={errors.email ? "Email is required" : ""}
-                    {...field}
+                    helperText={errors.email?.message}
+                    required
                   />
                 )}
               />
@@ -151,14 +183,14 @@ export default function SignUp() {
                 defaultValue=""
                 render={({ field }) => (
                   <TextField
-                    required
-                    fullWidth
-                    type="password"
+                    {...field}
                     label="Password"
+                    type="password"
+                    fullWidth
                     autoComplete="new-password"
                     error={!!errors.password}
-                    helperText={errors.password ? "Password is required" : ""}
-                    {...field}
+                    helperText={errors.password?.message}
+                    required
                   />
                 )}
               />
@@ -177,7 +209,6 @@ export default function SignUp() {
               />
             </Grid>
           </Grid>
-          {error && <Typography color="error">{error}</Typography>}
           <Button
             type="submit"
             fullWidth

@@ -19,8 +19,8 @@ export const api = createApi({
       }),
     }),
     loginUser: builder.query({
-      query: ({ email, password }) => ({
-        url: `/users?email=${email}&password=${password}`,
+      query: ({ email }) => ({
+        url: `/users?email=${email}`,
         method: "GET",
       }),
     }),

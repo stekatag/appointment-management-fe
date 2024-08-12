@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import useRedirectByRole from "../utils/redirectByRole";
 import { useLoginUserQuery } from "../services/api";
 import Avatar from "@mui/material/Avatar";
@@ -13,24 +15,17 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+// Define Yup validation schema
+const schema = yup.object().shape({
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  password: yup.string().required("Password is required"),
+});
 
 export default function SignIn() {
   const redirectByRole = useRedirectByRole();
@@ -38,26 +33,45 @@ export default function SignIn() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm();
-  const [errorMsg, setErrorMsg] = useState("");
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+  const [alert, setAlert] = useState({ type: "", message: "" });
   const [loginQueryArgs, setLoginQueryArgs] = useState(null);
 
-  const { data, error, isLoading } = useLoginUserQuery(loginQueryArgs, {
-    skip: !loginQueryArgs,
-  });
+  const { data, error, isLoading } = useLoginUserQuery(
+    loginQueryArgs ? { email: loginQueryArgs.email } : {},
+    {
+      skip: !loginQueryArgs,
+    }
+  );
 
-  const onSubmit = async (formData) => {
+  useEffect(() => {
+    if (data && Array.isArray(data) && data.length === 1) {
+      const user = data[0];
+      if (loginQueryArgs && user.password === loginQueryArgs.password) {
+        localStorage.setItem("token", "dummy-token");
+        localStorage.setItem("user", JSON.stringify(user));
+        redirectByRole(user.role);
+      } else {
+        setAlert({ type: "error", message: "Incorrect password." });
+      }
+    } else if (data && Array.isArray(data) && data.length > 1) {
+      setAlert({
+        type: "error",
+        message: "Multiple accounts found with the same email.",
+      });
+    } else if (error || (data && data.length === 0)) {
+      setAlert({
+        type: "error",
+        message: "Invalid credentials or user not found.",
+      });
+    }
+  }, [data, error, redirectByRole, loginQueryArgs]);
+
+  const onSubmit = (formData) => {
     setLoginQueryArgs(formData);
   };
-
-  if (data && data.length) {
-    localStorage.setItem("token", "dummy-token");
-    const user = data[0];
-    localStorage.setItem("user", JSON.stringify(user));
-    redirectByRole(user.role);
-  } else if (error) {
-    setErrorMsg(error.message);
-  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -81,6 +95,14 @@ export default function SignIn() {
           noValidate
           sx={{ mt: 1 }}
         >
+          {alert.message && (
+            <Alert severity={alert.type}>
+              <AlertTitle>
+                {alert.type === "success" ? "Success" : "Error"}
+              </AlertTitle>
+              {alert.message}
+            </Alert>
+          )}
           <Controller
             name="email"
             control={control}
@@ -94,7 +116,7 @@ export default function SignIn() {
                 autoComplete="email"
                 autoFocus
                 error={!!errors.email}
-                helperText={errors.email ? "Email is required" : ""}
+                helperText={errors.email ? errors.email.message : ""}
                 {...field}
               />
             )}
@@ -112,7 +134,7 @@ export default function SignIn() {
                 type="password"
                 autoComplete="current-password"
                 error={!!errors.password}
-                helperText={errors.password ? "Password is required" : ""}
+                helperText={errors.password ? errors.password.message : ""}
                 {...field}
               />
             )}
@@ -126,8 +148,9 @@ export default function SignIn() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={isLoading}
           >
-            Sign In
+            {isLoading ? "Signing in..." : "Sign In"}
           </Button>
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item>
@@ -136,10 +159,8 @@ export default function SignIn() {
               </Link>
             </Grid>
           </Grid>
-          {errorMsg && <Typography color="error">{errorMsg}</Typography>}
         </Box>
       </Box>
-      <Copyright sx={{ mt: 8, mb: 4 }} />
     </Container>
   );
 }
