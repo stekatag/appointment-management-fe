@@ -34,6 +34,10 @@ export const NavLink = styled(Button)(({ theme }) => ({
   [theme.breakpoints.down("lg")]: {
     padding: "0.5rem 1rem",
   },
+
+  [theme.breakpoints.down("md")]: {
+    fontSize: "1.1rem",
+  },
 }));
 
 // Styled IconButton for the hamburger menu

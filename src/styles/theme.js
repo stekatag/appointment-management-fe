@@ -4,9 +4,45 @@ import { createTheme } from "@mui/material/styles";
 const serifFont = '"Merriweather", serif';
 
 // Create a theme instance with custom fonts and button overrides
-let theme = createTheme({
+const theme = createTheme({
   typography: {
     fontFamily: serifFont, // Default font for all text
+    h1: {
+      fontWeight: 600,
+      fontSize: "3rem",
+      "@media (max-width:900px)": {
+        // Breakpoint for md (900px)
+        fontSize: "2.5rem",
+      },
+      "@media (max-width:600px)": {
+        // Breakpoint for sm (600px)
+        fontSize: "2rem",
+      },
+    },
+    h2: {
+      fontWeight: 500,
+      fontSize: "2.25rem",
+      "@media (max-width:900px)": {
+        // Breakpoint for md (900px)
+        fontSize: "1.75rem",
+      },
+      "@media (max-width:600px)": {
+        // Breakpoint for sm (600px)
+        fontSize: "1.5rem",
+      },
+    },
+    h3: {
+      fontWeight: 500,
+      fontSize: "1.75rem",
+      "@media (max-width:900px)": {
+        // Breakpoint for md (900px)
+        fontSize: "1.5rem",
+      },
+      "@media (max-width:600px)": {
+        // Breakpoint for sm (600px)
+        fontSize: "1.25rem",
+      },
+    },
   },
   palette: {
     primary: {
@@ -29,28 +65,16 @@ let theme = createTheme({
         },
       },
     },
-  },
-});
-
-// Now, define global styles with access to the fully initialized theme
-theme = createTheme(theme, {
-  components: {
-    MuiCssBaseline: {
+    MuiTypography: {
       styleOverrides: {
-        html: {
-          fontSize: "100%", // Default font size
-          [theme.breakpoints.down("lg")]: {
-            fontSize: "95%", // 100% at large breakpoint
-          },
-          [theme.breakpoints.down("md")]: {
-            fontSize: "85%", // 80% at medium breakpoint
-          },
-          [theme.breakpoints.down("sm")]: {
-            fontSize: "75%", // 70% at small breakpoint
-          },
-          [theme.breakpoints.down("xs")]: {
-            fontSize: "65%", // 60% at extra small breakpoint
-          },
+        h1: {
+          fontWeight: 600,
+        },
+        h2: {
+          fontWeight: 500,
+        },
+        h3: {
+          fontWeight: 500,
         },
       },
     },

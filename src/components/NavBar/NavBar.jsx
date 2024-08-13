@@ -91,6 +91,16 @@ export default function Navbar() {
               )}
             </Grid>
             <Grid item>
+              {!isSmallScreen && (
+                <>
+                  <NavLink>
+                    <Link to="/login">Sign In</Link>
+                  </NavLink>
+                  <NavLink>
+                    <Link to="/register">Sign Up</Link>
+                  </NavLink>
+                </>
+              )}
               <NavLink variant="outlined">Book Now</NavLink>
             </Grid>
           </Grid>
