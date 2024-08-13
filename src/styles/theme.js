@@ -43,6 +43,18 @@ const theme = createTheme({
         fontSize: "1.25rem",
       },
     },
+    h4: {
+      fontWeight: 500,
+      fontSize: "1.5rem",
+      "@media (max-width:900px)": {
+        // Breakpoint for md (900px)
+        fontSize: "1.25rem",
+      },
+      "@media (max-width:600px)": {
+        // Breakpoint for sm (600px)
+        fontSize: "1rem",
+      },
+    },
   },
   palette: {
     primary: {
@@ -62,19 +74,6 @@ const theme = createTheme({
             backgroundColor: "#AF8447",
             color: "#fff",
           },
-        },
-      },
-    },
-    MuiTypography: {
-      styleOverrides: {
-        h1: {
-          fontWeight: 600,
-        },
-        h2: {
-          fontWeight: 500,
-        },
-        h3: {
-          fontWeight: 500,
         },
       },
     },

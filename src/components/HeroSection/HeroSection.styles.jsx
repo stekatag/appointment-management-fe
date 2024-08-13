@@ -20,7 +20,7 @@ export const HeroSectionContainer = styled(Box)(({ theme }) => ({
     left: 0,
     width: "100%",
     height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Adjust the overlay color as needed
+    backgroundColor: "rgba(0, 0, 0, 0.65)", // Adjust the overlay color as needed
     zIndex: 1,
   },
 
