@@ -1,5 +1,6 @@
 import { styled } from "@mui/material/styles";
-import { Box, IconButton } from "@mui/material";
+import { Box, Icon } from "@mui/material";
+import { Link } from "react-router-dom";
 
 export const BarbersContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(8, 0),
@@ -7,42 +8,78 @@ export const BarbersContainer = styled(Box)(({ theme }) => ({
 }));
 
 export const BarberCard = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
+  display: "grid",
+  gridTemplateColumns: "1fr 2.5fr",
   backgroundColor: "#fff",
-  boxShadow: theme.shadows[1],
-  padding: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
+
+  [theme.breakpoints.down("lg")]: {
+    gridTemplateColumns: "1fr 1fr",
+  },
+
+  [theme.breakpoints.down("md")]: {
+    gridTemplateColumns: "1fr 1.5fr",
+  },
+
+  [theme.breakpoints.down("sm")]: {
+    gridTemplateColumns: "1fr",
+    padding: theme.spacing(3.5),
+  },
 }));
 
 export const BarberImage = styled(Box)(({ theme }) => ({
-  flex: "1 1 auto",
-  marginRight: theme.spacing(2),
   "& img": {
+    display: "block",
     width: "100%",
+    objectFit: "cover",
     borderRadius: theme.shape.borderRadius,
   },
 }));
 
-export const BarberInfo = styled(Box)(({ theme }) => ({
-  flex: "2 1 auto",
-}));
+export const BarberInfo = styled(Box)(() => ({
+  padding: "2rem",
 
-export const SocialIcons = styled(Box)(({ theme }) => ({
-  display: "flex",
-  marginTop: theme.spacing(2),
-  "& > *": {
-    marginRight: theme.spacing(1),
+  "& h4": {
+    fontSize: "1.15rem",
+    fontWeight: 600,
   },
 }));
 
-export const ContactButton = styled(IconButton)(({ theme }) => ({
-  position: "absolute",
-  right: theme.spacing(2),
-  bottom: theme.spacing(2),
+export const ContactInfo = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: theme.spacing(3),
+  marginTop: theme.spacing(2),
+
+  [theme.breakpoints.down("lg")]: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+  },
+}));
+
+export const ContactInfoInner = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: theme.spacing(1),
+}));
+
+export const ContactIcon = styled(Icon)(({ theme }) => ({
+  width: theme.spacing(5),
+  height: theme.spacing(5),
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderRadius: "50%",
   backgroundColor: theme.palette.primary.main,
   color: "#fff",
+}));
+
+export const StyledLink = styled(Link)(({ theme }) => ({
+  color: theme.palette.primary.main,
+  textDecoration: "none",
+  fontWeight: "bold",
+
   "&:hover": {
-    backgroundColor: theme.palette.primary.dark,
+    textDecoration: "underline",
   },
 }));
