@@ -3,7 +3,7 @@ import { Box, Typography, Button } from "@mui/material";
 
 export const ServicesContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(8, 0),
-  backgroundColor: "#f2f2f2",
+  backgroundColor: theme.palette.background.custom,
 }));
 
 export const ServiceTabContent = styled(Box)(({ theme }) => ({

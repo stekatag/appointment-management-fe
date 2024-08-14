@@ -2,7 +2,7 @@ import { styled } from "@mui/material/styles";
 import { Box, Button, Card, CardMedia, Dialog } from "@mui/material";
 
 export const BackgroundColorContainer = styled(Box)(({ theme }) => ({
-  backgroundColor: " #f2f2f2",
+  backgroundColor: theme.palette.background.custom,
 }));
 
 // Styled container for the video section

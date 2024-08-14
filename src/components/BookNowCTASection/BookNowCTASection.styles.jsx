@@ -2,6 +2,8 @@ import { styled } from "@mui/material/styles";
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
 
 export const BookNowContainer = styled(Container)(({ theme }) => ({
+  backgroundColor: theme.palette.background.default,
+
   [theme.breakpoints.down("md")]: {
     padding: theme.spacing(0, 3),
   },

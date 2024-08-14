@@ -63,6 +63,11 @@ const theme = createTheme({
     secondary: {
       main: "#6b6b6b",
     },
+    background: {
+      default: "#fff", // This sets the default background color
+      paper: "#fff", // Default for MUI Paper components
+      custom: "#f2f2f2", // Custom background color you can use throughout the app
+    },
   },
   components: {
     MuiButton: {
