@@ -1,6 +1,7 @@
 import BookNowCTASection from "../components/BookNowCTASection/BookNowCTASection";
 import Header from "../components/Header/Header";
 import HeroSection from "../components/HeroSection/HeroSection";
+import ServicesSection from "../components/ServicesSection/ServicesSection";
 import StatsSection from "../components/StatsSection/StatsSection";
 import VideoSection from "../components/VideoSection/VideoSection";
 
@@ -12,6 +13,7 @@ export default function HomePage() {
       <BookNowCTASection />
       <VideoSection />
       <StatsSection />
+      <ServicesSection />
     </>
   );
 }

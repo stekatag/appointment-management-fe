@@ -4,13 +4,14 @@ import { Box, Typography } from "@mui/material";
 export const StatsContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
-  padding: theme.spacing(6, 0),
+  padding: theme.spacing(8, 0),
   backgroundColor: theme.palette.background.default,
 
   [theme.breakpoints.down("md")]: {
     flexDirection: "column",
     alignItems: "center",
     gap: theme.spacing(4),
+    padding: theme.spacing(6, 0),
   },
 }));
 
