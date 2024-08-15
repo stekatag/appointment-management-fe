@@ -1,5 +1,6 @@
 import BarbersSection from "../components/BarbersSection/BarbersSection";
 import BookNowCTASection from "../components/BookNowCTASection/BookNowCTASection";
+import Footer from "../components/Footer/Footer";
 import GallerySection from "../components/GallerySection/GallerySection";
 import Header from "../components/Header/Header";
 import HeroSection from "../components/HeroSection/HeroSection";
@@ -20,6 +21,7 @@ export default function HomePage() {
       <BarbersSection />
       <TestimonialsSection />
       <GallerySection />
+      <Footer />
     </>
   );
 }
