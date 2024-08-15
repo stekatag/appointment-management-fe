@@ -9,6 +9,7 @@ AppointmentCalendar.propTypes = {
   onSlotSelect: PropTypes.func.isRequired,
   selectedDay: PropTypes.object.isRequired,
   initialSlot: PropTypes.string,
+  selectedBarber: PropTypes.string.isRequired, // Accept selectedBarber as a prop
 };
 
 const slots = [];
@@ -28,6 +29,7 @@ export default function AppointmentCalendar({
   onSlotSelect,
   selectedDay,
   initialSlot,
+  selectedBarber, // Use selectedBarber here
 }) {
   const [selectedSlot, setSelectedSlot] = useState(initialSlot || null);
 
@@ -40,8 +42,10 @@ export default function AppointmentCalendar({
       } else {
         setSelectedSlot(null);
       }
+    } else {
+      setSelectedSlot(null); // Clear the selectedSlot when selectedBarber changes or initialSlot is not provided
     }
-  }, [selectedDay, initialSlot]);
+  }, [selectedDay, initialSlot, selectedBarber]);
 
   // Set initial slot when the component first mounts or when initialSlot changes
   useEffect(() => {
@@ -51,11 +55,14 @@ export default function AppointmentCalendar({
   }, [initialSlot]);
 
   const isSlotBooked = (time) => {
-    return appointments.some((appt) =>
-      dayjs(appt.appointmentDateTime).isSame(
-        dayjs(selectedDay).hour(time.split(":")[0]).minute(time.split(":")[1]),
-        "minute"
-      )
+    return appointments.some(
+      (appt) =>
+        dayjs(appt.appointmentDateTime).isSame(
+          dayjs(selectedDay)
+            .hour(time.split(":")[0])
+            .minute(time.split(":")[1]),
+          "minute"
+        ) && appt.preferredHairdresser === selectedBarber // Match the selectedBarber with the appointment's hairdresser
     );
   };
 
