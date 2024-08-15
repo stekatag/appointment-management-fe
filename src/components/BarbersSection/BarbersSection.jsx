@@ -30,13 +30,13 @@ const barbersData = [
   {
     name: "JAMES HARRIS",
     title: "BARBER",
-    image: "/public/barber3.jpg",
+    image: "https://i.ibb.co/JsWSZHS/barber3.jpg",
     phone: "+359 987 654 321",
   },
   {
     name: "JOHN DOE",
     title: "BARBER",
-    image: "/public/barber4.jpg",
+    image: "https://i.ibb.co/LCHKrW3/barber4.jpg",
     phone: "+359 123 123 123",
   },
 ];
@@ -45,7 +45,7 @@ export default function BarbersSection() {
   return (
     <BarbersContainer>
       <Container maxWidth="lg">
-        <Typography variant="h4" component="h2" align="center" gutterBottom>
+        <Typography variant="h3" component="h3" align="center" gutterBottom>
           Our Skilled Barbers
         </Typography>
         <Typography variant="subtitle1" align="center" color="textSecondary">

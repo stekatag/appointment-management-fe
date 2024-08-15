@@ -5,6 +5,10 @@ import { Link } from "react-router-dom";
 export const BarbersContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(8, 0),
   backgroundColor: theme.palette.background.custom, // Assuming you added the custom background color to your theme
+
+  "& h3": {
+    fontWeight: 600,
+  },
 }));
 
 export const BarberCard = styled(Box)(({ theme }) => ({
