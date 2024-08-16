@@ -12,6 +12,9 @@ AppointmentCalendar.propTypes = {
   selectedBarber: PropTypes.string.isRequired, // Accept selectedBarber as a prop
 };
 
+// Define the days off (e.g., Monday)
+const DAYS_OFF = [1]; // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
 const slots = [];
 // Generate time slots from 10:00 to 19:30
 for (let hour = 10; hour <= 19; hour++) {
@@ -32,6 +35,9 @@ export default function AppointmentCalendar({
   selectedBarber, // Use selectedBarber here
 }) {
   const [selectedSlot, setSelectedSlot] = useState(initialSlot || null);
+
+  // Check if the selected day is a day off
+  const isDayOff = DAYS_OFF.includes(selectedDay.day());
 
   // Reset selectedSlot whenever selectedDay changes, unless the selectedDay matches the day of initialSlot
   useEffect(() => {
@@ -74,7 +80,7 @@ export default function AppointmentCalendar({
   };
 
   const handleSlotClick = (time) => {
-    if (!isSlotBooked(time) && !isSlotInPast(time)) {
+    if (!isSlotBooked(time) && !isSlotInPast(time) && !isDayOff) {
       setSelectedSlot(time);
       onSlotSelect(
         dayjs(selectedDay)
@@ -83,6 +89,19 @@ export default function AppointmentCalendar({
           .toISOString()
       );
     }
+  };
+
+  const getSlotStatus = (time) => {
+    if (isDayOff) {
+      return "Day Off";
+    }
+    if (isSlotBooked(time)) {
+      return "Booked";
+    }
+    if (isSlotInPast(time)) {
+      return "Past Slot";
+    }
+    return "Open Slot";
   };
 
   return (
@@ -98,18 +117,12 @@ export default function AppointmentCalendar({
               fullWidth
               variant="text"
               onClick={() => handleSlotClick(time)}
-              disabled={isSlotBooked(time) || isSlotInPast(time)}
+              disabled={isSlotBooked(time) || isSlotInPast(time) || isDayOff}
             >
               <Typography mr={1} variant="h6">
                 {time}
               </Typography>
-              <Typography variant="body2">
-                {isSlotBooked(time)
-                  ? "Booked"
-                  : isSlotInPast(time)
-                  ? "Past Slot"
-                  : "Open Slot"}
-              </Typography>
+              <Typography variant="body2">{getSlotStatus(time)}</Typography>
             </Button>
           </StyledSlot>
         </Grid>

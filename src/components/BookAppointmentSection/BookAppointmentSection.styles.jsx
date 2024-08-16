@@ -1,4 +1,4 @@
-import { styled, Box, FormControl, Button } from "@mui/material";
+import { styled, Box, Button } from "@mui/material";
 
 export const SectionContainer = styled(Box)(({ theme }) => ({
   width: "100%", // Ensure the gallery takes up the full width of the viewport
