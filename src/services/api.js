@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const API_URL = "https://appointment-management-json-server.onrender.com/";
 // const API_URL = "http://localhost:5175";
+const API_URL = "https://appointment-management-json-server.onrender.com/";
 
 export const api = createApi({
   reducerPath: "api",
@@ -19,8 +19,8 @@ export const api = createApi({
       }),
     }),
     loginUser: builder.query({
-      query: ({ email, password }) => ({
-        url: `/users?email=${email}&password=${password}`,
+      query: ({ email }) => ({
+        url: `/users?email=${email}`,
         method: "GET",
       }),
     }),
@@ -44,10 +44,11 @@ export const api = createApi({
       query: (userId) => `/appointments?userId=${userId}`,
       providesTags: ["Appointment"],
     }),
-    fetchAppointmentsByDay: builder.query({
-      query: (day) => `/appointments?day=${day}`,
+    fetchAppointmentsByDayAndBarber: builder.query({
+      query: ({ day, barber }) => `/appointments?day=${day}&barber=${barber}`,
       providesTags: ["Appointment"],
     }),
+
     fetchAppointmentById: builder.query({
       query: (id) => `/appointments/${id}`,
       providesTags: ["Appointment"],
@@ -62,6 +63,6 @@ export const {
   useCreateAppointmentMutation,
   useUpdateAppointmentMutation,
   useFetchAppointmentsByUserQuery,
-  useFetchAppointmentsByDayQuery,
+  useFetchAppointmentsByDayAndBarberQuery,
   useFetchAppointmentByIdQuery, // New Hook
 } = api;

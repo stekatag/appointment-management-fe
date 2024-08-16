@@ -9,7 +9,11 @@ AppointmentCalendar.propTypes = {
   onSlotSelect: PropTypes.func.isRequired,
   selectedDay: PropTypes.object.isRequired,
   initialSlot: PropTypes.string,
+  selectedBarber: PropTypes.string.isRequired, // Accept selectedBarber as a prop
 };
+
+// Define the days off (e.g., Monday)
+const DAYS_OFF = [1]; // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
 
 const slots = [];
 // Generate time slots from 10:00 to 19:30
@@ -28,8 +32,12 @@ export default function AppointmentCalendar({
   onSlotSelect,
   selectedDay,
   initialSlot,
+  selectedBarber, // Use selectedBarber here
 }) {
   const [selectedSlot, setSelectedSlot] = useState(initialSlot || null);
+
+  // Check if the selected day is a day off
+  const isDayOff = DAYS_OFF.includes(selectedDay.day());
 
   // Reset selectedSlot whenever selectedDay changes, unless the selectedDay matches the day of initialSlot
   useEffect(() => {
@@ -40,8 +48,10 @@ export default function AppointmentCalendar({
       } else {
         setSelectedSlot(null);
       }
+    } else {
+      setSelectedSlot(null); // Clear the selectedSlot when selectedBarber changes or initialSlot is not provided
     }
-  }, [selectedDay, initialSlot]);
+  }, [selectedDay, initialSlot, selectedBarber]);
 
   // Set initial slot when the component first mounts or when initialSlot changes
   useEffect(() => {
@@ -51,11 +61,14 @@ export default function AppointmentCalendar({
   }, [initialSlot]);
 
   const isSlotBooked = (time) => {
-    return appointments.some((appt) =>
-      dayjs(appt.appointmentDateTime).isSame(
-        dayjs(selectedDay).hour(time.split(":")[0]).minute(time.split(":")[1]),
-        "minute"
-      )
+    return appointments.some(
+      (appt) =>
+        dayjs(appt.appointmentDateTime).isSame(
+          dayjs(selectedDay)
+            .hour(time.split(":")[0])
+            .minute(time.split(":")[1]),
+          "minute"
+        ) && appt.preferredHairdresser === selectedBarber // Match the selectedBarber with the appointment's hairdresser
     );
   };
 
@@ -67,7 +80,7 @@ export default function AppointmentCalendar({
   };
 
   const handleSlotClick = (time) => {
-    if (!isSlotBooked(time) && !isSlotInPast(time)) {
+    if (!isSlotBooked(time) && !isSlotInPast(time) && !isDayOff) {
       setSelectedSlot(time);
       onSlotSelect(
         dayjs(selectedDay)
@@ -78,8 +91,21 @@ export default function AppointmentCalendar({
     }
   };
 
+  const getSlotStatus = (time) => {
+    if (isDayOff) {
+      return "Day Off";
+    }
+    if (isSlotBooked(time)) {
+      return "Booked";
+    }
+    if (isSlotInPast(time)) {
+      return "Past Slot";
+    }
+    return "Open Slot";
+  };
+
   return (
-    <Grid container spacing={2} mb={5}>
+    <Grid container spacing={2} mb={2}>
       {slots.map((time) => (
         <Grid item xs={12} sm={6} lg={3} key={time}>
           <StyledSlot
@@ -91,18 +117,12 @@ export default function AppointmentCalendar({
               fullWidth
               variant="text"
               onClick={() => handleSlotClick(time)}
-              disabled={isSlotBooked(time) || isSlotInPast(time)}
+              disabled={isSlotBooked(time) || isSlotInPast(time) || isDayOff}
             >
               <Typography mr={1} variant="h6">
                 {time}
               </Typography>
-              <Typography variant="body2">
-                {isSlotBooked(time)
-                  ? "Booked"
-                  : isSlotInPast(time)
-                  ? "Past Slot"
-                  : "Open Slot"}
-              </Typography>
+              <Typography variant="body2">{getSlotStatus(time)}</Typography>
             </Button>
           </StyledSlot>
         </Grid>

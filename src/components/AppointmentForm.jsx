@@ -2,11 +2,12 @@
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import {
   useCreateAppointmentMutation,
   useUpdateAppointmentMutation,
   useFetchAppointmentsByUserQuery,
-  useFetchAppointmentsByDayQuery,
+  useFetchAppointmentsByDayAndBarberQuery,
 } from "../services/api";
 import {
   Box,
@@ -21,6 +22,7 @@ import {
   CircularProgress,
   Alert,
   AlertTitle,
+  Fade,
 } from "@mui/material";
 import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
@@ -62,9 +64,14 @@ const schema = yup.object().shape({
 
 const AppointmentForm = ({ appointmentToEdit }) => {
   const user = useSelector((state) => state.auth.user);
+  const location = useLocation();
+  const { selectedSlot, selectedBarber } = location.state || {}; // Retrieve state from location
 
-  const [selectedDay, setSelectedDay] = useState(dayjs());
-  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedDay, setSelectedDay] = useState(
+    selectedSlot ? dayjs(selectedSlot) : dayjs()
+  );
+  const [slot, setSlot] = useState(selectedSlot || null);
+  const [barber, setBarber] = useState(selectedBarber || "");
   const [alert, setAlert] = useState({ type: "", message: "" });
 
   const {
@@ -78,13 +85,13 @@ const AppointmentForm = ({ appointmentToEdit }) => {
     defaultValues: {
       firstName: user ? user.firstName : "",
       lastName: user ? user.lastName : "",
-      contactNumber: "",
+      contactNumber: user ? user.contactNumber : "",
       email: user ? user.email : "",
-      preferredHairdresser: "",
+      preferredHairdresser: barber,
       serviceType: "",
       additionalNotes: "",
       userId: user ? user.id : null,
-      appointmentDateTime: null,
+      appointmentDateTime: slot,
     },
   });
 
@@ -96,15 +103,16 @@ const AppointmentForm = ({ appointmentToEdit }) => {
     useFetchAppointmentsByUserQuery(user ? user.id : null);
 
   const { data: dayAppointments, refetch: refetchDayAppointments } =
-    useFetchAppointmentsByDayQuery(selectedDay.format("YYYY-MM-DD"), {
-      skip: !selectedDay,
-    });
+    useFetchAppointmentsByDayAndBarberQuery(
+      { day: selectedDay.format("YYYY-MM-DD"), barber: barber },
+      { skip: !selectedDay || !barber }
+    );
 
   useEffect(() => {
-    if (selectedDay) {
+    if (selectedDay && barber) {
       refetchDayAppointments();
     }
-  }, [selectedDay, refetchDayAppointments]);
+  }, [selectedDay, barber, refetchDayAppointments]);
 
   useEffect(() => {
     if (appointmentToEdit) {
@@ -127,20 +135,42 @@ const AppointmentForm = ({ appointmentToEdit }) => {
       setValue("serviceType", serviceType);
       setValue("additionalNotes", additionalNotes);
       setSelectedDay(dayjs(appointmentDateTime));
-      setSelectedSlot(dayjs(appointmentDateTime).toISOString());
+      setSlot(dayjs(appointmentDateTime).toISOString());
       setValue("appointmentDateTime", dayjs(appointmentDateTime).toISOString());
+      setBarber(preferredHairdresser);
+    } else if (selectedBarber || selectedSlot) {
+      // If the user is coming from the BookAppointmentSection
+      setValue("preferredHairdresser", selectedBarber);
+      setValue("appointmentDateTime", selectedSlot);
     }
-  }, [appointmentToEdit, setValue]);
+  }, [appointmentToEdit, selectedBarber, selectedSlot, setValue]);
 
   const handleSlotSelect = (time) => {
-    setSelectedSlot(time);
+    setSlot(time);
     setValue("appointmentDateTime", time);
+  };
+
+  const handleBarberChange = (value) => {
+    setBarber(value);
+    setSlot(null); // Clear the selected slot when changing barbers
+    setValue("appointmentDateTime", null); // Clear the selected slot value in the form
+    setValue("preferredHairdresser", value);
+  };
+
+  const getButtonText = (isCreating, isUpdating, appointmentToEdit) => {
+    if (isCreating || isUpdating) {
+      return "Submitting...";
+    } else if (appointmentToEdit) {
+      return "Update Appointment";
+    } else {
+      return "Book Appointment";
+    }
   };
 
   const onSubmit = async (data) => {
     const appointmentData = {
       ...data,
-      appointmentDateTime: selectedSlot,
+      appointmentDateTime: slot,
     };
 
     try {
@@ -182,7 +212,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} sx={{ mb: 2 }}>
         <Grid item xs={12}>
           <Typography variant="h6">
             {appointmentToEdit ? "Edit Appointment" : "Create Appointment"}
@@ -199,97 +229,18 @@ const AppointmentForm = ({ appointmentToEdit }) => {
           </Grid>
         )}
         <Grid item xs={12}>
-          <DaySlider currentDay={selectedDay} setCurrentDay={setSelectedDay} />
-        </Grid>
-        <Grid item xs={12}>
-          <AppointmentCalendar
-            appointments={appointments}
-            onSlotSelect={handleSlotSelect}
-            selectedDay={selectedDay}
-            initialSlot={
-              selectedSlot ? dayjs(selectedSlot).format("HH:mm") : null
-            }
-          />
-          {errors.appointmentDateTime && (
-            <Typography color="error">
-              {errors.appointmentDateTime.message}
-            </Typography>
-          )}
-        </Grid>
-        <Grid item xs={6}>
-          <Controller
-            name="firstName"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="First Name"
-                fullWidth
-                error={!!errors.firstName}
-                helperText={errors.firstName ? errors.firstName.message : ""}
-                required
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <Controller
-            name="lastName"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Last Name"
-                fullWidth
-                error={!!errors.lastName}
-                helperText={errors.lastName ? errors.lastName.message : ""}
-                required
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <Controller
-            name="contactNumber"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Contact Number"
-                fullWidth
-                error={!!errors.contactNumber}
-                helperText={
-                  errors.contactNumber ? errors.contactNumber.message : ""
-                }
-                required
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Email"
-                fullWidth
-                error={!!errors.email}
-                helperText={errors.email ? errors.email.message : ""}
-                required
-              />
-            )}
-          />
-        </Grid>
-        <Grid item xs={12}>
           <FormControl fullWidth required error={!!errors.preferredHairdresser}>
             <InputLabel>Preferred Hairdresser</InputLabel>
             <Controller
               name="preferredHairdresser"
               control={control}
               render={({ field }) => (
-                <Select {...field} label="Preferred Hairdresser">
+                <Select
+                  {...field}
+                  label="Preferred Hairdresser"
+                  value={barber}
+                  onChange={(e) => handleBarberChange(e.target.value)}
+                >
                   <MenuItem value="Hairdresser 1">Hairdresser 1</MenuItem>
                   <MenuItem value="Hairdresser 2">Hairdresser 2</MenuItem>
                   <MenuItem value="Hairdresser 3">Hairdresser 3</MenuItem>
@@ -303,60 +254,148 @@ const AppointmentForm = ({ appointmentToEdit }) => {
             )}
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth required error={!!errors.serviceType}>
-            <InputLabel>Type of Service</InputLabel>
-            <Controller
-              name="serviceType"
-              control={control}
-              render={({ field }) => (
-                <Select {...field} label="Type of Service">
-                  <MenuItem value="Service 1">Service 1</MenuItem>
-                  <MenuItem value="Service 2">Service 2</MenuItem>
-                  <MenuItem value="Service 3">Service 3</MenuItem>
-                </Select>
-              )}
+      </Grid>
+
+      {/* Conditionally render the rest of the form fields */}
+      <Fade in={!!barber}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <DaySlider
+              currentDay={selectedDay}
+              setCurrentDay={setSelectedDay}
             />
-            {errors.serviceType && (
+          </Grid>
+          <Grid item xs={12}>
+            <AppointmentCalendar
+              appointments={appointments}
+              onSlotSelect={handleSlotSelect}
+              selectedDay={selectedDay}
+              selectedBarber={barber} // Pass down the selectedBarber
+              initialSlot={slot ? dayjs(slot).format("HH:mm") : null}
+            />
+            {errors.appointmentDateTime && (
               <Typography color="error">
-                {errors.serviceType.message}
+                {errors.appointmentDateTime.message}
               </Typography>
             )}
-          </FormControl>
-        </Grid>
-        <Grid item xs={12}>
-          <Controller
-            name="additionalNotes"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Additional Notes/Instructions"
-                fullWidth
-                multiline
-                rows={4}
-                variant="outlined"
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth required error={!!errors.serviceType}>
+              <InputLabel>Type of Service</InputLabel>
+              <Controller
+                name="serviceType"
+                control={control}
+                render={({ field }) => (
+                  <Select {...field} label="Type of Service">
+                    <MenuItem value="Service 1">Service 1</MenuItem>
+                    <MenuItem value="Service 2">Service 2</MenuItem>
+                    <MenuItem value="Service 3">Service 3</MenuItem>
+                  </Select>
+                )}
               />
-            )}
-          />
-        </Grid>
+              {errors.serviceType && (
+                <Typography color="error">
+                  {errors.serviceType.message}
+                </Typography>
+              )}
+            </FormControl>
+          </Grid>
+          <Grid item xs={6}>
+            <Controller
+              name="firstName"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="First Name"
+                  fullWidth
+                  error={!!errors.firstName}
+                  helperText={errors.firstName ? errors.firstName.message : ""}
+                  required
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Controller
+              name="lastName"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Last Name"
+                  fullWidth
+                  error={!!errors.lastName}
+                  helperText={errors.lastName ? errors.lastName.message : ""}
+                  required
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Controller
+              name="contactNumber"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Contact Number"
+                  fullWidth
+                  error={!!errors.contactNumber}
+                  helperText={
+                    errors.contactNumber ? errors.contactNumber.message : ""
+                  }
+                  required
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Controller
+              name="email"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Email"
+                  fullWidth
+                  error={!!errors.email}
+                  helperText={errors.email ? errors.email.message : ""}
+                  required
+                />
+              )}
+            />
+          </Grid>
 
-        <Grid item xs={3}>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={isCreating || isUpdating}
-            fullWidth
-          >
-            {isCreating || isUpdating
-              ? "Submitting..."
-              : appointmentToEdit
-              ? "Update Appointment"
-              : "Book Appointment"}
-          </Button>
+          <Grid item xs={12}>
+            <Controller
+              name="additionalNotes"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Additional Notes/Instructions"
+                  fullWidth
+                  multiline
+                  rows={4}
+                  variant="outlined"
+                />
+              )}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={isCreating || isUpdating}
+              fullWidth
+            >
+              {getButtonText(isCreating, isUpdating, appointmentToEdit)}
+            </Button>
+          </Grid>
         </Grid>
-      </Grid>
+      </Fade>
     </Box>
   );
 };

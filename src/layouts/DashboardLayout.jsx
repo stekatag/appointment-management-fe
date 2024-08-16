@@ -1,5 +1,6 @@
 import React from "react";
-import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
+import PropTypes from "prop-types";
+import { styled, ThemeProvider } from "@mui/material/styles";
 import {
   CssBaseline,
   Box,
@@ -21,6 +22,7 @@ import { mainListItems, secondaryListItems } from "../components/listItems";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/authSlice";
 import { useNavigate } from "react-router-dom";
+import theme from "../styles/theme";
 
 const drawerWidth = 240;
 
@@ -68,7 +70,9 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-const defaultTheme = createTheme();
+DashboardLayout.propTypes = {
+  children: PropTypes.node,
+};
 
 export default function DashboardLayout({ children }) {
   const dispatch = useDispatch();
@@ -76,7 +80,7 @@ export default function DashboardLayout({ children }) {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/login");
+    navigate("/");
   };
 
   const [open, setOpen] = React.useState(true);
@@ -85,7 +89,7 @@ export default function DashboardLayout({ children }) {
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar position="absolute" open={open}>

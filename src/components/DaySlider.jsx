@@ -35,7 +35,9 @@ export default function DaySlider({ currentDay, setCurrentDay }) {
       ) : (
         <div style={{ width: "48px" }} /> // Placeholder to center the date
       )}
-      <Typography variant="h6">{currentDay.format("DD MMMM YYYY")}</Typography>
+      <Typography variant="h6">
+        {currentDay.format("dddd, DD MMMM YYYY")}
+      </Typography>
       <IconButton onClick={handleNextDay}>
         <ArrowForward />
       </IconButton>

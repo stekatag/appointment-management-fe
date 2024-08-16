@@ -1,25 +1,29 @@
-import { Link } from "react-router-dom";
-import { Typography, Box, Button, Container } from "@mui/material";
-import "../App.css";
+import BarbersSection from "../components/BarbersSection/BarbersSection";
+import BookAppointmentSection from "../components/BookAppointmentSection/BookAppointmentSection";
+import BookNowCTASection from "../components/BookNowCTASection/BookNowCTASection";
+import Footer from "../components/Footer/Footer";
+import GallerySection from "../components/GallerySection/GallerySection";
+import Header from "../components/Header/Header";
+import HeroSection from "../components/HeroSection/HeroSection";
+import ServicesSection from "../components/ServicesSection/ServicesSection";
+import StatsSection from "../components/StatsSection/StatsSection";
+import TestimonialsSection from "../components/TestimonialsSection/TestimonialsSection";
+import VideoSection from "../components/VideoSection/VideoSection";
 
 export default function HomePage() {
   return (
-    <Container maxWidth="sm" style={{ textAlign: "center", marginTop: "50px" }}>
-      <Typography variant="h3" gutterBottom>
-        Appointment Management System
-      </Typography>
-      <Box mt={5} display="flex" justifyContent="center" gap={2}>
-        <Button variant="contained" color="primary">
-          <Link to="login" style={{ color: "#fff", textDecoration: "none" }}>
-            Sign In
-          </Link>
-        </Button>
-        <Button variant="contained" color="secondary">
-          <Link to="register" style={{ color: "#fff", textDecoration: "none" }}>
-            Sign Up
-          </Link>
-        </Button>
-      </Box>
-    </Container>
+    <>
+      <Header />
+      <HeroSection />
+      <BookNowCTASection />
+      <VideoSection />
+      <StatsSection />
+      <ServicesSection />
+      <BarbersSection />
+      <TestimonialsSection />
+      <GallerySection />
+      <BookAppointmentSection />
+      <Footer />
+    </>
   );
 }
