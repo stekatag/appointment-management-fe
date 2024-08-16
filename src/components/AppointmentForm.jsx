@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import {
   useCreateAppointmentMutation,
   useUpdateAppointmentMutation,
@@ -62,10 +63,14 @@ const schema = yup.object().shape({
 
 const AppointmentForm = ({ appointmentToEdit }) => {
   const user = useSelector((state) => state.auth.user);
+  const location = useLocation();
+  const { selectedSlot, selectedBarber } = location.state || {}; // Retrieve state from location
 
-  const [selectedDay, setSelectedDay] = useState(dayjs());
-  const [selectedSlot, setSelectedSlot] = useState(null);
-  const [selectedBarber, setSelectedBarber] = useState("");
+  const [selectedDay, setSelectedDay] = useState(
+    selectedSlot ? dayjs(selectedSlot) : dayjs()
+  );
+  const [slot, setSlot] = useState(selectedSlot || null);
+  const [barber, setBarber] = useState(selectedBarber || "");
   const [alert, setAlert] = useState({ type: "", message: "" });
 
   const {
@@ -81,11 +86,11 @@ const AppointmentForm = ({ appointmentToEdit }) => {
       lastName: user ? user.lastName : "",
       contactNumber: "",
       email: user ? user.email : "",
-      preferredHairdresser: "",
+      preferredHairdresser: barber,
       serviceType: "",
       additionalNotes: "",
       userId: user ? user.id : null,
-      appointmentDateTime: null,
+      appointmentDateTime: slot,
     },
   });
 
@@ -98,15 +103,15 @@ const AppointmentForm = ({ appointmentToEdit }) => {
 
   const { data: dayAppointments, refetch: refetchDayAppointments } =
     useFetchAppointmentsByDayAndBarberQuery(
-      { day: selectedDay.format("YYYY-MM-DD"), barber: selectedBarber },
-      { skip: !selectedDay || !selectedBarber }
+      { day: selectedDay.format("YYYY-MM-DD"), barber: barber },
+      { skip: !selectedDay || !barber }
     );
 
   useEffect(() => {
-    if (selectedDay && selectedBarber) {
+    if (selectedDay && barber) {
       refetchDayAppointments();
     }
-  }, [selectedDay, selectedBarber, refetchDayAppointments]);
+  }, [selectedDay, barber, refetchDayAppointments]);
 
   useEffect(() => {
     if (appointmentToEdit) {
@@ -129,20 +134,24 @@ const AppointmentForm = ({ appointmentToEdit }) => {
       setValue("serviceType", serviceType);
       setValue("additionalNotes", additionalNotes);
       setSelectedDay(dayjs(appointmentDateTime));
-      setSelectedSlot(dayjs(appointmentDateTime).toISOString());
+      setSlot(dayjs(appointmentDateTime).toISOString());
       setValue("appointmentDateTime", dayjs(appointmentDateTime).toISOString());
-      setSelectedBarber(preferredHairdresser);
+      setBarber(preferredHairdresser);
+    } else if (selectedBarber || selectedSlot) {
+      // If the user is coming from the BookAppointmentSection
+      setValue("preferredHairdresser", selectedBarber);
+      setValue("appointmentDateTime", selectedSlot);
     }
-  }, [appointmentToEdit, setValue]);
+  }, [appointmentToEdit, selectedBarber, selectedSlot, setValue]);
 
   const handleSlotSelect = (time) => {
-    setSelectedSlot(time);
+    setSlot(time);
     setValue("appointmentDateTime", time);
   };
 
   const handleBarberChange = (value) => {
-    setSelectedBarber(value);
-    setSelectedSlot(null); // Clear the selected slot when changing barbers
+    setBarber(value);
+    setSlot(null); // Clear the selected slot when changing barbers
     setValue("appointmentDateTime", null); // Clear the selected slot value in the form
     setValue("preferredHairdresser", value);
   };
@@ -150,7 +159,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
   const onSubmit = async (data) => {
     const appointmentData = {
       ...data,
-      appointmentDateTime: selectedSlot,
+      appointmentDateTime: slot,
     };
 
     try {
@@ -218,7 +227,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
                 <Select
                   {...field}
                   label="Preferred Hairdresser"
-                  value={selectedBarber}
+                  value={barber}
                   onChange={(e) => handleBarberChange(e.target.value)}
                 >
                   <MenuItem value="Hairdresser 1">Hairdresser 1</MenuItem>
@@ -242,10 +251,8 @@ const AppointmentForm = ({ appointmentToEdit }) => {
             appointments={appointments}
             onSlotSelect={handleSlotSelect}
             selectedDay={selectedDay}
-            selectedBarber={selectedBarber} // Pass down the selectedBarber
-            initialSlot={
-              selectedSlot ? dayjs(selectedSlot).format("HH:mm") : null
-            }
+            selectedBarber={barber} // Pass down the selectedBarber
+            initialSlot={slot ? dayjs(slot).format("HH:mm") : null}
           />
           {errors.appointmentDateTime && (
             <Typography color="error">

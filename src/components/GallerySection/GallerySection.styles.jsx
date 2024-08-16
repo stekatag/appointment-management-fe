@@ -4,7 +4,7 @@ import { Box } from "@mui/material";
 export const GalleryContainer = styled(Box)(({ theme }) => ({
   width: "100%", // Ensure the gallery takes up the full width of the viewport
   padding: theme.spacing(8, 0),
-  backgroundColor: "#f2f2f2",
+  backgroundColor: theme.palette.background.default,
   marginLeft: "auto",
   marginRight: "auto",
   paddingLeft: theme.spacing(2),

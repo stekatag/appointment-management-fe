@@ -86,7 +86,7 @@ export default function AppointmentCalendar({
   };
 
   return (
-    <Grid container spacing={2} mb={5}>
+    <Grid container spacing={2} mb={2}>
       {slots.map((time) => (
         <Grid item xs={12} sm={6} lg={3} key={time}>
           <StyledSlot

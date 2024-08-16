@@ -1,4 +1,5 @@
 import BarbersSection from "../components/BarbersSection/BarbersSection";
+import BookAppointmentSection from "../components/BookAppointmentSection/BookAppointmentSection";
 import BookNowCTASection from "../components/BookNowCTASection/BookNowCTASection";
 import Footer from "../components/Footer/Footer";
 import GallerySection from "../components/GallerySection/GallerySection";
@@ -21,6 +22,7 @@ export default function HomePage() {
       <BarbersSection />
       <TestimonialsSection />
       <GallerySection />
+      <BookAppointmentSection />
       <Footer />
     </>
   );

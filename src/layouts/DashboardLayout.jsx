@@ -21,6 +21,7 @@ import { mainListItems, secondaryListItems } from "../components/listItems";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/authSlice";
 import { useNavigate } from "react-router-dom";
+import theme from "../styles/theme";
 
 const drawerWidth = 240;
 
@@ -68,8 +69,6 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-const defaultTheme = createTheme();
-
 export default function DashboardLayout({ children }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -85,7 +84,7 @@ export default function DashboardLayout({ children }) {
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar position="absolute" open={open}>
