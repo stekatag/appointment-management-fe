@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../store/authSlice";
 import {
   useTheme,
   useMediaQuery,
@@ -17,15 +20,34 @@ import {
   StyledDrawer,
   StyledListItemText,
 } from "./NavBar.styles";
-import { Link } from "react-router-dom";
 
 export default function Navbar() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
+
+  // Access the user from the Redux store
+  const user = useSelector((state) => state.auth.user);
+
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
+  };
+
+  const getDashboardRoute = () => {
+    if (user?.role === "admin") {
+      return "/admin/dashboard";
+    } else if (user?.role === "user") {
+      return "/user/dashboard";
+    }
+    return "/";
   };
 
   const drawerContent = (
@@ -46,12 +68,20 @@ export default function Navbar() {
         <ListItem button component={Link} to="/contact">
           <StyledListItemText primary="Contact Us" />
         </ListItem>
-        <ListItem button component={Link} to="/login">
-          <StyledListItemText primary="Sign In" />
-        </ListItem>
-        <ListItem button component={Link} to="/register">
-          <StyledListItemText primary="Sign Up" />
-        </ListItem>
+        {user ? (
+          <ListItem button component={Link} to={getDashboardRoute()}>
+            <StyledListItemText primary="Dashboard" />
+          </ListItem>
+        ) : (
+          <>
+            <ListItem button component={Link} to="/login">
+              <StyledListItemText primary="Sign In" />
+            </ListItem>
+            <ListItem button component={Link} to="/register">
+              <StyledListItemText primary="Sign Up" />
+            </ListItem>
+          </>
+        )}
       </List>
     </Box>
   );
@@ -93,12 +123,23 @@ export default function Navbar() {
             <Grid item>
               {!isSmallScreen && (
                 <>
-                  <NavLink>
-                    <Link to="/login">Sign In</Link>
-                  </NavLink>
-                  <NavLink>
-                    <Link to="/register">Sign Up</Link>
-                  </NavLink>
+                  {user ? (
+                    <>
+                      <NavLink>
+                        <Link to={getDashboardRoute()}>Dashboard</Link>
+                      </NavLink>
+                      <NavLink onClick={handleLogout}>Sign Out</NavLink>
+                    </>
+                  ) : (
+                    <>
+                      <NavLink>
+                        <Link to="/login">Sign In</Link>
+                      </NavLink>
+                      <NavLink>
+                        <Link to="/register">Sign Up</Link>
+                      </NavLink>
+                    </>
+                  )}
                 </>
               )}
               <NavLink variant="outlined">Book Now</NavLink>

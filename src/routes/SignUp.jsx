@@ -28,6 +28,14 @@ const schema = yup.object().shape({
     .email("Invalid email format")
     .required("Email is required"),
   password: yup.string().required("Password is required"),
+  contactNumber: yup
+    .string()
+    .trim()
+    .matches(
+      /^0\d{9}$/,
+      "Enter a valid phone number starting with 0 and containing 10 digits"
+    )
+    .required("Contact number is required"),
   isAdmin: yup.boolean(),
 });
 
@@ -178,6 +186,23 @@ export default function SignUp() {
             </Grid>
             <Grid item xs={12}>
               <Controller
+                name="contactNumber"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Contact Number"
+                    fullWidth
+                    error={!!errors.contactNumber}
+                    helperText={errors.contactNumber?.message}
+                    required
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Controller
                 name="password"
                 control={control}
                 defaultValue=""
@@ -195,6 +220,7 @@ export default function SignUp() {
                 )}
               />
             </Grid>
+
             <Grid item xs={12}>
               <Controller
                 name="isAdmin"

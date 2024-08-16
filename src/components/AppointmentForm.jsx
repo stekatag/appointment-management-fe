@@ -85,7 +85,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
     defaultValues: {
       firstName: user ? user.firstName : "",
       lastName: user ? user.lastName : "",
-      contactNumber: "",
+      contactNumber: user ? user.contactNumber : "",
       email: user ? user.email : "",
       preferredHairdresser: barber,
       serviceType: "",

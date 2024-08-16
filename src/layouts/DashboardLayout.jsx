@@ -1,5 +1,6 @@
 import React from "react";
-import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
+import PropTypes from "prop-types";
+import { styled, ThemeProvider } from "@mui/material/styles";
 import {
   CssBaseline,
   Box,
@@ -69,13 +70,17 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
+DashboardLayout.propTypes = {
+  children: PropTypes.node,
+};
+
 export default function DashboardLayout({ children }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/login");
+    navigate("/");
   };
 
   const [open, setOpen] = React.useState(true);
