@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/authSlice";
 import {
@@ -23,7 +23,6 @@ import {
 
 export default function Navbar() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -31,7 +30,6 @@ export default function Navbar() {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/login");
   };
 
   // Access the user from the Redux store
@@ -125,24 +123,27 @@ export default function Navbar() {
                 <>
                   {user ? (
                     <>
-                      <NavLink>
-                        <Link to={getDashboardRoute()}>Dashboard</Link>
-                      </NavLink>
+                      <Link to={getDashboardRoute()}>
+                        <NavLink>Dashboard</NavLink>
+                      </Link>
                       <NavLink onClick={handleLogout}>Sign Out</NavLink>
                     </>
                   ) : (
                     <>
-                      <NavLink>
-                        <Link to="/login">Sign In</Link>
-                      </NavLink>
-                      <NavLink>
-                        <Link to="/register">Sign Up</Link>
-                      </NavLink>
+                      <Link to="/login">
+                        <NavLink>Sign In</NavLink>
+                      </Link>
+
+                      <Link to="/register">
+                        <NavLink>Sign Up</NavLink>
+                      </Link>
                     </>
                   )}
                 </>
               )}
-              <NavLink variant="outlined">Book Now</NavLink>
+              <a href="#booking-section">
+                <NavLink variant="outlined">Book Now</NavLink>
+              </a>
             </Grid>
           </Grid>
         </Toolbar>

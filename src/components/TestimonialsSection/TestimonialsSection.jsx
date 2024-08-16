@@ -9,6 +9,7 @@ import {
   TestimonialNameContent,
   CTAButton,
 } from "./TestimonialsSection.styles";
+import ScrollAnimation from "react-animate-on-scroll";
 
 const testimonials = [
   {
@@ -52,32 +53,34 @@ export default function TestimonialsSection() {
             product we carry. Read our testimonials from our happy customers.
           </Typography>
         </TitlesContainer>
-        <TestimonialCardsContainer container spacing={4}>
-          {testimonials.map((testimonial, index) => (
-            <Grid item xs={12} md={4} key={index}>
-              <TestimonialCard>
-                <TestimonialNameContent>
-                  <Typography variant="subtitle2">
-                    {testimonial.name}
-                  </Typography>
-                  <TestimonialRatingContainer>
-                    <Rating name="read-only" value={5} readOnly />
-                    <Typography variant="body2" color="textSecondary">
-                      2 weeks ago
+        <ScrollAnimation animateIn="fadeInRightBig" animateOnce>
+          <TestimonialCardsContainer container spacing={4}>
+            {testimonials.map((testimonial, index) => (
+              <Grid item xs={12} md={4} key={index}>
+                <TestimonialCard>
+                  <TestimonialNameContent>
+                    <Typography variant="subtitle2">
+                      {testimonial.name}
                     </Typography>
-                  </TestimonialRatingContainer>
-                </TestimonialNameContent>
-                <TestimonialContent>
-                  <Typography variant="h6">{testimonial.text}</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {testimonial.description}
-                  </Typography>
-                </TestimonialContent>
-              </TestimonialCard>
-            </Grid>
-          ))}
-        </TestimonialCardsContainer>
-        <CTAButton variant="contained">See all Reviews</CTAButton>
+                    <TestimonialRatingContainer>
+                      <Rating name="read-only" value={5} readOnly />
+                      <Typography variant="body2" color="textSecondary">
+                        2 weeks ago
+                      </Typography>
+                    </TestimonialRatingContainer>
+                  </TestimonialNameContent>
+                  <TestimonialContent>
+                    <Typography variant="h6">{testimonial.text}</Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {testimonial.description}
+                    </Typography>
+                  </TestimonialContent>
+                </TestimonialCard>
+              </Grid>
+            ))}
+          </TestimonialCardsContainer>
+          <CTAButton variant="contained">See all Reviews</CTAButton>
+        </ScrollAnimation>
       </Container>
     </TestimonialsContainer>
   );

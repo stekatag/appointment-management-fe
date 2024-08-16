@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Link } from "@mui/material";
 import {
   ViewServicesButton,
   BookNowBox,
@@ -23,9 +23,11 @@ export default function BookNowCTASection() {
             </BookNowSubtitle>
           </Grid>
           <Grid item>
-            <ViewServicesButton variant="contained">
-              Book Now
-            </ViewServicesButton>
+            <Link href="#booking-section" underline="none">
+              <ViewServicesButton variant="contained">
+                Book Now
+              </ViewServicesButton>
+            </Link>
           </Grid>
         </BookNowGridContainer>
       </BookNowBox>

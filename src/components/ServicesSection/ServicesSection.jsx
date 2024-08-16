@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { Container, Tabs, Tab, Box, Typography } from "@mui/material";
+import { Container, Tabs, Tab, Box, Typography, Link } from "@mui/material";
 import {
   ServicesContainer,
   ServiceItem,
@@ -12,6 +12,7 @@ import {
   ServiceGrid,
   CustomTabs,
 } from "./ServicesSection.styles";
+import ScrollAnimation from "react-animate-on-scroll";
 
 const servicesData = {
   Haircut: [
@@ -83,55 +84,59 @@ export default function ServicesSection() {
   };
 
   return (
-    <ServicesContainer>
-      <Container maxWidth="lg">
-        <ServiceTitleContainer>
-          <Typography variant="h3" component="h3">
-            Services
-          </Typography>
-          <Typography variant="subtitle1" color="textSecondary">
-            Combining traditional techniques with modern styles, providing cut,
-            color, and shave services.
-          </Typography>
-        </ServiceTitleContainer>
+    <ServicesContainer id="services-section">
+      <ScrollAnimation animateIn="fadeInLeftBig" animateOnce>
+        <Container maxWidth="lg">
+          <ServiceTitleContainer>
+            <Typography variant="h3" component="h3">
+              Services
+            </Typography>
+            <Typography variant="subtitle1" color="textSecondary">
+              Combining traditional techniques with modern styles, providing
+              cut, color, and shave services.
+            </Typography>
+          </ServiceTitleContainer>
 
-        <ServiceTabContent>
-          <Box
-            sx={{
-              borderBottom: 1,
-              borderColor: "divider",
-              marginTop: "2rem",
-            }}
-          >
-            <CustomTabs>
-              <Tabs value={selectedTab} onChange={handleTabChange} centered>
-                {Object.keys(servicesData).map((category) => (
-                  <Tab key={category} label={category} value={category} />
-                ))}
-              </Tabs>
-            </CustomTabs>
-          </Box>
+          <ServiceTabContent>
+            <Box
+              sx={{
+                borderBottom: 1,
+                borderColor: "divider",
+                marginTop: "2rem",
+              }}
+            >
+              <CustomTabs>
+                <Tabs value={selectedTab} onChange={handleTabChange} centered>
+                  {Object.keys(servicesData).map((category) => (
+                    <Tab key={category} label={category} value={category} />
+                  ))}
+                </Tabs>
+              </CustomTabs>
+            </Box>
 
-          {Object.keys(servicesData).map((category) => (
-            <TabPanel key={category} value={selectedTab} index={category}>
-              <ServiceGrid>
-                {servicesData[category].map((service, index) => (
-                  <ServiceItem key={index}>
-                    <ServiceTitle>{service.title}</ServiceTitle>
-                    <Typography variant="body2" color="textSecondary">
-                      {service.description}
-                    </Typography>
-                    <ServicePrice>{service.price}</ServicePrice>
-                    <Box sx={{ flexGrow: 1 }} />{" "}
-                    {/* Spacer to push the button down */}
-                    <BookButton variant="contained">Book now</BookButton>
-                  </ServiceItem>
-                ))}
-              </ServiceGrid>
-            </TabPanel>
-          ))}
-        </ServiceTabContent>
-      </Container>
+            {Object.keys(servicesData).map((category) => (
+              <TabPanel key={category} value={selectedTab} index={category}>
+                <ServiceGrid>
+                  {servicesData[category].map((service, index) => (
+                    <ServiceItem key={index}>
+                      <ServiceTitle>{service.title}</ServiceTitle>
+                      <Typography variant="body2" color="textSecondary">
+                        {service.description}
+                      </Typography>
+                      <ServicePrice>{service.price}</ServicePrice>
+                      <Box sx={{ flexGrow: 1 }} />{" "}
+                      {/* Spacer to push the button down */}
+                      <Link href="#booking-section" underline="none">
+                        <BookButton variant="contained">Book now</BookButton>
+                      </Link>
+                    </ServiceItem>
+                  ))}
+                </ServiceGrid>
+              </TabPanel>
+            ))}
+          </ServiceTabContent>
+        </Container>
+      </ScrollAnimation>
     </ServicesContainer>
   );
 }

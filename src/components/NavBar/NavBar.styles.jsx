@@ -20,8 +20,9 @@ export const NavBarContainer = styled(AppBar)(() => ({
 
 // Styled Button for navigation links
 export const NavLink = styled(Button)(({ theme }) => ({
-  color: "black",
+  color: "#212121",
   padding: "0.75rem 1.45rem",
+  fontWeight: "bold",
   marginRight: theme.spacing(1),
   textTransform: "uppercase",
   textDecoration: "none",

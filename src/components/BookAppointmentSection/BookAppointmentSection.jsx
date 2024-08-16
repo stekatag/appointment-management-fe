@@ -51,7 +51,7 @@ export default function BookAppointmentSection() {
   };
 
   return (
-    <SectionContainer>
+    <SectionContainer id="booking-section">
       <Container maxWidth="lg">
         <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12}>
@@ -59,7 +59,7 @@ export default function BookAppointmentSection() {
               Book an Appointment
             </Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <FormControl fullWidth required>
               <InputLabel>Preferred Hairdresser</InputLabel>
               <Select
@@ -73,45 +73,45 @@ export default function BookAppointmentSection() {
               </Select>
             </FormControl>
           </Grid>
-          {/* Conditionally render DaySlider and AppointmentCalendar with a fade transition */}
-          {selectedBarber && (
-            <Fade in={selectedBarber !== ""}>
-              <Grid container spacing={2} sx={{ mt: 1 }}>
-                <Grid item xs={12}>
-                  <DaySlider
-                    currentDay={selectedDay}
-                    setCurrentDay={setSelectedDay}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <AppointmentCalendar
-                    appointments={dayAppointments || []}
-                    onSlotSelect={handleSlotSelect}
-                    selectedDay={selectedDay}
-                    selectedBarber={selectedBarber}
-                    initialSlot={
-                      selectedSlot ? dayjs(selectedSlot).format("HH:mm") : null
-                    }
-                  />
-                </Grid>
-              </Grid>
-            </Fade>
-          )}
-          <Grid item xs={12}>
-            <StyledButton
-              variant="contained"
-              color="primary"
-              onClick={() =>
-                navigate("/appointments/create", {
-                  state: { selectedSlot, selectedBarber },
-                })
-              }
-              disabled={!selectedSlot || !selectedBarber}
-            >
-              Book Now
-            </StyledButton>
-          </Grid>
         </Grid>
+        {/* Conditionally render DaySlider and AppointmentCalendar with a fade transition */}
+        {selectedBarber && (
+          <Fade in={selectedBarber !== ""}>
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid item xs={12}>
+                <DaySlider
+                  currentDay={selectedDay}
+                  setCurrentDay={setSelectedDay}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <AppointmentCalendar
+                  appointments={dayAppointments || []}
+                  onSlotSelect={handleSlotSelect}
+                  selectedDay={selectedDay}
+                  selectedBarber={selectedBarber}
+                  initialSlot={
+                    selectedSlot ? dayjs(selectedSlot).format("HH:mm") : null
+                  }
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <StyledButton
+                  variant="contained"
+                  color="primary"
+                  onClick={() =>
+                    navigate("/appointments/create", {
+                      state: { selectedSlot, selectedBarber },
+                    })
+                  }
+                  disabled={!selectedSlot || !selectedBarber}
+                >
+                  Book Now
+                </StyledButton>
+              </Grid>
+            </Grid>
+          </Fade>
+        )}
       </Container>
     </SectionContainer>
   );

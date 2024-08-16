@@ -4,6 +4,7 @@ import {
   GalleryItem,
   GalleryImage,
 } from "./GallerySection.styles";
+import ScrollAnimation from "react-animate-on-scroll";
 
 const images = [
   "https://www.keydesign-themes.com/etalon/barber/wp-content/uploads/sites/26/2020/12/gallery1.jpg",
@@ -31,15 +32,17 @@ export default function GallerySection() {
           of all ages.
         </Typography>
       </Box>
-      <Grid container spacing={2}>
-        {images.map((image, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <GalleryItem>
-              <GalleryImage src={image} alt={`Gallery image ${index + 1}`} />
-            </GalleryItem>
-          </Grid>
-        ))}
-      </Grid>
+      <ScrollAnimation animateIn="fadeInLeftBig" animateOnce>
+        <Grid container spacing={2}>
+          {images.map((image, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <GalleryItem>
+                <GalleryImage src={image} alt={`Gallery image ${index + 1}`} />
+              </GalleryItem>
+            </Grid>
+          ))}
+        </Grid>
+      </ScrollAnimation>
     </GalleryContainer>
   );
 }
