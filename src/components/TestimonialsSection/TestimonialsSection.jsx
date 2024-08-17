@@ -16,6 +16,7 @@ import {
   TestimonialNameContent,
   CTAButton,
   StyledLink,
+  TestimonialDescription,
 } from "./TestimonialsSection.styles";
 import ScrollAnimation from "react-animate-on-scroll";
 
@@ -85,9 +86,9 @@ export default function TestimonialsSection() {
                   </TestimonialNameContent>
                   <TestimonialContent>
                     <Typography variant="h6">{testimonial.text}</Typography>
-                    <Typography variant="body2" color="textSecondary">
+                    <TestimonialDescription variant="body2">
                       {testimonial.description}
-                    </Typography>
+                    </TestimonialDescription>
                   </TestimonialContent>
                 </TestimonialCard>
               </Grid>

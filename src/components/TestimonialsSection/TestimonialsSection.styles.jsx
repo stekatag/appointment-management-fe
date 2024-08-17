@@ -1,4 +1,4 @@
-import { Grid, styled } from "@mui/material";
+import { Grid, styled, Typography } from "@mui/material";
 import { Box, Card, Avatar, Button } from "@mui/material";
 import { Link } from "react-router-dom";
 
@@ -69,6 +69,10 @@ export const TestimonialContent = styled(Box)(({ theme }) => ({
     marginBottom: theme.spacing(1),
     color: theme.palette.primary.main,
   },
+}));
+
+export const TestimonialDescription = styled(Typography)(({ theme }) => ({
+  color: theme.palette.secondary.light,
 }));
 
 export const TestimonialAvatar = styled(Avatar)(({ theme }) => ({

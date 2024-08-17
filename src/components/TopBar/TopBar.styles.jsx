@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import { Link } from "react-router-dom";
 
 export const TopBarContainer = styled(Box)(({ theme }) => ({
-  color: "black",
+  color: theme.palette.secondary.dark,
   padding: "0.7rem 1.6rem",
   fontSize: "0.875rem",
   width: "100%",
@@ -60,7 +60,7 @@ export const LinkIconContainer = styled(Box)(({ theme }) => ({
 export const LinkIcon = styled(Link)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  color: "black",
+  color: theme.palette.secondary.dark,
   marginLeft: theme.spacing(1),
   transition: "color 0.2s",
 

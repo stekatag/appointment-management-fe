@@ -12,7 +12,7 @@ export const BookNowContainer = styled(Container)(({ theme }) => ({
 // Styled component for the Button
 export const ViewServicesButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
-  color: "#fff",
+  color: theme.palette.common.white,
   padding: theme.spacing(1, 4),
   fontWeight: "bold",
   "&:hover": {

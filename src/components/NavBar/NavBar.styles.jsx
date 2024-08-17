@@ -20,7 +20,7 @@ export const NavBarContainer = styled(AppBar)(() => ({
 
 // Styled Button for navigation links
 export const NavLink = styled(Button)(({ theme, variant }) => ({
-  color: "#212121",
+  color: theme.palette.secondary.dark,
   padding: "0.75rem 1.45rem",
   fontWeight: "bold",
   marginRight: theme.spacing(1),
@@ -53,8 +53,8 @@ export const NavLink = styled(Button)(({ theme, variant }) => ({
 }));
 
 // Styled IconButton for the hamburger menu
-export const StyledIconButton = styled(IconButton)(() => ({
-  color: "black",
+export const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.secondary.dark,
 
   "& > svg": {
     width: "2.2rem",

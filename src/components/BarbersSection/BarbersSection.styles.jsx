@@ -14,7 +14,7 @@ export const BarbersContainer = styled(Box)(({ theme }) => ({
 export const BarberCard = styled(Box)(({ theme }) => ({
   display: "grid",
   gridTemplateColumns: "1fr 2.75fr",
-  backgroundColor: "#fff",
+  backgroundColor: theme.palette.common.white,
   borderRadius: theme.shape.borderRadius,
 
   [theme.breakpoints.down("lg")]: {
@@ -75,7 +75,7 @@ export const ContactIcon = styled(Icon)(({ theme }) => ({
   justifyContent: "center",
   borderRadius: "50%",
   backgroundColor: theme.palette.primary.main,
-  color: "#fff",
+  color: theme.palette.common.white,
 }));
 
 export const StyledLink = styled(Link)(({ theme }) => ({
