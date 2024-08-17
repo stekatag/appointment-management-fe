@@ -16,14 +16,20 @@ export const TopBarContainer = styled(Box)(({ theme }) => ({
 export const IconText = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
+
   "& > *:not(:first-of-type)": {
     marginLeft: "1.5rem",
   },
   // from md and lower, the margin left applies to all elements
   [theme.breakpoints.down("md")]: {
-    "& > *": {
+    "& > *:not(a)": {
       marginLeft: "1.5rem",
     },
+  },
+
+  // Adding specific rule to reset margin-left for the second StyledLink
+  "& > a:not(:first-of-type)": {
+    marginLeft: 0,
   },
 }));
 
@@ -31,6 +37,15 @@ export const IconStyled = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   marginRight: theme.spacing(1),
+}));
+
+export const StyledLink = styled(Link)(() => ({
+  color: "inherit",
+  textDecoration: "none",
+
+  "&:hover": {
+    textDecoration: "underline",
+  },
 }));
 
 export const LinkIconContainer = styled(Box)(({ theme }) => ({

@@ -13,6 +13,7 @@ import {
   LinkIcon,
   LinkIconContainer,
   HorizontalLine,
+  StyledLink,
 } from "./TopBar.styles.jsx";
 
 export default function TopBar() {
@@ -41,11 +42,15 @@ export default function TopBar() {
                     <IconStyled>
                       <PhoneOutlined />
                     </IconStyled>
-                    +359 88 888 8888
+                    <StyledLink to="tel:+359888888888">
+                      +359 88 888 8888
+                    </StyledLink>
                     <IconStyled>
                       <EmailOutlined />
                     </IconStyled>
-                    contact@barbershop.com
+                    <StyledLink to="mailto:contact@barbershop.com">
+                      contact@barbershop.com
+                    </StyledLink>
                   </IconText>
                 </Box>
               </Grid>
@@ -76,11 +81,15 @@ export default function TopBar() {
                   <IconStyled>
                     <PhoneOutlined />
                   </IconStyled>
-                  +359 88 888 8888
+                  <StyledLink to="tel:+359888888888">
+                    +359 88 888 8888
+                  </StyledLink>
                   <IconStyled>
                     <EmailOutlined />
                   </IconStyled>
-                  contact@barbershop.com
+                  <StyledLink to="mailto:contact@barbersho.com">
+                    contact@barbershop.com
+                  </StyledLink>
                 </IconText>
               </Grid>
               <Grid item>

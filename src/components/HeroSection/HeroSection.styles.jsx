@@ -4,7 +4,15 @@ import { Box, Button, Container, Typography } from "@mui/material";
 // Background image with overlay styling
 export const HeroSectionContainer = styled(Box)(({ theme }) => ({
   position: "relative",
-  backgroundImage: `url(https://images.unsplash.com/photo-1672257493626-038f96997ade?q=80&w=1840&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)`, // Use the appropriate image URL
+  backgroundImage: `
+  linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.60),
+    rgba(0, 0, 0, 0.70)
+  ),
+  url('https://images.unsplash.com/photo-1672257493626-038f96997ade?q=80&w=1840&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')
+`,
+
   backgroundSize: "cover",
   backgroundPosition: "center",
   height: "100vh",
@@ -13,24 +21,13 @@ export const HeroSectionContainer = styled(Box)(({ theme }) => ({
   justifyContent: "center",
   color: "#fff",
 
-  "&::before": {
-    content: '""',
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.65)", // Adjust the overlay color as needed
-    zIndex: 1,
-  },
-
   [theme.breakpoints.down("md")]: {
     height: "75vh",
   },
 }));
 
 // Styled container for text content to ensure proper z-index
-export const ContentContainer = styled(Container)(({ theme }) => ({
+export const ContentContainer = styled(Container)(() => ({
   position: "relative",
   zIndex: 2,
   textAlign: "center",
