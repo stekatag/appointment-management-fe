@@ -13,7 +13,7 @@ export const BarbersContainer = styled(Box)(({ theme }) => ({
 
 export const BarberCard = styled(Box)(({ theme }) => ({
   display: "grid",
-  gridTemplateColumns: "1fr 2.5fr",
+  gridTemplateColumns: "1fr 2.75fr",
   backgroundColor: "#fff",
   borderRadius: theme.shape.borderRadius,
 

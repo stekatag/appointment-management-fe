@@ -10,7 +10,7 @@ import {
   StyledLink,
 } from "./BarbersSection.styles";
 import { Call } from "@mui/icons-material";
-import PersonIcon from "@mui/icons-material/Person";
+import GradeIcon from "@mui/icons-material/Grade";
 
 const barbersData = [
   {
@@ -79,12 +79,10 @@ export default function BarbersSection() {
                     </ContactInfoInner>
                     <ContactInfoInner>
                       <ContactIcon>
-                        <PersonIcon />
+                        <GradeIcon />
                       </ContactIcon>
                       <Typography variant="body2" color="textSecondary">
-                        <StyledLink to={`/barbers/${barber.name}`}>
-                          View Profile
-                        </StyledLink>
+                        <StyledLink to={`/barbers`}>Rate & Review</StyledLink>
                       </Typography>
                     </ContactInfoInner>
                   </ContactInfo>

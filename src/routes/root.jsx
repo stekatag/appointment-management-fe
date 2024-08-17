@@ -1,5 +1,8 @@
 import { Routes, Route, Outlet } from "react-router-dom";
 import HomePage from "./HomePage";
+import AboutUs from "./AboutUs";
+import Barbers from "./Barbers";
+import ContactUs from "./ContactUs";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import ErrorPage from "./ErrorPage";
@@ -20,6 +23,9 @@ export default function Root() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/about" element={<AboutUs />} />
+      <Route path="/barbers" element={<Barbers />} />
+      <Route path="/contact" element={<ContactUs />} />
       <Route path="/login" element={<SignIn />} />
       <Route path="/register" element={<SignUp />} />
 

@@ -1,5 +1,6 @@
 import { Grid, styled } from "@mui/material";
 import { Box, Card, Avatar, Button } from "@mui/material";
+import { Link } from "react-router-dom";
 
 export const TestimonialsContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(8, 0),
@@ -34,7 +35,7 @@ export const TitlesContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const TestimonialCardsContainer = styled(Grid)(({ theme }) => ({
+export const TestimonialCardsContainer = styled(Grid)(() => ({
   marginTop: "0",
 }));
 
@@ -74,6 +75,10 @@ export const TestimonialAvatar = styled(Avatar)(({ theme }) => ({
   width: theme.spacing(7),
   height: theme.spacing(7),
   border: `2px solid ${theme.palette.primary.main}`,
+}));
+
+export const StyledLink = styled(Link)(() => ({
+  textDecoration: "none",
 }));
 
 export const CTAButton = styled(Button)(({ theme }) => ({

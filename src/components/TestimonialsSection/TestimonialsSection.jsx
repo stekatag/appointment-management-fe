@@ -8,6 +8,7 @@ import {
   TestimonialRatingContainer,
   TestimonialNameContent,
   CTAButton,
+  StyledLink,
 } from "./TestimonialsSection.styles";
 import ScrollAnimation from "react-animate-on-scroll";
 
@@ -39,21 +40,21 @@ export default function TestimonialsSection() {
   return (
     <TestimonialsContainer>
       <Container maxWidth="lg">
-        <TitlesContainer>
-          <Typography variant="h3" align="center" gutterBottom>
-            Testimonials
-          </Typography>
-          <Typography
-            variant="subtitle1"
-            align="center"
-            color="textSecondary"
-            gutterBottom
-          >
-            We are very proud of the service we provide and stand by every
-            product we carry. Read our testimonials from our happy customers.
-          </Typography>
-        </TitlesContainer>
         <ScrollAnimation animateIn="fadeInRightBig" animateOnce>
+          <TitlesContainer>
+            <Typography variant="h3" align="center" gutterBottom>
+              Testimonials
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              align="center"
+              color="textSecondary"
+              gutterBottom
+            >
+              We are very proud of the service we provide and stand by every
+              product we carry. Read our testimonials from our happy customers.
+            </Typography>
+          </TitlesContainer>
           <TestimonialCardsContainer container spacing={4}>
             {testimonials.map((testimonial, index) => (
               <Grid item xs={12} md={4} key={index}>
@@ -79,7 +80,9 @@ export default function TestimonialsSection() {
               </Grid>
             ))}
           </TestimonialCardsContainer>
-          <CTAButton variant="contained">See all Reviews</CTAButton>
+          <StyledLink to="/barbers">
+            <CTAButton variant="contained">See all Reviews</CTAButton>
+          </StyledLink>
         </ScrollAnimation>
       </Container>
     </TestimonialsContainer>
