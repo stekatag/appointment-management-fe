@@ -1,4 +1,11 @@
-import { Container, Grid, Typography, Rating } from "@mui/material";
+import {
+  Container,
+  Grid,
+  Typography,
+  Rating,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import {
   TestimonialsContainer,
   TestimonialCard,
@@ -37,10 +44,16 @@ const testimonials = [
 ];
 
 export default function TestimonialsSection() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   return (
     <TestimonialsContainer>
       <Container maxWidth="lg">
-        <ScrollAnimation animateIn="fadeInRightBig" animateOnce>
+        <ScrollAnimation
+          animateIn={isSmallScreen ? "fadeIn" : "fadeInRightBig"}
+          animateOnce
+        >
           <TitlesContainer>
             <Typography variant="h3" align="center" gutterBottom>
               Testimonials

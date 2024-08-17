@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Container, Link, Typography } from "@mui/material";
+import {
+  Container,
+  Link,
+  Typography,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import {
   VideoSectionContainer,
   TextContent,
@@ -17,6 +23,8 @@ import YouTube from "react-youtube";
 import ScrollAnimation from "react-animate-on-scroll";
 
 export default function VideoSection() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -36,7 +44,10 @@ export default function VideoSection() {
   return (
     <BackgroundColorContainer>
       <Container maxWidth="lg">
-        <ScrollAnimation animateIn="fadeInRightBig" animateOnce>
+        <ScrollAnimation
+          animateIn={isSmallScreen ? "fadeIn" : "fadeInRightBig"}
+          animateOnce
+        >
           <VideoSectionContainer id="video-section">
             <TextContent>
               <Typography variant="h3" component="h3">

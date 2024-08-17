@@ -1,4 +1,4 @@
-import { Grid, Box, Typography } from "@mui/material";
+import { Grid, Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import {
   GalleryContainer,
   GalleryItem,
@@ -16,6 +16,9 @@ const images = [
 ];
 
 export default function GallerySection() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
   return (
     <GalleryContainer>
       <Box sx={{ textAlign: "center", marginBottom: 4 }}>
@@ -32,7 +35,10 @@ export default function GallerySection() {
           of all ages.
         </Typography>
       </Box>
-      <ScrollAnimation animateIn="fadeInLeftBig" animateOnce>
+      <ScrollAnimation
+        animateIn={isSmallScreen ? "fadeIn" : "fadeInLeftBig"}
+        animateOnce
+      >
         <Grid container spacing={2}>
           {images.map((image, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>

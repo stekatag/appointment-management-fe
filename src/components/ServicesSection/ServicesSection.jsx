@@ -1,6 +1,15 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { Container, Tabs, Tab, Box, Typography, Link } from "@mui/material";
+import {
+  Container,
+  Tabs,
+  Tab,
+  Box,
+  Typography,
+  Link,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import {
   ServicesContainer,
   ServiceItem,
@@ -77,6 +86,8 @@ const servicesData = {
 };
 
 export default function ServicesSection() {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [selectedTab, setSelectedTab] = useState("Haircut");
 
   const handleTabChange = (event, newValue) => {
@@ -85,7 +96,10 @@ export default function ServicesSection() {
 
   return (
     <ServicesContainer id="services-section">
-      <ScrollAnimation animateIn="fadeInLeftBig" animateOnce>
+      <ScrollAnimation
+        animateIn={isSmallScreen ? "fadeIn" : "fadeInLeftBig"}
+        animateOnce
+      >
         <Container maxWidth="lg">
           <ServiceTitleContainer>
             <Typography variant="h3" component="h3">
