@@ -19,13 +19,24 @@ export const NavBarContainer = styled(AppBar)(() => ({
 }));
 
 // Styled Button for navigation links
-export const NavLink = styled(Button)(({ theme }) => ({
+export const NavLink = styled(Button)(({ theme, variant }) => ({
   color: "#212121",
   padding: "0.75rem 1.45rem",
   fontWeight: "bold",
   marginRight: theme.spacing(1),
   textTransform: "uppercase",
   textDecoration: "none",
+
+  "&:hover": {
+    color: theme.palette.primary.dark,
+    backgroundColor: theme.palette.primary.custom,
+
+    ...(variant === "outlined" && {
+      backgroundColor: theme.palette.primary.main,
+      borderColor: theme.palette.primary.main,
+      color: theme.palette.common.white,
+    }),
+  },
 
   "& > a": {
     textDecoration: "none",
