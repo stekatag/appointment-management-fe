@@ -17,6 +17,7 @@ import {
 } from "../../services/api";
 import FadeAlert from "../../components/FadeAlert/FadeAlert";
 import DashboardLayout from "../../layouts/DashboardLayout";
+import { useMediaQuery } from "@mui/material";
 
 const BarbersBase = () => {
   const navigate = useNavigate();
@@ -31,6 +32,8 @@ const BarbersBase = () => {
   const [selectedBarber, setSelectedBarber] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [alert, setAlert] = useState(null);
+
+  const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
 
   const handleEdit = (id) => {
     navigate(`/manage-barbers/edit/${id}`);
@@ -145,7 +148,13 @@ const BarbersBase = () => {
         Manage Barbers
       </Typography>
       <Box sx={{ height: 400, width: "100%" }}>
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: isSmallScreen ? "flex-start" : "flex-end",
+            mb: 2,
+          }}
+        >
           <Button
             variant="contained"
             color="primary"

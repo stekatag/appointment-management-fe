@@ -81,10 +81,6 @@ export const TestimonialAvatar = styled(Avatar)(({ theme }) => ({
   border: `2px solid ${theme.palette.primary.main}`,
 }));
 
-export const StyledLink = styled(Link)(() => ({
-  textDecoration: "none",
-}));
-
 export const CTAButton = styled(Button)(({ theme }) => ({
   display: "flex",
   justifyContent: "center",

@@ -6,9 +6,10 @@
       "password": "123",
       "firstName": "John",
       "lastName": "Doe",
-      "role": "user",
-      "title": "",
-      "image": "",
+      "contactNumber": "0898888888",
+      "role": "barber",
+      "title": "Master Barber",
+      "image": "https://www.keydesign-themes.com/etalon/barber/wp-content/uploads/sites/26/2020/12/barber1.jpg",
       "selectedUserId": "6943"
     },
     {
@@ -18,8 +19,9 @@
       "firstName": "Jane",
       "lastName": "Doe",
       "role": "barber",
+      "contactNumber": "0898888889",
       "selectedUserId": "5596",
-      "title": "barber",
+      "title": "Barber",
       "image": "https://www.keydesign-themes.com/etalon/barber/wp-content/uploads/sites/26/2020/12/barber2.jpg"
     },
     {
@@ -46,6 +48,30 @@
       "password": "123",
       "contactNumber": "0894703251",
       "role": "admin"
+    },
+    {
+      "id": "6b57",
+      "firstName": "Dimitar",
+      "lastName": "Ivanov",
+      "email": "user3@example.com",
+      "contactNumber": "0898888888",
+      "password": "123",
+      "role": "barber",
+      "selectedUserId": "6b57",
+      "title": "Barber",
+      "image": "https://i.ibb.co/JsWSZHS/barber3.jpg"
+    },
+    {
+      "id": "e9cc",
+      "firstName": "Petar",
+      "lastName": "Petrov",
+      "email": "user4@example.com",
+      "contactNumber": "0898888889",
+      "password": "123",
+      "role": "barber",
+      "selectedUserId": "e9cc",
+      "title": "Barber",
+      "image": "https://i.ibb.co/LCHKrW3/barber4.jpg"
     }
   ],
   "appointments": [

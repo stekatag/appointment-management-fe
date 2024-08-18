@@ -15,10 +15,10 @@ import {
   TestimonialRatingContainer,
   TestimonialNameContent,
   CTAButton,
-  StyledLink,
   TestimonialDescription,
 } from "./TestimonialsSection.styles";
 import ScrollAnimation from "react-animate-on-scroll";
+import { useHandleSectionLink } from "../../utils/navigationUtils";
 
 const testimonials = [
   {
@@ -47,6 +47,7 @@ const testimonials = [
 export default function TestimonialsSection() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const handleCTAClick = useHandleSectionLink();
 
   return (
     <TestimonialsContainer>
@@ -94,9 +95,12 @@ export default function TestimonialsSection() {
               </Grid>
             ))}
           </TestimonialCardsContainer>
-          <StyledLink to="/barbers">
-            <CTAButton variant="contained">See all Reviews</CTAButton>
-          </StyledLink>
+          <CTAButton
+            onClick={() => handleCTAClick("reviews-section", "/barbers")}
+            variant="contained"
+          >
+            See all Reviews
+          </CTAButton>
         </ScrollAnimation>
       </Container>
     </TestimonialsContainer>

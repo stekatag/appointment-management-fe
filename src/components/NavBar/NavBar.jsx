@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useHandleSectionLink } from "../../utils/navigationUtils";
 import { logout } from "../../store/authSlice";
 import { scroller } from "react-scroll";
 import {
@@ -26,6 +27,7 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
+  const handleNavClick = useHandleSectionLink();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -48,20 +50,6 @@ export default function Navbar() {
       return "/user/dashboard";
     }
     return "/";
-  };
-
-  const handleNavClick = (sectionId) => {
-    if (location.pathname === "/") {
-      // If on the homepage, scroll to the section
-      scroller.scrollTo(sectionId, {
-        duration: 250,
-        delay: 0,
-        smooth: "easeInOutQuart",
-      });
-    } else {
-      // If on a different page, navigate to the homepage and then scroll
-      navigate("/", { state: { sectionId } });
-    }
   };
 
   const handleHomeClick = () => {

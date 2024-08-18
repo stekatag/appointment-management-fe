@@ -1,4 +1,6 @@
-import { Container, Grid, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useFetchBarbersQuery } from "../../services/api";
+import { Container, Grid, Typography, Alert, Box, Button } from "@mui/material";
 import {
   BarbersContainer,
   BarberCard,
@@ -13,36 +15,19 @@ import { Call } from "@mui/icons-material";
 import GradeIcon from "@mui/icons-material/Grade";
 import ScrollAnimation from "react-animate-on-scroll";
 
-const barbersData = [
-  {
-    name: "NEAL LEYTON",
-    title: "MASTER BARBER",
-    image:
-      "https://www.keydesign-themes.com/etalon/barber/wp-content/uploads/sites/26/2020/12/barber1.jpg",
-    phone: "+359 888 888 888",
-  },
-  {
-    name: "BRUCE SUTTON",
-    title: "HAIRDRESSER",
-    image:
-      "https://www.keydesign-themes.com/etalon/barber/wp-content/uploads/sites/26/2020/12/barber2.jpg",
-    phone: "+359 123 456 789",
-  },
-  {
-    name: "JAMES HARRIS",
-    title: "BARBER",
-    image: "https://i.ibb.co/JsWSZHS/barber3.jpg",
-    phone: "+359 987 654 321",
-  },
-  {
-    name: "JOHN DOE",
-    title: "BARBER",
-    image: "https://i.ibb.co/LCHKrW3/barber4.jpg",
-    phone: "+359 123 123 123",
-  },
-];
-
 export default function BarbersSection() {
+  const { data: barbers = [], isLoading, isError } = useFetchBarbersQuery();
+  const navigate = useNavigate();
+
+  // Handle the loading and error states if necessary
+  if (isLoading) {
+    return <Typography>Loading...</Typography>;
+  }
+
+  if (isError) {
+    return <Typography>Error loading barbers data.</Typography>;
+  }
+
   return (
     <BarbersContainer>
       <ScrollAnimation animateIn="fadeIn" animateOnce>
@@ -55,43 +40,53 @@ export default function BarbersSection() {
             color, and shave services.
           </Typography>
           <Grid container spacing={4} sx={{ marginTop: 4 }}>
-            {barbersData.map((barber, index) => (
-              <Grid item xs={12} md={6} key={index}>
-                <BarberCard>
-                  <BarberImage>
-                    <img src={barber.image} alt={barber.name} />
-                  </BarberImage>
-                  <BarberInfo>
-                    <Typography component="h4" variant="h6" gutterBottom>
-                      {barber.name}
-                    </Typography>
-                    <Typography variant="subtitle2" color="textSecondary">
-                      {barber.title}
-                    </Typography>
-                    <ContactInfo>
-                      <ContactInfoInner>
-                        <ContactIcon>
-                          <Call />
-                        </ContactIcon>
-                        <Typography variant="body2" color="textSecondary">
-                          <StyledLink to={`tel:${barber.phone}`}>
-                            {barber.phone}
-                          </StyledLink>
-                        </Typography>
-                      </ContactInfoInner>
-                      <ContactInfoInner>
-                        <ContactIcon>
-                          <GradeIcon />
-                        </ContactIcon>
-                        <Typography variant="body2" color="textSecondary">
-                          <StyledLink to={`/barbers`}>Rate & Review</StyledLink>
-                        </Typography>
-                      </ContactInfoInner>
-                    </ContactInfo>
-                  </BarberInfo>
-                </BarberCard>
+            {barbers.length > 0 ? (
+              barbers.map((barber) => (
+                <Grid item xs={12} md={6} key={barber.id}>
+                  <BarberCard>
+                    <BarberImage>
+                      <img src={barber.image} alt={barber.firstName} />
+                    </BarberImage>
+                    <BarberInfo>
+                      <Typography component="h4" variant="h6" gutterBottom>
+                        {barber.firstName} {barber.lastName}
+                      </Typography>
+                      <Typography variant="subtitle2" color="textSecondary">
+                        {barber.title}
+                      </Typography>
+                      <ContactInfo>
+                        <ContactInfoInner>
+                          <ContactIcon>
+                            <Call />
+                          </ContactIcon>
+                          <Typography variant="body2" color="textSecondary">
+                            <StyledLink to={`tel:${barber.contactNumber}`}>
+                              {barber.contactNumber}
+                            </StyledLink>
+                          </Typography>
+                        </ContactInfoInner>
+                        <ContactInfoInner>
+                          <ContactIcon>
+                            <GradeIcon />
+                          </ContactIcon>
+                          <Typography variant="body2" color="textSecondary">
+                            <StyledLink to={`/barbers`}>
+                              Rate & Review
+                            </StyledLink>
+                          </Typography>
+                        </ContactInfoInner>
+                      </ContactInfo>
+                    </BarberInfo>
+                  </BarberCard>
+                </Grid>
+              ))
+            ) : (
+              <Grid item xs={12}>
+                <Alert severity="warning">
+                  There are no barbers available in the database.
+                </Alert>
               </Grid>
-            ))}
+            )}
           </Grid>
         </Container>
       </ScrollAnimation>
