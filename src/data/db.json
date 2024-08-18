@@ -6,7 +6,10 @@
       "password": "123",
       "firstName": "John",
       "lastName": "Doe",
-      "role": "user"
+      "role": "user",
+      "title": "",
+      "image": "",
+      "selectedUserId": "6943"
     },
     {
       "id": "5596",
@@ -14,7 +17,10 @@
       "password": "456",
       "firstName": "Jane",
       "lastName": "Doe",
-      "role": "admin"
+      "role": "barber",
+      "selectedUserId": "5596",
+      "title": "barber",
+      "image": "https://www.keydesign-themes.com/etalon/barber/wp-content/uploads/sites/26/2020/12/barber2.jpg"
     },
     {
       "id": "8690",

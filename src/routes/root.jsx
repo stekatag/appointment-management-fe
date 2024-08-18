@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import HomePage from "./HomePage";
 import AboutUs from "./AboutUs";
 import Barbers from "./Barbers";
@@ -12,12 +12,12 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import AdminDashboard from "./AdminDashboard";
 import UserDashboard from "./UserDashboard";
 
+import AppointmentsBase from "./base/AppointmentsBase";
 import AppointmentForm from "../components/AppointmentForm";
 import EditAppointment from "../components/EditAppointment";
-
-import AdminBase from "./base/AdminBase";
-import UserBase from "./base/UserBase";
-import AppointmentsBase from "./base/AppointmentsBase";
+import BarbersBase from "./base/BarbersBase";
+import BarberForm from "../components/BarberForm";
+import EditBarber from "../components/EditBarber";
 
 export default function Root() {
   return (
@@ -38,7 +38,7 @@ export default function Root() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<AdminBase />} />
+        <Route index element={<Navigate to="/admin/dashboard" replace />} />
         <Route
           path="dashboard"
           element={
@@ -58,7 +58,7 @@ export default function Root() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<UserBase />} />
+        <Route index element={<Navigate to="/user/dashboard" replace />} />
         <Route
           path="dashboard"
           element={
@@ -92,6 +92,34 @@ export default function Root() {
           element={
             <DashboardLayout>
               <EditAppointment />
+            </DashboardLayout>
+          }
+        />
+      </Route>
+
+      {/* Barbers routes */}
+      <Route
+        path="/manage-barbers"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <Outlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<BarbersBase />} />
+        <Route
+          path="create"
+          element={
+            <DashboardLayout>
+              <BarberForm />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="edit/:userId"
+          element={
+            <DashboardLayout>
+              <EditBarber />
             </DashboardLayout>
           }
         />
