@@ -16,7 +16,7 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import { useUpdateUserMutation, useFetchUsersQuery } from "../services/api";
 
 const schema = yup.object().shape({
@@ -46,14 +46,21 @@ export default function BarberForm({ barberToEdit }) {
     },
   });
 
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
+  const {
+    data: users,
+    isLoading: isLoadingUsers,
+    refetch,
+  } = useFetchUsersQuery();
   const [alert, setAlert] = useState({ type: "", message: "" });
-
-  const { data: users, isLoading: isLoadingUsers } = useFetchUsersQuery();
 
   const selectedUserId = watch("selectedUserId");
   const [showFields, setShowFields] = useState(!!barberToEdit);
+
+  useEffect(() => {
+    refetch(); // Refetch users when the component mounts to get the latest list
+  }, [refetch]);
 
   useEffect(() => {
     if (barberToEdit) {
@@ -82,7 +89,6 @@ export default function BarberForm({ barberToEdit }) {
 
       await updateUser({ id: selectedUserId, ...userData }).unwrap();
 
-      // Set the alert message based on the operation
       const message = barberToEdit
         ? "Barber updated successfully!"
         : "Barber assigned successfully!";
@@ -95,6 +101,13 @@ export default function BarberForm({ barberToEdit }) {
       setAlert({ type: "error", message: `Error: ${error.message}` });
     }
   };
+
+  const eligibleUsers =
+    users?.filter((user) =>
+      barberToEdit
+        ? user.id === barberToEdit.id || user.role === "user"
+        : user.role === "user"
+    ) || [];
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
@@ -114,116 +127,137 @@ export default function BarberForm({ barberToEdit }) {
             </Alert>
           </Grid>
         )}
-        <Grid item xs={12}>
-          <FormControl fullWidth required>
-            <InputLabel>Select User by Email</InputLabel>
-            <Controller
-              name="selectedUserId"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  label="Select User by Email"
-                  disabled={isLoadingUsers || !!barberToEdit}
-                  value={field.value} // Ensure the value is set
-                >
-                  {users
-                    ?.filter((user) =>
-                      barberToEdit
-                        ? user.id === barberToEdit.id || user.role === "user"
-                        : user.role === "user"
-                    )
-                    .map((user) => (
-                      <MenuItem key={user.id} value={user.id}>
-                        {user.email}
-                      </MenuItem>
-                    ))}
-                </Select>
-              )}
-            />
-          </FormControl>
-        </Grid>
-      </Grid>
+        {!isLoadingUsers && eligibleUsers.length === 0 && !barberToEdit ? (
+          <Grid item xs={12}>
+            <Alert severity="warning">
+              <AlertTitle>No Available Users</AlertTitle>
+              There are no users available to assign as a barber.
+            </Alert>
+            <Box mt={2}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => navigate("/manage-barbers")}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </Grid>
+        ) : (
+          <>
+            <Grid item xs={12}>
+              <FormControl fullWidth required>
+                <InputLabel>Select User by Email</InputLabel>
+                <Controller
+                  name="selectedUserId"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      label="Select User by Email"
+                      disabled={isLoadingUsers || !!barberToEdit}
+                      value={field.value}
+                    >
+                      {eligibleUsers.map((user) => (
+                        <MenuItem key={user.id} value={user.id}>
+                          {user.email}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+              </FormControl>
+            </Grid>
 
-      {showFields && (
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12} sm={6}>
-            <Controller
-              name="firstName"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="First Name"
-                  disabled
-                  fullWidth
-                  InputProps={{ readOnly: true }}
-                  required
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Controller
-              name="lastName"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Last Name"
-                  disabled
-                  fullWidth
-                  InputProps={{ readOnly: true }}
-                  required
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Controller
-              name="title"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Title"
-                  fullWidth
-                  error={!!errors.title}
-                  helperText={errors.title?.message}
-                  required
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Controller
-              name="image"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Image URL"
-                  fullWidth
-                  error={!!errors.image}
-                  helperText={errors.image?.message}
-                  required
-                />
-              )}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={isUpdating}
-              fullWidth
-            >
-              {barberToEdit ? "Update Barber" : "Assign Barber"}
-            </Button>
-          </Grid>
-        </Grid>
-      )}
+            {showFields && (
+              <>
+                <Grid item xs={12} sm={6}>
+                  <Controller
+                    name="firstName"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="First Name"
+                        disabled
+                        fullWidth
+                        InputProps={{ readOnly: true }}
+                        required
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Controller
+                    name="lastName"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Last Name"
+                        disabled
+                        fullWidth
+                        InputProps={{ readOnly: true }}
+                        required
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Controller
+                    name="title"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Title"
+                        fullWidth
+                        error={!!errors.title}
+                        helperText={errors.title?.message}
+                        required
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Controller
+                    name="image"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Image URL"
+                        fullWidth
+                        error={!!errors.image}
+                        helperText={errors.image?.message}
+                        required
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Box display="flex" gap={2}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      disabled={isUpdating}
+                    >
+                      {barberToEdit ? "Update Barber" : "Assign Barber"}
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => navigate("/manage-barbers")}
+                    >
+                      Cancel
+                    </Button>
+                  </Box>
+                </Grid>
+              </>
+            )}
+          </>
+        )}
+      </Grid>
     </Box>
   );
 }

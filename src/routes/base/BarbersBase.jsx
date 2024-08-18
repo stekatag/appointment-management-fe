@@ -79,9 +79,6 @@ const BarbersBase = () => {
   useEffect(() => {
     if (location.state?.alert) {
       setAlert(location.state.alert);
-      setTimeout(() => {
-        navigate("/manage-barbers", { state: {} });
-      }, 3000);
     }
   }, [location.state, navigate]);
 
@@ -157,13 +154,7 @@ const BarbersBase = () => {
             Assign New Barber
           </Button>
         </Box>
-        <DataGrid
-          rows={barbers}
-          columns={columns}
-          pageSize={5}
-          checkboxSelection
-          disableRowSelectionOnClick
-        />
+        <DataGrid rows={barbers} columns={columns} pageSize={5} />
 
         {/* Confirmation Dialog */}
         <Dialog
