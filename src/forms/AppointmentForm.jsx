@@ -12,6 +12,7 @@ import {
 import { useFetchServiceCategoriesQuery } from "../services/api/serviceCategoriesApi";
 import { useFetchServicesQuery } from "../services/api/servicesApi";
 import { useFetchBarbersQuery } from "../services/api/barbersApi";
+import { useFetchStatusesQuery } from "../services/api/statusesApi";
 import {
   Box,
   TextField,
@@ -106,6 +107,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
   const { data: categories = [] } = useFetchServiceCategoriesQuery();
   const { data: services = [] } = useFetchServicesQuery();
   const { data: barbers = [] } = useFetchBarbersQuery();
+  const { data: statuses = [] } = useFetchStatusesQuery();
 
   const [createAppointment, { isLoading: isCreating }] =
     useCreateAppointmentMutation();
@@ -196,10 +198,24 @@ const AppointmentForm = ({ appointmentToEdit }) => {
     }
   };
 
+  const determineStatusId = (appointmentDateTime) => {
+    if (!statuses || statuses.length === 0) return null;
+
+    const now = dayjs();
+    const isPast = dayjs(appointmentDateTime).isBefore(now);
+
+    const statusName = isPast ? "Past" : "Upcoming";
+    const status = statuses.find((status) => status.name === statusName);
+
+    return status ? status.id : null;
+  };
+
   const onSubmit = async (data) => {
+    const statusId = determineStatusId(slot);
     const appointmentData = {
       ...data,
       appointmentDateTime: slot,
+      statusId, // Set status ID based on appointment date
     };
 
     try {
@@ -221,7 +237,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
         state: { alert: { type: "success", message: alertMessage } },
       });
 
-      // Reset all fields to their default values
+      // Reset form fields
       reset({
         firstName: "",
         lastName: "",

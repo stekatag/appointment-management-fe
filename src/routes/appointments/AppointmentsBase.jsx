@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -10,6 +10,7 @@ import {
   DialogContentText,
   DialogTitle,
   useMediaQuery,
+  Badge,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -17,9 +18,11 @@ import {
   useFetchAllAppointmentsQuery,
   useFetchAppointmentsByUserQuery,
   useDeleteAppointmentMutation,
+  useUpdateAppointmentMutation,
 } from "../../services/api/appointmentsApi";
 import { useFetchServiceByIdQuery } from "../../services/api/servicesApi";
 import { useFetchBarberByIdQuery } from "../../services/api/barbersApi";
+import { useFetchStatusByIdQuery } from "../../services/api/statusesApi";
 import FadeAlert from "../../components/FadeAlert/FadeAlert";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useSelector } from "react-redux";
@@ -32,6 +35,7 @@ const AppointmentsBase = () => {
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
 
   const [deleteAppointment] = useDeleteAppointmentMutation();
+  const [updateAppointment] = useUpdateAppointmentMutation();
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [alert, setAlert] = useState(null);
@@ -44,6 +48,34 @@ const AppointmentsBase = () => {
   } = user?.role === "admin"
     ? useFetchAllAppointmentsQuery()
     : useFetchAppointmentsByUserQuery(user?.id);
+
+  useEffect(() => {
+    const updatePastAppointments = async () => {
+      if (appointments.length > 0) {
+        const now = dayjs();
+
+        for (const appointment of appointments) {
+          const appointmentDate = dayjs(appointment.appointmentDateTime);
+
+          if (appointmentDate.isBefore(now) && appointment.statusId !== "2") {
+            try {
+              // Update only the statusId while preserving other data
+              await updateAppointment({
+                ...appointment,
+                statusId: "2", // "Past" status
+              }).unwrap();
+            } catch (error) {
+              console.error("Failed to update appointment status", error);
+            }
+          }
+        }
+
+        refetch(); // Refetch after updates
+      }
+    };
+
+    updatePastAppointments();
+  }, [appointments, updateAppointment, refetch]);
 
   useEffect(() => {
     if (location.state?.alert) {
@@ -135,9 +167,24 @@ const AppointmentsBase = () => {
     {
       field: "appointmentDateTime",
       headerName: "Date & Time",
-      width: 200,
+      width: 150,
       renderCell: (params) =>
         dayjs(params.row.appointmentDateTime).format("DD/MM/YYYY HH:mm"),
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      width: 120,
+      renderCell: (params) => {
+        const { data: status } = useFetchStatusByIdQuery(params.row.statusId);
+        return (
+          <Badge
+            badgeContent={status?.name}
+            color={status?.name === "Upcoming" ? "primary" : "secondary"}
+            sx={{ padding: "5px 20px" }} // Adjust padding to fit within the column
+          />
+        );
+      },
     },
     {
       field: "actions",
@@ -151,6 +198,7 @@ const AppointmentsBase = () => {
             size="small"
             onClick={() => handleEdit(params.row.id)}
             sx={{ mr: 1 }}
+            disabled={params.row.statusId === "2"} // Disable edit if status is "Past"
           >
             Edit
           </Button>
@@ -159,6 +207,7 @@ const AppointmentsBase = () => {
             color="secondary"
             size="small"
             onClick={() => handleOpenDialog(params.row)}
+            disabled={params.row.statusId === "2"} // Disable delete if status is "Past"
           >
             Delete
           </Button>

@@ -4,6 +4,7 @@ import { appointmentsApi } from "../api/appointmentsApi";
 import { barbersApi } from "../api/barbersApi";
 import { servicesApi } from "../api/servicesApi";
 import { serviceCategoriesApi } from "../api/serviceCategoriesApi";
+import { statusesApi } from "../api/statusesApi";
 import authReducer from "./authSlice";
 
 export const store = configureStore({
@@ -13,6 +14,7 @@ export const store = configureStore({
     [barbersApi.reducerPath]: barbersApi.reducer,
     [servicesApi.reducerPath]: servicesApi.reducer,
     [serviceCategoriesApi.reducerPath]: serviceCategoriesApi.reducer,
+    [statusesApi.reducerPath]: statusesApi.reducer,
     auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -21,7 +23,8 @@ export const store = configureStore({
       appointmentsApi.middleware,
       barbersApi.middleware,
       servicesApi.middleware,
-      serviceCategoriesApi.middleware
+      serviceCategoriesApi.middleware,
+      statusesApi.middleware
     ),
 });
 

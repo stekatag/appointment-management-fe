@@ -95,50 +95,11 @@
       "serviceType": "06e0",
       "additionalNotes": "",
       "userId": "8690",
-      "appointmentDateTime": "2024-08-20T09:00:42.074Z",
-      "id": "eae7"
+      "appointmentDateTime": "2024-08-21T12:00:07.199Z",
+      "statusId": "1",
+      "id": "dc42"
     },
     {
-      "id": "ed9f",
-      "firstName": "Стефан",
-      "lastName": "Гогов",
-      "contactNumber": "0894703251",
-      "email": "splay333@gmail.com",
-      "preferredHairdresser": "6943",
-      "serviceCategory": "7753",
-      "serviceType": "06e0",
-      "additionalNotes": "",
-      "userId": "8690",
-      "appointmentDateTime": "2024-08-20T07:30:42.022Z"
-    },
-    {
-      "id": "89d0",
-      "firstName": "Стефан",
-      "lastName": "Гогов",
-      "contactNumber": "0898360516",
-      "email": "splay333@gmail.com",
-      "preferredHairdresser": "6b57",
-      "serviceCategory": "7753",
-      "serviceType": "06e0",
-      "additionalNotes": "",
-      "userId": "8690",
-      "appointmentDateTime": "2024-08-20T07:30:15.187Z"
-    },
-    {
-      "id": "dc42",
-      "firstName": "Стефан",
-      "lastName": "Гогов",
-      "contactNumber": "0894703251",
-      "email": "splay333@gmail.com",
-      "preferredHairdresser": "5596",
-      "serviceCategory": "7753",
-      "serviceType": "06e0",
-      "additionalNotes": "",
-      "userId": "8690",
-      "appointmentDateTime": "2024-08-20T07:30:07.199Z"
-    },
-    {
-      "id": "ed49",
       "firstName": "Стефан",
       "lastName": "Гогов",
       "contactNumber": "0894703251",
@@ -148,7 +109,9 @@
       "serviceType": "049c",
       "additionalNotes": "",
       "userId": "8690",
-      "appointmentDateTime": "2024-08-20T09:00:49.054Z"
+      "appointmentDateTime": "2024-08-19T09:00:49.054Z",
+      "statusId": "2",
+      "id": "ed49"
     },
     {
       "firstName": "Ivan",
@@ -160,8 +123,23 @@
       "serviceType": "06e0",
       "additionalNotes": "",
       "userId": "d718",
-      "appointmentDateTime": "2024-08-20T11:30:13.110Z",
+      "appointmentDateTime": "2024-08-19T11:30:13.110Z",
+      "statusId": "2",
       "id": "7414"
+    },
+    {
+      "firstName": "Стефан",
+      "lastName": "Гогов",
+      "contactNumber": "0885849584",
+      "email": "splay333@gmail.com",
+      "preferredHairdresser": "6943",
+      "serviceCategory": "671e",
+      "serviceType": "049c",
+      "additionalNotes": "",
+      "userId": "8690",
+      "appointmentDateTime": "2024-08-19T08:00:00.785Z",
+      "statusId": "2",
+      "id": "de9a"
     }
   ],
   "services": [

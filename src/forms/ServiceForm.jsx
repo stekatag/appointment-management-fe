@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -32,7 +33,6 @@ export default function ServiceForm({ serviceToEdit }) {
     control,
     handleSubmit,
     formState: { errors },
-    setValue,
     watch,
   } = useForm({
     resolver: yupResolver(schema),
