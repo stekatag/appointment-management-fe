@@ -52,14 +52,23 @@ export default function ServiceForm({ serviceToEdit }) {
 
   const onSubmit = async (data) => {
     try {
+      let message = "";
       if (serviceToEdit) {
         await updateService({ id: serviceToEdit.id, ...data }).unwrap();
+        message = "Service updated successfully!";
       } else {
         await createService(data).unwrap();
+        message = "Service created successfully!";
       }
-      navigate("/manage-services");
+      navigate("/manage-services", {
+        state: { alert: { severity: "success", message } },
+      });
     } catch (error) {
-      // handle error
+      navigate("/manage-services", {
+        state: {
+          alert: { severity: "error", message: `Error: ${error.message}` },
+        },
+      });
     }
   };
 
@@ -90,8 +99,8 @@ export default function ServiceForm({ serviceToEdit }) {
               render={({ field }) => (
                 <Select {...field} label="Category">
                   {categories.map((category) => (
-                    <MenuItem key={category} value={category}>
-                      {category}
+                    <MenuItem key={category.id} value={category.id}>
+                      {category.name}
                     </MenuItem>
                   ))}
                 </Select>
@@ -150,19 +159,21 @@ export default function ServiceForm({ serviceToEdit }) {
               />
             </Grid>
             <Grid item xs={12}>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={isCreating || isUpdating}
-              >
-                {serviceToEdit ? "Update Service" : "Create Service"}
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => navigate("/manage-services")}
-              >
-                Cancel
-              </Button>
+              <Box display="flex" gap={2}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={isCreating || isUpdating}
+                >
+                  {serviceToEdit ? "Update Service" : "Create Service"}
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate("/manage-services")}
+                >
+                  Cancel
+                </Button>
+              </Box>
             </Grid>
           </>
         )}

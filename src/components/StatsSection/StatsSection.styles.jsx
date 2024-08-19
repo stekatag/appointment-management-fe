@@ -22,7 +22,7 @@ export const StatItem = styled(Box)(({ theme }) => ({
   gap: theme.spacing(2.5),
 }));
 
-export const StatItemInner = styled(Box)(({ theme }) => ({
+export const StatItemInner = styled(Box)(() => ({
   display: "flex",
   alignItems: "start",
   flexDirection: "column",

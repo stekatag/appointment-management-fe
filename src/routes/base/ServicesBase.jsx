@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -10,16 +10,19 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   useFetchServicesQuery,
   useDeleteServiceMutation,
+  useFetchServiceCategoryByIdQuery,
 } from "../../services/api";
 import FadeAlert from "../../components/FadeAlert/FadeAlert";
 import DashboardLayout from "../../layouts/DashboardLayout";
+import { ButtonsContainer } from "./ServiceBase.styles";
 
 const ServicesBase = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     data: services = [],
     isLoading,
@@ -29,7 +32,14 @@ const ServicesBase = () => {
   const [deleteService] = useDeleteServiceMutation();
   const [selectedService, setSelectedService] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const [alert, setAlert] = useState(null);
+  const [alert, setAlert] = useState(location.state?.alert || null);
+
+  useEffect(() => {
+    if (location.state?.alert) {
+      setAlert(location.state.alert);
+      navigate(location.pathname, { replace: true }); // Remove the alert from history after displaying it once
+    }
+  }, [location, navigate]);
 
   const handleEdit = (id) => {
     navigate(`/manage-services/edit/${id}`);
@@ -64,17 +74,20 @@ const ServicesBase = () => {
     }
   };
 
-  if (isLoading) {
-    return <Typography>Loading...</Typography>;
-  }
-
-  if (isError) {
-    return <Typography>Error loading services</Typography>;
-  }
-
   const columns = [
     { field: "title", headerName: "Title", width: 150 },
-    { field: "category", headerName: "Category", width: 150 },
+    {
+      field: "category",
+      headerName: "Category",
+      width: 150,
+      renderCell: (params) => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const { data: category } = useFetchServiceCategoryByIdQuery(
+          params.row.category
+        );
+        return category ? category.name : "Loading...";
+      },
+    },
     { field: "price", headerName: "Price", width: 100 },
     {
       field: "actions",
@@ -104,6 +117,14 @@ const ServicesBase = () => {
     },
   ];
 
+  if (isLoading) {
+    return <Typography>Loading...</Typography>;
+  }
+
+  if (isError) {
+    return <Typography>Error loading services</Typography>;
+  }
+
   return (
     <DashboardLayout>
       {alert && (
@@ -118,21 +139,29 @@ const ServicesBase = () => {
         Manage Services
       </Typography>
       <Box sx={{ height: 400, width: "100%" }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => navigate("/manage-services/create")}
-          sx={{ mb: 2 }}
-        >
-          Add New Service
-        </Button>
-        <DataGrid rows={services} columns={columns} pageSize={5} />
+        <ButtonsContainer>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/manage-services/create")}
+          >
+            Add New Service
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => navigate("/manage-service-categories/")}
+          >
+            Manage Categories
+          </Button>
+        </ButtonsContainer>
+        <DataGrid rows={services} columns={columns} pageSize={10} />
         <Dialog open={openDialog} onClose={handleCloseDialog}>
           <DialogTitle>Delete Service</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to delete the service "
-              {selectedService?.title}"?
+              Are you sure you want to delete the service{" "}
+              <strong>{selectedService?.title}</strong>?
             </DialogContentText>
           </DialogContent>
           <DialogActions>

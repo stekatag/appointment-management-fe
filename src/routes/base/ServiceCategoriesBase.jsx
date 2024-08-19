@@ -17,6 +17,7 @@ import {
 } from "../../services/api";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import FadeAlert from "../../components/FadeAlert/FadeAlert";
+import { ButtonsContainer } from "./ServiceBase.styles";
 
 export default function ServiceCategoriesBase() {
   const navigate = useNavigate();
@@ -130,15 +131,22 @@ export default function ServiceCategoriesBase() {
         Manage Service Categories
       </Typography>
       <Box sx={{ height: 400, width: "100%" }}>
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        <ButtonsContainer>
           <Button
             variant="contained"
             color="primary"
             onClick={() => navigate("/manage-service-categories/create")}
           >
-            Create New Category
+            Add Category
           </Button>
-        </Box>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => navigate("/manage-services/")}
+          >
+            Manage Services
+          </Button>
+        </ButtonsContainer>
         <DataGrid rows={categories} columns={columns} pageSize={5} />
 
         <Dialog
