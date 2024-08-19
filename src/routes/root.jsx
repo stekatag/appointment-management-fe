@@ -12,18 +12,18 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import AdminDashboard from "./AdminDashboard";
 import UserDashboard from "./UserDashboard";
 
-import AppointmentsBase from "./base/AppointmentsBase";
-import AppointmentForm from "../components/AppointmentForm";
-import EditAppointment from "../components/EditAppointment";
-import BarbersBase from "./base/BarbersBase";
-import BarberForm from "../components/BarberForm";
-import EditBarber from "../components/EditBarber";
-import ServicesBase from "./base/ServicesBase";
-import ServiceForm from "../components/ServiceForm";
-import EditService from "../components/EditService";
-import ServiceCategoriesBase from "./base/ServiceCategoriesBase";
-import ServiceCategoryForm from "../components/ServiceCategoryForm";
-import EditServiceCategory from "../components/EditServiceCategory";
+import AppointmentsBase from "./appointments/AppointmentsBase";
+import AppointmentForm from "../forms/AppointmentForm";
+import EditAppointment from "./appointments/EditAppointment";
+import BarbersBase from "./barbers/BarbersBase";
+import BarberForm from "../forms/BarberForm";
+import EditBarber from "./barbers/EditBarber";
+import ServicesBase from "./services/ServicesBase";
+import ServiceForm from "../forms/ServiceForm";
+import EditService from "./services/EditService";
+import ServiceCategoriesBase from "./service-categories/ServiceCategoriesBase";
+import ServiceCategoryForm from "../forms/ServiceCategoryForm";
+import EditServiceCategory from "./service-categories/EditServiceCategory";
 
 export default function Root() {
   return (

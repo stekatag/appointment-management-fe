@@ -17,7 +17,7 @@ import {
 } from "../../services/api";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import FadeAlert from "../../components/FadeAlert/FadeAlert";
-import { ButtonsContainer } from "./ServiceBase.styles";
+import { ButtonsContainer } from "../services/ServiceBase.styles";
 
 export default function ServiceCategoriesBase() {
   const navigate = useNavigate();

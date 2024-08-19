@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
-import { useFetchBarberByIdQuery } from "../services/api";
-import BarberForm from "./BarberForm";
+import { useFetchBarberByIdQuery } from "../../services/api";
+import BarberForm from "../../forms/BarberForm";
 import { CircularProgress, Typography } from "@mui/material";
 
 const EditBarber = () => {

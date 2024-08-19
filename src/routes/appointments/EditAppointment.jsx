@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useFetchAppointmentByIdQuery } from "../services/api";
-import AppointmentForm from "./AppointmentForm";
+import { useFetchAppointmentByIdQuery } from "../../services/api";
+import AppointmentForm from "../../forms/AppointmentForm";
 import { CircularProgress, Typography } from "@mui/material";
 import dayjs from "dayjs";
 

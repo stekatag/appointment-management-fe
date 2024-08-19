@@ -11,12 +11,12 @@ import {
   Fade,
 } from "@mui/material";
 import dayjs from "dayjs";
-import AppointmentCalendar from "../AppointmentCalendar/AppointmentCalendar";
+import AppointmentCalendar from "../../components/AppointmentCalendar/AppointmentCalendar";
+import DaySlider from "../../components/DaySlider";
 import {
   SectionContainer,
   StyledButton,
 } from "./BookAppointmentSection.styles";
-import DaySlider from "../DaySlider";
 import { useNavigate } from "react-router-dom";
 
 export default function BookAppointmentSection() {

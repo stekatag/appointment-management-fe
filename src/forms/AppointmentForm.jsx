@@ -28,8 +28,8 @@ import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import AppointmentCalendar from "./AppointmentCalendar/AppointmentCalendar";
-import DaySlider from "./DaySlider";
+import AppointmentCalendar from "../components/AppointmentCalendar/AppointmentCalendar";
+import DaySlider from "../components/DaySlider";
 
 // Extend the validation schema to include slot selection
 const schema = yup.object().shape({

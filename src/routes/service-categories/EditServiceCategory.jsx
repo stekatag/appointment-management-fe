@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
-import { useFetchServiceCategoryByIdQuery } from "../services/api";
-import ServiceCategoryForm from "./ServiceCategoryForm";
+import { useFetchServiceCategoryByIdQuery } from "../../services/api";
+import ServiceCategoryForm from "../../forms/ServiceCategoryForm";
 import { CircularProgress, Typography } from "@mui/material";
 
 const EditServiceCategory = () => {

@@ -8,6 +8,7 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: API_URL }),
   tagTypes: ["Appointment", "Barber", "Service", "ServiceCategory"],
   endpoints: (builder) => ({
+    // User endpoints...
     fetchUsers: builder.query({
       query: () => "/users",
     }),
@@ -32,6 +33,8 @@ export const api = createApi({
         method: "GET",
       }),
     }),
+
+    // Appointment endpoints...
     createAppointment: builder.mutation({
       query: (newAppointment) => ({
         url: "/appointments",
@@ -79,17 +82,18 @@ export const api = createApi({
       invalidatesTags: ["Barber"],
     }),
 
+    // Service endpoints...
     fetchServices: builder.query({
-      query: () => "/services", // Corrected path
+      query: () => "/services",
       providesTags: ["Service"],
     }),
     fetchServiceById: builder.query({
-      query: (id) => `/services/${id}`, // Corrected path
+      query: (id) => `/services/${id}`,
       providesTags: ["Service"],
     }),
     createService: builder.mutation({
       query: (newService) => ({
-        url: "/services", // Corrected path
+        url: "/services",
         method: "POST",
         body: newService,
       }),
@@ -97,7 +101,7 @@ export const api = createApi({
     }),
     updateService: builder.mutation({
       query: ({ id, ...patch }) => ({
-        url: `/services/${id}`, // Corrected path
+        url: `/services/${id}`,
         method: "PATCH",
         body: patch,
       }),
@@ -105,11 +109,13 @@ export const api = createApi({
     }),
     deleteService: builder.mutation({
       query: (id) => ({
-        url: `/services/${id}`, // Corrected path
+        url: `/services/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Service"],
     }),
+
+    // Service category endpoints...
     fetchServiceCategories: builder.query({
       query: () => "/service-categories",
       providesTags: ["ServiceCategory"],
