@@ -18,6 +18,12 @@ import EditAppointment from "../components/EditAppointment";
 import BarbersBase from "./base/BarbersBase";
 import BarberForm from "../components/BarberForm";
 import EditBarber from "../components/EditBarber";
+import ServicesBase from "./base/ServicesBase";
+import ServiceForm from "../components/ServiceForm";
+import EditService from "../components/EditService";
+import ServiceCategoriesBase from "./base/ServiceCategoriesBase";
+import ServiceCategoryForm from "../components/ServiceCategoryForm";
+import EditServiceCategory from "../components/EditServiceCategory";
 
 export default function Root() {
   return (
@@ -120,6 +126,62 @@ export default function Root() {
           element={
             <DashboardLayout>
               <EditBarber />
+            </DashboardLayout>
+          }
+        />
+      </Route>
+
+      {/* Services routes */}
+      <Route
+        path="/manage-services"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <Outlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ServicesBase />} />
+        <Route
+          path="create"
+          element={
+            <DashboardLayout>
+              <ServiceForm />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="edit/:serviceId"
+          element={
+            <DashboardLayout>
+              <EditService />
+            </DashboardLayout>
+          }
+        />
+      </Route>
+
+      {/* Service Categories routes */}
+      <Route
+        path="/manage-service-categories"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <Outlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ServiceCategoriesBase />} />
+        <Route
+          path="create"
+          element={
+            <DashboardLayout>
+              <ServiceCategoryForm />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="edit/:categoryId"
+          element={
+            <DashboardLayout>
+              <EditServiceCategory />
             </DashboardLayout>
           }
         />

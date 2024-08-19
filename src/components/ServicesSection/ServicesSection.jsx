@@ -24,63 +24,64 @@ import {
 import ScrollAnimation from "react-animate-on-scroll";
 
 const servicesData = {
-  Haircut: [
+  Haircuts: [
     {
-      title: "Classic haircut",
+      title: "Classic Haircut",
       description:
-        "Sapien nunc amet ultrices, dolores sit ipsum velit purus aliquet, massa fringilla leo orci.",
-      price: "$7.50",
+        "A timeless haircut that suits all occasions, providing a clean and polished look. Includes a professional cut and style.",
+      price: "$15.00",
     },
     {
-      title: "Haircut and shampoo",
+      title: "Haircut & Shampoo",
       description:
-        "Venenatis hac curabitur per quis parturient vel ut a sit scelerisque a sociis posuere penatibus.",
-      price: "$5.00",
+        "A comprehensive package that includes a stylish haircut followed by a refreshing shampoo to leave your hair feeling clean and revitalized.",
+      price: "$20.00",
     },
     {
-      title: "Beard and moustache",
+      title: "Children’s Haircut",
       description:
-        "Dolores sit ipsum velit purus aliquet massa fringilla leo orci lorem ipsum dolor sit amet.",
-      price: "$6.75",
-    },
-  ],
-  Shaving: [
-    {
-      title: "Head massage",
-      description:
-        "Ut enim ad minim veniam quis nostrud ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-      price: "$4.50",
-    },
-    {
-      title: "Hair treatment",
-      description:
-        "Dolores sit ipsum velit purus aliquet massa fringilla leo orci lorem ipsum dolor sit amet.",
-      price: "$6.75",
-    },
-    {
-      title: "Beard trimming",
-      description:
-        "Venenatis hac curabitur per quis parturient vel ut a sit scelerisque a sociis posuere penatibus.",
-      price: "$5.00",
+        "A fun and friendly haircut experience for kids, ensuring they leave with a smile and a fresh new look.",
+      price: "$10.00",
     },
   ],
-  Trimming: [
+  Grooming: [
     {
-      title: "Trimming service 1",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      price: "$4.00",
+      title: "Beard Trim & Shape",
+      description:
+        "A precise beard trim and shape to maintain a clean and stylish look. Includes a consultation to achieve the perfect shape for your face.",
+      price: "$12.00",
     },
     {
-      title: "Trimming service 2",
+      title: "Hot Towel Shave",
       description:
-        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      price: "$6.50",
+        "A relaxing hot towel shave that softens the skin and beard for a smooth, close shave, leaving your skin refreshed and rejuvenated.",
+      price: "$18.00",
     },
     {
-      title: "Trimming service 3",
+      title: "Beard & Moustache Styling",
       description:
-        "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      price: "$5.25",
+        "A detailed grooming service that includes trimming and styling of both beard and moustache, perfect for a well-groomed appearance.",
+      price: "$15.00",
+    },
+  ],
+  Treatments: [
+    {
+      title: "Scalp Massage",
+      description:
+        "A soothing scalp massage that helps relieve tension and promotes healthy hair growth. Perfect for stress relief and relaxation.",
+      price: "$10.00",
+    },
+    {
+      title: "Hair & Scalp Treatment",
+      description:
+        "A nourishing treatment that revitalizes both hair and scalp, addressing issues like dryness, dandruff, and hair loss.",
+      price: "$25.00",
+    },
+    {
+      title: "Eyebrow Shaping",
+      description:
+        "A precise eyebrow shaping service that enhances your facial features, ensuring a clean and sharp appearance.",
+      price: "$8.00",
     },
   ],
 };

@@ -6,7 +6,7 @@ const API_URL = "http://localhost:5175";
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({ baseUrl: API_URL }),
-  tagTypes: ["Appointment", "Barber"],
+  tagTypes: ["Appointment", "Barber", "Service", "ServiceCategory"],
   endpoints: (builder) => ({
     fetchUsers: builder.query({
       query: () => "/users",
@@ -78,6 +78,69 @@ export const api = createApi({
       }),
       invalidatesTags: ["Barber"],
     }),
+
+    fetchServices: builder.query({
+      query: () => "/services", // Corrected path
+      providesTags: ["Service"],
+    }),
+    fetchServiceById: builder.query({
+      query: (id) => `/services/${id}`, // Corrected path
+      providesTags: ["Service"],
+    }),
+    createService: builder.mutation({
+      query: (newService) => ({
+        url: "/services", // Corrected path
+        method: "POST",
+        body: newService,
+      }),
+      invalidatesTags: ["Service"],
+    }),
+    updateService: builder.mutation({
+      query: ({ id, ...patch }) => ({
+        url: `/services/${id}`, // Corrected path
+        method: "PATCH",
+        body: patch,
+      }),
+      invalidatesTags: ["Service"],
+    }),
+    deleteService: builder.mutation({
+      query: (id) => ({
+        url: `/services/${id}`, // Corrected path
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Service"],
+    }),
+    fetchServiceCategories: builder.query({
+      query: () => "/service-categories",
+      providesTags: ["ServiceCategory"],
+    }),
+    fetchServiceCategoryById: builder.query({
+      query: (id) => `/service-categories/${id}`,
+      providesTags: ["ServiceCategory"],
+    }),
+    createServiceCategory: builder.mutation({
+      query: (newCategory) => ({
+        url: "/service-categories",
+        method: "POST",
+        body: newCategory,
+      }),
+      invalidatesTags: ["ServiceCategory"],
+    }),
+    updateServiceCategory: builder.mutation({
+      query: ({ id, ...patch }) => ({
+        url: `/service-categories/${id}`,
+        method: "PATCH",
+        body: patch,
+      }),
+      invalidatesTags: ["ServiceCategory"],
+    }),
+    deleteServiceCategory: builder.mutation({
+      query: (id) => ({
+        url: `/service-categories/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["ServiceCategory"],
+    }),
   }),
 });
 
@@ -93,4 +156,14 @@ export const {
   useFetchAppointmentByIdQuery,
   useFetchBarbersQuery,
   useFetchBarberByIdQuery,
+  useFetchServicesQuery,
+  useFetchServiceByIdQuery,
+  useCreateServiceMutation,
+  useUpdateServiceMutation,
+  useDeleteServiceMutation,
+  useFetchServiceCategoriesQuery,
+  useFetchServiceCategoryByIdQuery,
+  useCreateServiceCategoryMutation,
+  useUpdateServiceCategoryMutation,
+  useDeleteServiceCategoryMutation,
 } = api;
