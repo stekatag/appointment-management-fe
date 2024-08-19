@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import { useFetchAppointmentsByDayAndBarberQuery } from "../../services/api";
+import {
+  useFetchAppointmentsByDayAndBarberQuery,
+  useFetchBarbersQuery,
+} from "../../services/api";
 import {
   InputLabel,
   Select,
@@ -9,6 +12,8 @@ import {
   Grid,
   FormControl,
   Fade,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
 import dayjs from "dayjs";
 import AppointmentCalendar from "../../components/AppointmentCalendar/AppointmentCalendar";
@@ -25,6 +30,9 @@ export default function BookAppointmentSection() {
   const [selectedSlot, setSelectedSlot] = useState(null);
 
   const navigate = useNavigate();
+
+  const { data: barbers = [], isLoading: isLoadingBarbers } =
+    useFetchBarbersQuery();
 
   const { data: dayAppointments, refetch: refetchDayAppointments } =
     useFetchAppointmentsByDayAndBarberQuery(
@@ -60,18 +68,30 @@ export default function BookAppointmentSection() {
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
-            <FormControl fullWidth required>
-              <InputLabel>Preferred Hairdresser</InputLabel>
-              <Select
-                label="Preferred Hairdresser"
-                value={selectedBarber}
-                onChange={(e) => handleBarberChange(e.target.value)}
-              >
-                <MenuItem value="Hairdresser 1">Hairdresser 1</MenuItem>
-                <MenuItem value="Hairdresser 2">Hairdresser 2</MenuItem>
-                <MenuItem value="Hairdresser 3">Hairdresser 3</MenuItem>
-              </Select>
-            </FormControl>
+            {barbers.length > 0 ? (
+              <FormControl fullWidth required>
+                <InputLabel>Preferred Hairdresser</InputLabel>
+                {isLoadingBarbers ? (
+                  <CircularProgress />
+                ) : (
+                  <Select
+                    label="Preferred Hairdresser"
+                    value={selectedBarber}
+                    onChange={(e) => handleBarberChange(e.target.value)}
+                  >
+                    {barbers.map((barber) => (
+                      <MenuItem key={barber.id} value={barber.id}>
+                        {`${barber.firstName} ${barber.lastName}`}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              </FormControl>
+            ) : (
+              <Alert severity="warning">
+                There are no barbers available in the database.
+              </Alert>
+            )}
           </Grid>
         </Grid>
         {/* Conditionally render DaySlider and AppointmentCalendar with a fade transition */}

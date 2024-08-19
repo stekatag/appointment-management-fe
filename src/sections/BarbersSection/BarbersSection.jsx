@@ -1,6 +1,5 @@
-import { useNavigate } from "react-router-dom";
 import { useFetchBarbersQuery } from "../../services/api";
-import { Container, Grid, Typography, Alert, Box, Button } from "@mui/material";
+import { Container, Grid, Typography, Alert } from "@mui/material";
 import {
   BarbersContainer,
   BarberCard,
@@ -17,7 +16,6 @@ import ScrollAnimation from "react-animate-on-scroll";
 
 export default function BarbersSection() {
   const { data: barbers = [], isLoading, isError } = useFetchBarbersQuery();
-  const navigate = useNavigate();
 
   // Handle the loading and error states if necessary
   if (isLoading) {

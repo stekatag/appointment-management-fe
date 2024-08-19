@@ -2,12 +2,15 @@
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   useCreateAppointmentMutation,
   useUpdateAppointmentMutation,
   useFetchAppointmentsByUserQuery,
   useFetchAppointmentsByDayAndBarberQuery,
+  useFetchServiceCategoriesQuery,
+  useFetchServicesQuery,
+  useFetchBarbersQuery,
 } from "../services/api";
 import {
   Box,
@@ -31,7 +34,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import AppointmentCalendar from "../components/AppointmentCalendar/AppointmentCalendar";
 import DaySlider from "../components/DaySlider";
 
-// Extend the validation schema to include slot selection
+// Validation schema
 const schema = yup.object().shape({
   firstName: yup
     .string()
@@ -55,6 +58,7 @@ const schema = yup.object().shape({
   preferredHairdresser: yup
     .string()
     .required("Preferred hairdresser is required"),
+  serviceCategory: yup.string().required("Service category is required"),
   serviceType: yup.string().required("Service type is required"),
   appointmentDateTime: yup
     .string()
@@ -64,8 +68,9 @@ const schema = yup.object().shape({
 
 const AppointmentForm = ({ appointmentToEdit }) => {
   const user = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
   const location = useLocation();
-  const { selectedSlot, selectedBarber } = location.state || {}; // Retrieve state from location
+  const { selectedSlot, selectedBarber } = location.state || {};
 
   const [selectedDay, setSelectedDay] = useState(
     selectedSlot ? dayjs(selectedSlot) : dayjs()
@@ -73,6 +78,8 @@ const AppointmentForm = ({ appointmentToEdit }) => {
   const [slot, setSlot] = useState(selectedSlot || null);
   const [barber, setBarber] = useState(selectedBarber || "");
   const [alert, setAlert] = useState({ type: "", message: "" });
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [filteredServices, setFilteredServices] = useState([]);
 
   const {
     control,
@@ -88,12 +95,17 @@ const AppointmentForm = ({ appointmentToEdit }) => {
       contactNumber: user ? user.contactNumber : "",
       email: user ? user.email : "",
       preferredHairdresser: barber,
+      serviceCategory: "",
       serviceType: "",
       additionalNotes: "",
       userId: user ? user.id : null,
       appointmentDateTime: slot,
     },
   });
+
+  const { data: categories = [] } = useFetchServiceCategoriesQuery();
+  const { data: services = [] } = useFetchServicesQuery();
+  const { data: barbers = [] } = useFetchBarbersQuery();
 
   const [createAppointment, { isLoading: isCreating }] =
     useCreateAppointmentMutation();
@@ -123,6 +135,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
         email,
         preferredHairdresser,
         serviceType,
+        serviceCategory,
         additionalNotes,
         appointmentDateTime,
       } = appointmentToEdit;
@@ -133,17 +146,27 @@ const AppointmentForm = ({ appointmentToEdit }) => {
       setValue("email", email);
       setValue("preferredHairdresser", preferredHairdresser);
       setValue("serviceType", serviceType);
+      setValue("serviceCategory", serviceCategory);
       setValue("additionalNotes", additionalNotes);
       setSelectedDay(dayjs(appointmentDateTime));
       setSlot(dayjs(appointmentDateTime).toISOString());
       setValue("appointmentDateTime", dayjs(appointmentDateTime).toISOString());
       setBarber(preferredHairdresser);
+      setSelectedCategory(serviceCategory);
     } else if (selectedBarber || selectedSlot) {
-      // If the user is coming from the BookAppointmentSection
       setValue("preferredHairdresser", selectedBarber);
       setValue("appointmentDateTime", selectedSlot);
     }
   }, [appointmentToEdit, selectedBarber, selectedSlot, setValue]);
+
+  useEffect(() => {
+    if (selectedCategory) {
+      const filtered = services.filter(
+        (service) => service.category === selectedCategory
+      );
+      setFilteredServices(filtered);
+    }
+  }, [selectedCategory, services]);
 
   const handleSlotSelect = (time) => {
     setSlot(time);
@@ -152,9 +175,15 @@ const AppointmentForm = ({ appointmentToEdit }) => {
 
   const handleBarberChange = (value) => {
     setBarber(value);
-    setSlot(null); // Clear the selected slot when changing barbers
-    setValue("appointmentDateTime", null); // Clear the selected slot value in the form
+    setSlot(null);
+    setValue("appointmentDateTime", null);
     setValue("preferredHairdresser", value);
+  };
+
+  const handleCategoryChange = (value) => {
+    setSelectedCategory(value);
+    setValue("serviceCategory", value); // Ensure the selected category is properly set
+    setValue("serviceType", ""); // Clear serviceType when changing category
   };
 
   const getButtonText = (isCreating, isUpdating, appointmentToEdit) => {
@@ -190,7 +219,22 @@ const AppointmentForm = ({ appointmentToEdit }) => {
           message: "Appointment booked successfully!",
         });
       }
-      reset();
+
+      // Reset all fields to their default values
+      reset({
+        firstName: "",
+        lastName: "",
+        contactNumber: "",
+        email: "",
+        preferredHairdresser: "",
+        serviceCategory: "",
+        serviceType: "",
+        additionalNotes: "",
+        appointmentDateTime: null,
+      });
+      setBarber("");
+      setSelectedCategory("");
+      setSlot(null);
     } catch (error) {
       setAlert({
         type: "error",
@@ -241,9 +285,11 @@ const AppointmentForm = ({ appointmentToEdit }) => {
                   value={barber}
                   onChange={(e) => handleBarberChange(e.target.value)}
                 >
-                  <MenuItem value="Hairdresser 1">Hairdresser 1</MenuItem>
-                  <MenuItem value="Hairdresser 2">Hairdresser 2</MenuItem>
-                  <MenuItem value="Hairdresser 3">Hairdresser 3</MenuItem>
+                  {barbers.map((barber) => (
+                    <MenuItem key={barber.id} value={barber.id}>
+                      {`${barber.firstName} ${barber.lastName}`}
+                    </MenuItem>
+                  ))}
                 </Select>
               )}
             />
@@ -256,9 +302,63 @@ const AppointmentForm = ({ appointmentToEdit }) => {
         </Grid>
       </Grid>
 
-      {/* Conditionally render the rest of the form fields */}
       <Fade in={!!barber}>
         <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <FormControl fullWidth required error={!!errors.serviceCategory}>
+              <InputLabel>Service Category</InputLabel>
+              <Controller
+                name="serviceCategory"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label="Service Category"
+                    value={selectedCategory}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
+                  >
+                    {categories.map((category) => (
+                      <MenuItem key={category.id} value={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+              {errors.serviceCategory && (
+                <Typography color="error">
+                  {errors.serviceCategory.message}
+                </Typography>
+              )}
+            </FormControl>
+          </Grid>
+
+          {!!selectedCategory && (
+            <Grid item xs={12}>
+              <FormControl fullWidth required error={!!errors.serviceType}>
+                <InputLabel>Type of Service</InputLabel>
+                <Controller
+                  name="serviceType"
+                  control={control}
+                  render={({ field }) => (
+                    <Select {...field} label="Type of Service">
+                      {filteredServices.map((service) => (
+                        <MenuItem key={service.id} value={service.id}>
+                          {service.title}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+                {errors.serviceType && (
+                  <Typography color="error">
+                    {errors.serviceType.message}
+                  </Typography>
+                )}
+              </FormControl>
+            </Grid>
+          )}
+
           <Grid item xs={12}>
             <DaySlider
               currentDay={selectedDay}
@@ -270,7 +370,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
               appointments={appointments}
               onSlotSelect={handleSlotSelect}
               selectedDay={selectedDay}
-              selectedBarber={barber} // Pass down the selectedBarber
+              selectedBarber={barber}
               initialSlot={slot ? dayjs(slot).format("HH:mm") : null}
             />
             {errors.appointmentDateTime && (
@@ -279,28 +379,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
               </Typography>
             )}
           </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth required error={!!errors.serviceType}>
-              <InputLabel>Type of Service</InputLabel>
-              <Controller
-                name="serviceType"
-                control={control}
-                render={({ field }) => (
-                  <Select {...field} label="Type of Service">
-                    <MenuItem value="Service 1">Service 1</MenuItem>
-                    <MenuItem value="Service 2">Service 2</MenuItem>
-                    <MenuItem value="Service 3">Service 3</MenuItem>
-                  </Select>
-                )}
-              />
-              {errors.serviceType && (
-                <Typography color="error">
-                  {errors.serviceType.message}
-                </Typography>
-              )}
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <Controller
               name="firstName"
               control={control}
@@ -316,7 +395,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
               )}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <Controller
               name="lastName"
               control={control}
@@ -332,7 +411,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
               )}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <Controller
               name="contactNumber"
               control={control}
@@ -350,7 +429,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
               )}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <Controller
               name="email"
               control={control}
@@ -383,16 +462,24 @@ const AppointmentForm = ({ appointmentToEdit }) => {
               )}
             />
           </Grid>
-          <Grid item xs={3}>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={isCreating || isUpdating}
-              fullWidth
-            >
-              {getButtonText(isCreating, isUpdating, appointmentToEdit)}
-            </Button>
+          <Grid item xs={12}>
+            <Box display="flex" gap={2}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={isCreating || isUpdating}
+              >
+                {getButtonText(isCreating, isUpdating, appointmentToEdit)}
+              </Button>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => navigate("/appointments")}
+              >
+                Cancel
+              </Button>
+            </Box>
           </Grid>
         </Grid>
       </Fade>
