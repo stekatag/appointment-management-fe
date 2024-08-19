@@ -203,22 +203,23 @@ const AppointmentForm = ({ appointmentToEdit }) => {
     };
 
     try {
+      let alertMessage = "";
+
       if (appointmentToEdit) {
         await updateAppointment({
           id: appointmentToEdit.id,
           ...appointmentData,
         }).unwrap();
-        setAlert({
-          type: "success",
-          message: "Appointment updated successfully!",
-        });
+        alertMessage = "Appointment updated successfully!";
       } else {
         await createAppointment(appointmentData).unwrap();
-        setAlert({
-          type: "success",
-          message: "Appointment booked successfully!",
-        });
+        alertMessage = "Appointment booked successfully!";
       }
+
+      // Navigate to the appointments route with the alert message
+      navigate("/appointments", {
+        state: { alert: { type: "success", message: alertMessage } },
+      });
 
       // Reset all fields to their default values
       reset({

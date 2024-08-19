@@ -15,28 +15,35 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   useFetchAllAppointmentsQuery,
+  useFetchAppointmentsByUserQuery,
   useFetchServiceByIdQuery,
   useDeleteAppointmentMutation,
   useFetchBarberByIdQuery,
 } from "../../services/api";
 import FadeAlert from "../../components/FadeAlert/FadeAlert";
 import DashboardLayout from "../../layouts/DashboardLayout";
+import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 
 const AppointmentsBase = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const user = useSelector((state) => state.auth.user);
+  const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
+
+  const [deleteAppointment] = useDeleteAppointmentMutation();
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [alert, setAlert] = useState(null);
+
   const {
     data: appointments = [],
     isLoading,
     isError,
     refetch,
-  } = useFetchAllAppointmentsQuery();
-  const [deleteAppointment] = useDeleteAppointmentMutation();
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [alert, setAlert] = useState(null);
-  const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
+  } = user?.role === "admin"
+    ? useFetchAllAppointmentsQuery()
+    : useFetchAppointmentsByUserQuery(user?.id);
 
   useEffect(() => {
     if (location.state?.alert) {
@@ -59,7 +66,7 @@ const AppointmentsBase = () => {
   };
 
   const handleAlertClose = () => {
-    setAlert(null); // Remove the alert from the DOM after fade-out
+    setAlert(null);
   };
 
   const handleDelete = async () => {
@@ -92,7 +99,6 @@ const AppointmentsBase = () => {
         return `${params.row.firstName} ${params.row.lastName}`;
       },
     },
-    { field: "email", headerName: "Email", width: 200 },
     {
       field: "serviceType",
       headerName: "Service",
@@ -113,6 +119,17 @@ const AppointmentsBase = () => {
           params.row.preferredHairdresser
         );
         return barber ? `${barber.firstName} ${barber.lastName}` : "Loading...";
+      },
+    },
+    {
+      field: "price",
+      headerName: "Price",
+      width: 100,
+      renderCell: (params) => {
+        const { data: service } = useFetchServiceByIdQuery(
+          params.row.serviceType
+        );
+        return service ? `$${service.price}` : "Loading...";
       },
     },
     {
@@ -169,7 +186,7 @@ const AppointmentsBase = () => {
         />
       )}
       <Typography variant="h4" gutterBottom>
-        Manage Appointments
+        {user?.role === "admin" ? "Manage All Appointments" : "My Appointments"}
       </Typography>
       <Box sx={{ height: 400, width: "100%" }}>
         <Box
