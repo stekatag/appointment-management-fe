@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useFetchServiceCategoryByIdQuery } from "../../services/api";
+import { useFetchServiceCategoryByIdQuery } from "../../services/api/serviceCategoriesApi";
 import ServiceCategoryForm from "../../forms/ServiceCategoryForm";
 import { CircularProgress, Typography } from "@mui/material";
 

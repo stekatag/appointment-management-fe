@@ -23,10 +23,8 @@ import {
   CustomTabs,
 } from "./ServicesSection.styles";
 import ScrollAnimation from "react-animate-on-scroll";
-import {
-  useFetchServicesQuery,
-  useFetchServiceCategoriesQuery,
-} from "../../services/api";
+import { useFetchServicesQuery } from "../../services/api/servicesApi";
+import { useFetchServiceCategoriesQuery } from "../../services/api/serviceCategoriesApi";
 
 export default function ServicesSection() {
   const theme = useTheme();

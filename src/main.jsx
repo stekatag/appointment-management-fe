@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Provider } from "react-redux";
-import { store } from "./store/index.js";
+import { store } from "./services/store/index.js";
 import Root from "./routes/root.jsx";
 
 import { ThemeProvider } from "@mui/material/styles";

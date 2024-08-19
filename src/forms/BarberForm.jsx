@@ -17,7 +17,10 @@ import {
   InputLabel,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useUpdateUserMutation, useFetchUsersQuery } from "../services/api";
+import {
+  useUpdateUserMutation,
+  useFetchUsersQuery,
+} from "../services/api/usersApi";
 
 const schema = yup.object().shape({
   title: yup.string().required("Title is required"),

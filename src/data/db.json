@@ -29,6 +29,7 @@
       "firstName": "Стефан",
       "lastName": "Гогов",
       "email": "splay333@gmail.com",
+      "contactNumber": "0885849584",
       "password": "123",
       "role": "admin"
     },
@@ -240,6 +241,20 @@
     {
       "id": "8c90",
       "name": "Treatments"
+    }
+  ],
+  "statuses": [
+    {
+      "id": "1",
+      "name": "Upcoming"
+    },
+    {
+      "id": "2",
+      "name": "Past"
+    },
+    {
+      "id": "3",
+      "name": "Cancelled"
     }
   ]
 }

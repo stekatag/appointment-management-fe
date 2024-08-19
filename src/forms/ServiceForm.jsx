@@ -17,8 +17,8 @@ import { useNavigate } from "react-router-dom";
 import {
   useCreateServiceMutation,
   useUpdateServiceMutation,
-  useFetchServiceCategoriesQuery,
-} from "../services/api";
+} from "../services/api/servicesApi";
+import { useFetchServiceCategoriesQuery } from "../services/api/serviceCategoriesApi";
 
 const schema = yup.object().shape({
   category: yup.string().required("Category is required"),

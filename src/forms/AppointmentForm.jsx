@@ -8,10 +8,10 @@ import {
   useUpdateAppointmentMutation,
   useFetchAppointmentsByUserQuery,
   useFetchAppointmentsByDayAndBarberQuery,
-  useFetchServiceCategoriesQuery,
-  useFetchServicesQuery,
-  useFetchBarbersQuery,
-} from "../services/api";
+} from "../services/api/appointmentsApi";
+import { useFetchServiceCategoriesQuery } from "../services/api/serviceCategoriesApi";
+import { useFetchServicesQuery } from "../services/api/servicesApi";
+import { useFetchBarbersQuery } from "../services/api/barbersApi";
 import {
   Box,
   TextField,

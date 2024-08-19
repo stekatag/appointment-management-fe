@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useHandleSectionLink } from "../../utils/navigationUtils";
-import { logout } from "../../store/authSlice";
+import { logout } from "../../services/store/authSlice";
 import { scroller } from "react-scroll";
 import {
   useTheme,

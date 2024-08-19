@@ -11,10 +11,8 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  useFetchBarbersQuery,
-  useUpdateUserMutation,
-} from "../../services/api";
+import { useFetchBarbersQuery } from "../../services/api/barbersApi";
+import { useUpdateUserMutation } from "../../services/api/usersApi";
 import FadeAlert from "../../components/FadeAlert/FadeAlert";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useMediaQuery } from "@mui/material";

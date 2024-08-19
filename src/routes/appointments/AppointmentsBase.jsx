@@ -16,10 +16,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   useFetchAllAppointmentsQuery,
   useFetchAppointmentsByUserQuery,
-  useFetchServiceByIdQuery,
   useDeleteAppointmentMutation,
-  useFetchBarberByIdQuery,
-} from "../../services/api";
+} from "../../services/api/appointmentsApi";
+import { useFetchServiceByIdQuery } from "../../services/api/servicesApi";
+import { useFetchBarberByIdQuery } from "../../services/api/barbersApi";
 import FadeAlert from "../../components/FadeAlert/FadeAlert";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useSelector } from "react-redux";

@@ -18,7 +18,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import DashboardListItems from "../components/DashboardListItems";
 import { useDispatch } from "react-redux";
-import { logout } from "../store/authSlice";
+import { logout } from "../services/store/authSlice";
 import { useNavigate } from "react-router-dom";
 import { StyledAppBar, StyledDrawer } from "./DashboardLayout.styles";
 

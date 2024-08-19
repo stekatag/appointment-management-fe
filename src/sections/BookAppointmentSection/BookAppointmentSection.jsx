@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  useFetchAppointmentsByDayAndBarberQuery,
-  useFetchBarbersQuery,
-} from "../../services/api";
+import { useFetchAppointmentsByDayAndBarberQuery } from "../../services/api/appointmentsApi";
+import { useFetchBarbersQuery } from "../../services/api/barbersApi";
 import {
   InputLabel,
   Select,

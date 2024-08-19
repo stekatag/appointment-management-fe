@@ -1,4 +1,4 @@
-import { useFetchBarbersQuery } from "../../services/api";
+import { useFetchBarbersQuery } from "../../services/api/barbersApi";
 import { Container, Grid, Typography, Alert } from "@mui/material";
 import {
   BarbersContainer,

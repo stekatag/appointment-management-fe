@@ -14,8 +14,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   useFetchServicesQuery,
   useDeleteServiceMutation,
-  useFetchServiceCategoryByIdQuery,
-} from "../../services/api";
+} from "../../services/api/servicesApi";
+import { useFetchServiceCategoryByIdQuery } from "../../services/api/serviceCategoriesApi";
 import FadeAlert from "../../components/FadeAlert/FadeAlert";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { ButtonsContainer } from "./ServiceBase.styles";

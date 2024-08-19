@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import {
   useCreateServiceCategoryMutation,
   useUpdateServiceCategoryMutation,
-} from "../services/api";
+} from "../services/api/serviceCategoriesApi";
 
 // Validation schema for the form
 const schema = yup.object().shape({
