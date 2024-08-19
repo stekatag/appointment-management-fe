@@ -51,6 +51,17 @@ export const api = createApi({
       }),
       invalidatesTags: ["Appointment"],
     }),
+    deleteAppointment: builder.mutation({
+      query: (id) => ({
+        url: `/appointments/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Appointment"],
+    }),
+    fetchAllAppointments: builder.query({
+      query: () => "/appointments",
+      providesTags: ["Appointment"],
+    }),
     fetchAppointmentsByUser: builder.query({
       query: (userId) => `/appointments?userId=${userId}`,
       providesTags: ["Appointment"],
@@ -157,6 +168,8 @@ export const {
   useLoginUserQuery,
   useCreateAppointmentMutation,
   useUpdateAppointmentMutation,
+  useDeleteAppointmentMutation,
+  useFetchAllAppointmentsQuery,
   useFetchAppointmentsByUserQuery,
   useFetchAppointmentsByDayAndBarberQuery,
   useFetchAppointmentByIdQuery,
