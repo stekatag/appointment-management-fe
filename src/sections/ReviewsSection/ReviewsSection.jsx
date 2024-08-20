@@ -9,7 +9,6 @@ import {
   Alert,
 } from "@mui/material";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Star, StarBorder } from "@mui/icons-material";
 import {
@@ -34,7 +33,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
 export default function ReviewsSection() {
-  const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
   const [selectedRating, setSelectedRating] = useState(null);
   const [page, setPage] = useState(1);

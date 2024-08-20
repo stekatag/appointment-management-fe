@@ -361,7 +361,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
                     <Select {...field} label="Type of Service">
                       {filteredServices.map((service) => (
                         <MenuItem key={service.id} value={service.id}>
-                          {service.title}
+                          {service.title} (${service.price})
                         </MenuItem>
                       ))}
                     </Select>
