@@ -194,7 +194,6 @@ const ReviewForm = ({ reviewToEdit }) => {
                     {...field}
                     value={parseFloat(field.value)}
                     onChange={(_, value) => field.onChange(value)}
-                    precision={0.5} // Allow half-star ratings
                     max={5}
                     required
                   />
