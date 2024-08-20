@@ -234,5 +234,33 @@
       "id": "3",
       "name": "Cancelled"
     }
+  ],
+  "reviews": [
+    {
+      "id": "c834",
+      "userId": "8690",
+      "name": "Стефан Гогов",
+      "barberId": "6943",
+      "serviceType": "049c",
+      "appointmentDateTime": "2024-08-19T09:00:49.054Z",
+      "date": "2024-08-20T08:07:37.767Z",
+      "appointmentId": "ed49",
+      "rating": 3,
+      "title": "title",
+      "text": "rewfweewf"
+    },
+    {
+      "id": "0596",
+      "userId": "d718",
+      "name": "Ivan Draganov",
+      "barberId": "6b57",
+      "serviceType": "06e0",
+      "appointmentDateTime": "2024-08-19T11:30:13.110Z",
+      "date": "2024-08-20T08:43:15.765Z",
+      "appointmentId": "7414",
+      "rating": 4.5,
+      "title": "Men's fashion",
+      "text": "dssdfvv"
+    }
   ]
 }

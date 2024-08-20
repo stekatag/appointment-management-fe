@@ -21,6 +21,8 @@ const mockReviews = [
     rating: 5,
     title: "Great Service!",
     text: "Amazing service, will definitely come again!",
+    barberId: 593,
+    serviceType: 233,
     date: "3 days ago",
   },
   {

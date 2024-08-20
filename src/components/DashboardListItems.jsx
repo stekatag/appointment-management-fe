@@ -43,7 +43,7 @@ export default function DashboardListItems() {
         <ListItemText primary="Appointments" />
       </ListItemButton>
       {(userRole === "user" || userRole === "admin") && (
-        <ListItemButton component={Link} to="/manage-reviews">
+        <ListItemButton component={Link} to="/reviews">
           <ListItemIcon>
             <StarIcon />
           </ListItemIcon>

@@ -24,6 +24,9 @@ import EditService from "./services/EditService";
 import ServiceCategoriesBase from "./service-categories/ServiceCategoriesBase";
 import ServiceCategoryForm from "../forms/ServiceCategoryForm";
 import EditServiceCategory from "./service-categories/EditServiceCategory";
+import ReviewsBase from "./reviews/ReviewsBase";
+import ReviewForm from "../forms/ReviewForm";
+import EditReview from "./reviews/EditReview";
 
 export default function Root() {
   return (
@@ -182,6 +185,34 @@ export default function Root() {
           element={
             <DashboardLayout>
               <EditServiceCategory />
+            </DashboardLayout>
+          }
+        />
+      </Route>
+
+      {/* Review routes */}
+      <Route
+        path="/reviews"
+        element={
+          <ProtectedRoute allowedRoles={["admin", "user"]}>
+            <Outlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ReviewsBase />} />
+        <Route
+          path="create"
+          element={
+            <DashboardLayout>
+              <ReviewForm />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="edit/:reviewId"
+          element={
+            <DashboardLayout>
+              <EditReview />
             </DashboardLayout>
           }
         />
