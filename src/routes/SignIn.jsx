@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import useRedirectByRole from "../utils/redirectByRole";
-import { useLoginUserQuery } from "../services/api";
+import { useLoginUserQuery } from "../services/api/usersApi";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";

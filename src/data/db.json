@@ -6,7 +6,11 @@
       "password": "123",
       "firstName": "John",
       "lastName": "Doe",
-      "role": "user"
+      "contactNumber": "0898888888",
+      "role": "barber",
+      "title": "Master Barber",
+      "image": "https://www.keydesign-themes.com/etalon/barber/wp-content/uploads/sites/26/2020/12/barber1.jpg",
+      "selectedUserId": "6943"
     },
     {
       "id": "5596",
@@ -14,13 +18,18 @@
       "password": "456",
       "firstName": "Jane",
       "lastName": "Doe",
-      "role": "admin"
+      "role": "barber",
+      "contactNumber": "0898888889",
+      "selectedUserId": "5596",
+      "title": "Barber",
+      "image": "https://www.keydesign-themes.com/etalon/barber/wp-content/uploads/sites/26/2020/12/barber2.jpg"
     },
     {
       "id": "8690",
       "firstName": "Стефан",
       "lastName": "Гогов",
       "email": "splay333@gmail.com",
+      "contactNumber": "0885849584",
       "password": "123",
       "role": "admin"
     },
@@ -40,20 +49,274 @@
       "password": "123",
       "contactNumber": "0894703251",
       "role": "admin"
+    },
+    {
+      "id": "6b57",
+      "firstName": "Dimitar",
+      "lastName": "Ivanov",
+      "email": "user3@example.com",
+      "contactNumber": "0898888888",
+      "password": "123",
+      "role": "barber",
+      "selectedUserId": "6b57",
+      "title": "Barber",
+      "image": "https://i.ibb.co/JsWSZHS/barber3.jpg"
+    },
+    {
+      "id": "e9cc",
+      "firstName": "Petar",
+      "lastName": "Petrov",
+      "email": "user4@example.com",
+      "contactNumber": "0898888889",
+      "password": "123",
+      "role": "barber",
+      "selectedUserId": "e9cc",
+      "title": "Barber",
+      "image": "https://i.ibb.co/LCHKrW3/barber4.jpg"
+    },
+    {
+      "id": "d718",
+      "firstName": "Ivan",
+      "lastName": "Draganov",
+      "email": "ivandraganov@mail.com",
+      "contactNumber": "0898888889",
+      "password": "123",
+      "role": "user"
     }
   ],
   "appointments": [
     {
-      "id": "a196",
       "firstName": "Стефан",
       "lastName": "Гогов",
       "contactNumber": "0894703251",
-      "email": "newaccount@gmail.com",
-      "preferredHairdresser": "Hairdresser 1",
-      "serviceType": "Service 1",
+      "email": "splay333@gmail.com",
+      "preferredHairdresser": "5596",
+      "serviceCategory": "7753",
+      "serviceType": "06e0",
       "additionalNotes": "",
-      "userId": "7545",
-      "appointmentDateTime": "2024-08-16T12:00:05.344Z"
+      "userId": "8690",
+      "appointmentDateTime": "2024-08-21T12:00:07.199Z",
+      "statusId": "1",
+      "id": "dc42"
+    },
+    {
+      "firstName": "Стефан",
+      "lastName": "Гогов",
+      "contactNumber": "0894703251",
+      "email": "splay333@gmail.com",
+      "preferredHairdresser": "6943",
+      "serviceCategory": "671e",
+      "serviceType": "049c",
+      "additionalNotes": "",
+      "userId": "8690",
+      "appointmentDateTime": "2024-08-19T09:00:49.054Z",
+      "statusId": "2",
+      "id": "ed49"
+    },
+    {
+      "firstName": "Ivan",
+      "lastName": "Draganov",
+      "contactNumber": "0898888889",
+      "email": "ivandraganov@mail.com",
+      "preferredHairdresser": "6b57",
+      "serviceCategory": "7753",
+      "serviceType": "06e0",
+      "additionalNotes": "",
+      "userId": "d718",
+      "appointmentDateTime": "2024-08-19T11:30:13.110Z",
+      "statusId": "2",
+      "id": "7414"
+    },
+    {
+      "firstName": "Стефан",
+      "lastName": "Гогов",
+      "contactNumber": "0885849584",
+      "email": "splay333@gmail.com",
+      "preferredHairdresser": "6943",
+      "serviceCategory": "671e",
+      "serviceType": "049c",
+      "additionalNotes": "",
+      "userId": "8690",
+      "appointmentDateTime": "2024-08-19T08:00:00.785Z",
+      "statusId": "2",
+      "id": "de9a"
+    },
+    {
+      "firstName": "Ivan",
+      "lastName": "Draganov",
+      "contactNumber": "0898888889",
+      "email": "ivandraganov@mail.com",
+      "preferredHairdresser": "e9cc",
+      "serviceCategory": "671e",
+      "serviceType": "1fde",
+      "additionalNotes": "",
+      "userId": "d718",
+      "appointmentDateTime": "2024-08-20T11:00:02.858Z",
+      "statusId": "2",
+      "id": "45b5"
+    },
+    {
+      "firstName": "Ivan",
+      "lastName": "Draganov",
+      "contactNumber": "0898888889",
+      "email": "ivandraganov@mail.com",
+      "preferredHairdresser": "6b57",
+      "serviceCategory": "8c90",
+      "serviceType": "75bc",
+      "additionalNotes": "",
+      "userId": "d718",
+      "appointmentDateTime": "2024-08-20T11:30:39.863Z",
+      "statusId": "2",
+      "id": "3961"
+    },
+    {
+      "firstName": "Dimitar",
+      "lastName": "Ivanov",
+      "contactNumber": "0898888888",
+      "email": "user3@example.com",
+      "preferredHairdresser": "6b57",
+      "serviceCategory": "671e",
+      "serviceType": "049c",
+      "additionalNotes": "",
+      "userId": "6b57",
+      "appointmentDateTime": "2024-08-20T13:00:46.011Z",
+      "statusId": "3",
+      "id": "8491"
+    },
+    {
+      "id": "c6fd",
+      "firstName": "Dimitar",
+      "lastName": "Ivanov",
+      "contactNumber": "0898888888",
+      "email": "user3@example.com",
+      "preferredHairdresser": "6b57",
+      "serviceCategory": "671e",
+      "serviceType": "049c",
+      "additionalNotes": "",
+      "userId": "6b57",
+      "appointmentDateTime": "2024-08-20T13:30:30.444Z",
+      "statusId": "1"
+    }
+  ],
+  "services": [
+    {
+      "id": "2a58",
+      "price": 15,
+      "description": "A timeless haircut that suits all occasions, providing a clean and polished look. Includes a professional cut and style.",
+      "title": "Classic Haircut",
+      "category": "7753"
+    },
+    {
+      "id": "06e0",
+      "price": 20,
+      "description": "A comprehensive package that includes a stylish haircut followed by a refreshing shampoo to leave your hair feeling clean and revitalized.",
+      "title": "Haircut & Shampoo",
+      "category": "7753"
+    },
+    {
+      "id": "c61e",
+      "price": 10,
+      "description": "A fun and friendly haircut experience for kids, ensuring they leave with a smile and a fresh new look.",
+      "title": "Children’s Haircut",
+      "category": "7753"
+    },
+    {
+      "id": "db9f",
+      "price": 12,
+      "description": "A precise beard trim and shape to maintain a clean and stylish look. Includes a consultation to achieve the perfect shape for your face.",
+      "title": "Beard Trim & Shape",
+      "category": "671e"
+    },
+    {
+      "id": "049c",
+      "price": 18,
+      "description": "A relaxing hot towel shave that softens the skin and beard for a smooth, close shave, leaving your skin refreshed and rejuvenated.",
+      "title": "Hot Towel Shave",
+      "category": "671e"
+    },
+    {
+      "id": "1fde",
+      "price": 15,
+      "description": "A detailed grooming service that includes trimming and styling of both beard and moustache, perfect for a well-groomed appearance.",
+      "title": "Beard & Moustache Styling",
+      "category": "671e"
+    },
+    {
+      "id": "68ac",
+      "price": 10,
+      "description": "A soothing scalp massage that helps relieve tension and promotes healthy hair growth. Perfect for stress relief and relaxation.",
+      "title": "Scalp Massage",
+      "category": "8c90"
+    },
+    {
+      "id": "75bc",
+      "price": 25,
+      "description": "A nourishing treatment that revitalizes both hair and scalp, addressing issues like dryness, dandruff, and hair loss.",
+      "title": "Hair & Scalp Treatment",
+      "category": "8c90"
+    },
+    {
+      "id": "12c2",
+      "price": 8,
+      "description": "A precise eyebrow shaping service that enhances your facial features, ensuring a clean and sharp appearance.",
+      "title": "Eyebrow Shaping",
+      "category": "8c90"
+    }
+  ],
+  "service-categories": [
+    {
+      "id": "7753",
+      "name": "Haircuts"
+    },
+    {
+      "id": "671e",
+      "name": "Grooming"
+    },
+    {
+      "id": "8c90",
+      "name": "Treatments"
+    }
+  ],
+  "statuses": [
+    {
+      "id": "1",
+      "name": "Upcoming"
+    },
+    {
+      "id": "2",
+      "name": "Past"
+    },
+    {
+      "id": "3",
+      "name": "Cancelled"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "c834",
+      "userId": "8690",
+      "name": "Стефан Гогов",
+      "barberId": "6943",
+      "serviceType": "049c",
+      "appointmentDateTime": "2024-08-19T09:00:49.054Z",
+      "date": "2024-08-20T08:07:37.767Z",
+      "appointmentId": "ed49",
+      "rating": 3,
+      "title": "title",
+      "text": "rewfweewf"
+    },
+    {
+      "id": "0596",
+      "userId": "d718",
+      "name": "Ivan Draganov",
+      "barberId": "6b57",
+      "serviceType": "06e0",
+      "appointmentDateTime": "2024-08-19T11:30:13.110Z",
+      "date": "2024-08-20T08:43:15.765Z",
+      "appointmentId": "7414",
+      "rating": 4,
+      "title": "Men's fashion",
+      "text": "dssdfvv"
     }
   ]
 }

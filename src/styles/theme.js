@@ -55,14 +55,22 @@ const theme = createTheme({
         fontSize: "1rem",
       },
     },
+    body1: {
+      color: "#2a2a2a",
+    },
   },
   palette: {
     primary: {
       main: "#AF8447",
+      dark: "#694f2b",
       light: "#f4e0c8",
+      custom: "#efe6da",
     },
     secondary: {
-      main: "#6b6b6b",
+      main: "#3b3b3b",
+      light: "#646464",
+      dark: "#2a2a2a",
+      darker: "#212121",
     },
     background: {
       default: "#fff", // This sets the default background color

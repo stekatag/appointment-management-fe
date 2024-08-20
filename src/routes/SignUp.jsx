@@ -2,7 +2,10 @@ import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useAddUserMutation, useFetchUsersQuery } from "../services/api";
+import {
+  useAddUserMutation,
+  useFetchUsersQuery,
+} from "../services/api/usersApi";
 import useRedirectByRole from "../utils/redirectByRole";
 import { validateEmail } from "../utils/validateEmail";
 import Avatar from "@mui/material/Avatar";

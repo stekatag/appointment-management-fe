@@ -11,6 +11,10 @@ const useRedirectByRole = () => {
     if (role === "user") {
       navigate("/user/dashboard");
     }
+
+    if (role === "barber") {
+      navigate("/barber/dashboard");
+    }
   };
 
   return redirectByRole;

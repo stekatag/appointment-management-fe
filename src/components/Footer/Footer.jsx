@@ -66,13 +66,15 @@ export default function Footer() {
             <Grid item xs={12} md={4}>
               <FooterIconContainer>
                 <Phone />
-                <Typography variant="body2">+359 88 888 8888</Typography>
+                <FooterLink to="tel:+359888888888">+359 88 888 8888</FooterLink>
               </FooterIconContainer>
             </Grid>
             <Grid item xs={12} md={4}>
               <FooterIconContainer>
                 <Email />
-                <Typography variant="body2">contact@barbershop.com</Typography>
+                <FooterLink to="mailto:contact@barbershop.com">
+                  contact@barbershop.com
+                </FooterLink>
               </FooterIconContainer>
             </Grid>
           </Grid>
