@@ -142,7 +142,6 @@
       "id": "de9a"
     },
     {
-      "id": "45b5",
       "firstName": "Ivan",
       "lastName": "Draganov",
       "contactNumber": "0898888889",
@@ -153,10 +152,10 @@
       "additionalNotes": "",
       "userId": "d718",
       "appointmentDateTime": "2024-08-20T11:00:02.858Z",
-      "statusId": "1"
+      "statusId": "2",
+      "id": "45b5"
     },
     {
-      "id": "3961",
       "firstName": "Ivan",
       "lastName": "Draganov",
       "contactNumber": "0898888889",
@@ -167,6 +166,35 @@
       "additionalNotes": "",
       "userId": "d718",
       "appointmentDateTime": "2024-08-20T11:30:39.863Z",
+      "statusId": "2",
+      "id": "3961"
+    },
+    {
+      "firstName": "Dimitar",
+      "lastName": "Ivanov",
+      "contactNumber": "0898888888",
+      "email": "user3@example.com",
+      "preferredHairdresser": "6b57",
+      "serviceCategory": "671e",
+      "serviceType": "049c",
+      "additionalNotes": "",
+      "userId": "6b57",
+      "appointmentDateTime": "2024-08-20T13:00:46.011Z",
+      "statusId": "3",
+      "id": "8491"
+    },
+    {
+      "id": "c6fd",
+      "firstName": "Dimitar",
+      "lastName": "Ivanov",
+      "contactNumber": "0898888888",
+      "email": "user3@example.com",
+      "preferredHairdresser": "6b57",
+      "serviceCategory": "671e",
+      "serviceType": "049c",
+      "additionalNotes": "",
+      "userId": "6b57",
+      "appointmentDateTime": "2024-08-20T13:30:30.444Z",
       "statusId": "1"
     }
   ],

@@ -17,6 +17,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
   useFetchAllAppointmentsQuery,
   useFetchAppointmentsByUserQuery,
+  useFetchAppointmentsByBarberQuery,
+  useFetchAppointmentsByDayAndBarberQuery,
   useDeleteAppointmentMutation,
   useUpdateAppointmentMutation,
 } from "../../services/api/appointmentsApi";
@@ -27,6 +29,8 @@ import FadeAlert from "../../components/FadeAlert/FadeAlert";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
+import AppointmentCalendar from "../../components/AppointmentCalendar/AppointmentCalendar";
+import DaySlider from "../../components/DaySlider";
 
 const AppointmentsBase = () => {
   const navigate = useNavigate();
@@ -34,20 +38,51 @@ const AppointmentsBase = () => {
   const user = useSelector((state) => state.auth.user);
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
 
+  const [selectedDay, setSelectedDay] = useState(dayjs());
+
   const [deleteAppointment] = useDeleteAppointmentMutation();
   const [updateAppointment] = useUpdateAppointmentMutation();
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [alert, setAlert] = useState(null);
 
+  let appointmentsQuery;
+
+  switch (user?.role) {
+    case "admin":
+      appointmentsQuery = useFetchAllAppointmentsQuery();
+      break;
+    case "barber":
+      appointmentsQuery = useFetchAppointmentsByBarberQuery(user?.id);
+      break;
+    case "user":
+      appointmentsQuery = useFetchAppointmentsByUserQuery(user?.id);
+      break;
+    default:
+      appointmentsQuery = {
+        data: [],
+        isLoading: false,
+        isError: true,
+        refetch: () => {},
+      }; // Fallback in case the user role is undefined
+      break;
+  }
+
   const {
     data: appointments = [],
     isLoading,
     isError,
     refetch,
-  } = user?.role === "admin"
-    ? useFetchAllAppointmentsQuery()
-    : useFetchAppointmentsByUserQuery(user?.id);
+  } = appointmentsQuery;
+
+  const { data: dayAppointments = [] } =
+    useFetchAppointmentsByDayAndBarberQuery(
+      {
+        day: selectedDay.format("YYYY-MM-DD"),
+        barber: user?.id, // Currently logged barber
+      },
+      { skip: !selectedDay || user?.role !== "barber" }
+    );
 
   useEffect(() => {
     const updatePastAppointments = async () => {
@@ -116,6 +151,30 @@ const AppointmentsBase = () => {
       } catch (error) {
         setAlert({
           message: `Error deleting appointment: ${error.message}`,
+          severity: "error",
+        });
+      }
+    }
+  };
+
+  const handleCancel = async () => {
+    if (selectedAppointment) {
+      try {
+        await updateAppointment({
+          ...selectedAppointment,
+          statusId: "3", // "Cancelled" status
+        }).unwrap();
+
+        setOpenDialog(false);
+        refetch();
+
+        setAlert({
+          message: "Appointment cancelled successfully!",
+          severity: "success",
+        });
+      } catch (error) {
+        setAlert({
+          message: `Error cancelling appointment: ${error.message}`,
           severity: "error",
         });
       }
@@ -198,19 +257,37 @@ const AppointmentsBase = () => {
             size="small"
             onClick={() => handleEdit(params.row.id)}
             sx={{ mr: 1 }}
-            disabled={params.row.statusId === "2"} // Disable edit if status is "Past"
+            disabled={
+              params.row.statusId === "2" || params.row.statusId === "3"
+            } // Disable edit if status is "Past" or "Cancelled"
           >
             Edit
           </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            size="small"
-            onClick={() => handleOpenDialog(params.row)}
-            disabled={params.row.statusId === "2"} // Disable delete if status is "Past"
-          >
-            Delete
-          </Button>
+          {user?.role === "admin" ? (
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              onClick={() => handleOpenDialog(params.row)}
+              disabled={
+                params.row.statusId === "2" || params.row.statusId === "3"
+              } // Disable delete if status is "Past" or "Cancelled"
+            >
+              Delete
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              onClick={() => handleOpenDialog(params.row)}
+              disabled={
+                params.row.statusId === "2" || params.row.statusId === "3"
+              } // Disable cancel if status is "Past" or "Cancelled"
+            >
+              Cancel
+            </Button>
+          )}
         </Box>
       ),
     },
@@ -237,6 +314,22 @@ const AppointmentsBase = () => {
       <Typography variant="h4" gutterBottom>
         {user?.role === "admin" ? "Manage All Appointments" : "My Appointments"}
       </Typography>
+
+      {/* Conditionally render Appointment Calendar for Barbers */}
+      {user?.role === "barber" && (
+        <Box mb={4}>
+          <DaySlider currentDay={selectedDay} setCurrentDay={setSelectedDay} />
+          <AppointmentCalendar
+            appointments={dayAppointments}
+            onSlotSelect={() => {}} // Disable slot selection
+            selectedDay={selectedDay}
+            selectedBarber={user?.id}
+            initialSlot={null}
+            readOnly
+          />
+        </Box>
+      )}
+
       <Box sx={{ height: 400, width: "100%" }}>
         <Box
           sx={{
@@ -263,19 +356,26 @@ const AppointmentsBase = () => {
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            {"Delete Appointment"}
+            {user?.role === "admin"
+              ? "Delete Appointment"
+              : "Cancel Appointment"}
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              Are you sure you want to delete the appointment for{" "}
-              {selectedAppointment?.firstName} {selectedAppointment?.lastName}?
+              {user?.role === "admin"
+                ? `Are you sure you want to delete the appointment for ${selectedAppointment?.firstName} ${selectedAppointment?.lastName}?`
+                : `Are you sure you want to cancel the appointment for ${selectedAppointment?.firstName} ${selectedAppointment?.lastName}?`}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog} color="primary">
               Cancel
             </Button>
-            <Button onClick={handleDelete} color="secondary" autoFocus>
+            <Button
+              onClick={user?.role === "admin" ? handleDelete : handleCancel}
+              color="secondary"
+              autoFocus
+            >
               Confirm
             </Button>
           </DialogActions>

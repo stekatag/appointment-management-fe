@@ -38,6 +38,10 @@ export const appointmentsApi = createApi({
       query: (userId) => `/appointments?userId=${userId}`,
       providesTags: ["Appointment"],
     }),
+    fetchAppointmentsByBarber: builder.query({
+      query: (barber) => `/appointments?preferredHairdresser=${barber}`,
+      providesTags: ["Appointment"],
+    }),
     fetchAppointmentsByDayAndBarber: builder.query({
       query: ({ day, barber }) => `/appointments?day=${day}&barber=${barber}`,
       providesTags: ["Appointment"],
@@ -55,6 +59,7 @@ export const {
   useDeleteAppointmentMutation,
   useFetchAllAppointmentsQuery,
   useFetchAppointmentsByUserQuery,
+  useFetchAppointmentsByBarberQuery,
   useFetchAppointmentsByDayAndBarberQuery,
   useFetchAppointmentByIdQuery,
 } = appointmentsApi;

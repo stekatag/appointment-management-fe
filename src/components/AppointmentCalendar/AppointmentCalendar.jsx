@@ -9,7 +9,8 @@ AppointmentCalendar.propTypes = {
   onSlotSelect: PropTypes.func.isRequired,
   selectedDay: PropTypes.object.isRequired,
   initialSlot: PropTypes.string,
-  selectedBarber: PropTypes.string.isRequired, // Accept selectedBarber as a prop
+  selectedBarber: PropTypes.string.isRequired,
+  readOnly: PropTypes.bool,
 };
 
 // Define the days off (e.g., Monday)
@@ -32,7 +33,8 @@ export default function AppointmentCalendar({
   onSlotSelect,
   selectedDay,
   initialSlot,
-  selectedBarber, // Use selectedBarber here
+  selectedBarber,
+  readOnly = false,
 }) {
   const [selectedSlot, setSelectedSlot] = useState(initialSlot || null);
 
@@ -68,7 +70,9 @@ export default function AppointmentCalendar({
             .hour(time.split(":")[0])
             .minute(time.split(":")[1]),
           "minute"
-        ) && appt.preferredHairdresser === selectedBarber // Match the selectedBarber with the appointment's hairdresser
+        ) &&
+        appt.preferredHairdresser === selectedBarber &&
+        appt.statusId !== "3"
     );
   };
 
@@ -80,7 +84,7 @@ export default function AppointmentCalendar({
   };
 
   const handleSlotClick = (time) => {
-    if (!isSlotBooked(time) && !isSlotInPast(time) && !isDayOff) {
+    if (!readOnly && !isSlotBooked(time) && !isSlotInPast(time) && !isDayOff) {
       setSelectedSlot(time);
       onSlotSelect(
         dayjs(selectedDay)
@@ -117,7 +121,9 @@ export default function AppointmentCalendar({
               fullWidth
               variant="text"
               onClick={() => handleSlotClick(time)}
-              disabled={isSlotBooked(time) || isSlotInPast(time) || isDayOff}
+              disabled={
+                readOnly || isSlotBooked(time) || isSlotInPast(time) || isDayOff
+              }
             >
               <Typography mr={1} variant="h6">
                 {time}
