@@ -27,6 +27,7 @@ import EditServiceCategory from "./service-categories/EditServiceCategory";
 import ReviewsBase from "./reviews/ReviewsBase";
 import ReviewForm from "../forms/ReviewForm";
 import EditReview from "./reviews/EditReview";
+import BarberDashboard from "./BarberDashboard";
 
 export default function Root() {
   return (
@@ -58,6 +59,26 @@ export default function Root() {
         />
       </Route>
 
+      {/* Barber routes */}
+      <Route
+        path="/barber"
+        element={
+          <ProtectedRoute allowedRoles={["barber"]}>
+            <Outlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="/barber/dashboard" replace />} />
+        <Route
+          path="dashboard"
+          element={
+            <DashboardLayout>
+              <BarberDashboard />
+            </DashboardLayout>
+          }
+        />
+      </Route>
+
       {/* User routes */}
       <Route
         path="/user"
@@ -82,7 +103,7 @@ export default function Root() {
       <Route
         path="/appointments"
         element={
-          <ProtectedRoute allowedRoles={["admin", "user"]}>
+          <ProtectedRoute allowedRoles={["admin", "barber", "user"]}>
             <Outlet />
           </ProtectedRoute>
         }
