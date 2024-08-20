@@ -1,5 +1,5 @@
 import { styled } from "@mui/material/styles";
-import { Box, Icon } from "@mui/material";
+import { Box, Button, Icon } from "@mui/material";
 import { Link } from "react-router-dom";
 
 export const BarbersContainer = styled(Box)(({ theme }) => ({
@@ -82,6 +82,16 @@ export const StyledLink = styled(Link)(({ theme }) => ({
   color: theme.palette.primary.main,
   textDecoration: "none",
   fontWeight: "bold",
+
+  "&:hover": {
+    textDecoration: "underline",
+  },
+}));
+
+export const StyledButton = styled(Button)(() => ({
+  padding: 0,
+  textTransform: "none",
+  fontWeight: 600,
 
   "&:hover": {
     textDecoration: "underline",

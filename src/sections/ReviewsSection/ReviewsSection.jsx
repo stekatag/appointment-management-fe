@@ -6,8 +6,11 @@ import {
   Button,
   Pagination,
   Box,
+  Alert,
 } from "@mui/material";
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Star, StarBorder } from "@mui/icons-material";
 import {
   ReviewItem,
@@ -31,6 +34,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
 export default function ReviewsSection() {
+  const user = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
   const [selectedRating, setSelectedRating] = useState(null);
   const [page, setPage] = useState(1);
   const reviewsPerPage = 5;
@@ -81,109 +86,131 @@ export default function ReviewsSection() {
   return (
     <ReviewsSectionContainer maxWidth="lg" id="reviews-section">
       <Grid container spacing={4}>
-        {/* Sidebar for Filtering */}
-        <Grid item xs={12} md={4}>
-          <Sidebar>
-            <SidebarHeader>
-              <SidebarHeaderRating>
-                <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-                  {averageRating.toFixed(1)}
-                </Typography>
-                <Rating value={averageRating} precision={0.5} readOnly />
-              </SidebarHeaderRating>
-              <Typography variant="body1" color="textSecondary">
-                {totalReviews} ratings
-              </Typography>
-            </SidebarHeader>
-            <SidebarMain>
-              <Typography variant="h6" gutterBottom>
-                Filter Reviews
-              </Typography>
-              {reviewsCountByRating
-                .filter(({ count }) => count > 0) // Only show stars with reviews
-                .map(({ star, count }) => (
-                  <SidebarItem
-                    key={star}
-                    onClick={() => setSelectedRating(star)}
-                    selected={selectedRating === star}
-                  >
-                    <Rating
-                      value={star}
-                      readOnly
-                      icon={<Star fontSize="inherit" />}
-                      emptyIcon={<StarBorder fontSize="inherit" />}
-                    />
-                    <Typography variant="body2">{`(${count})`}</Typography>
-                  </SidebarItem>
-                ))}
-              <Button
-                variant="outlined"
-                onClick={() => setSelectedRating(null)}
-                sx={{ mt: 2 }}
-              >
-                Clear Filters
-              </Button>
-            </SidebarMain>
-          </Sidebar>
-        </Grid>
+        {reviews.length > 0 && (
+          <>
+            {/* Sidebar for filterint */}
+            <Grid item xs={12} md={4}>
+              <Sidebar>
+                <SidebarHeader>
+                  <SidebarHeaderRating>
+                    <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                      {averageRating.toFixed(1)}
+                    </Typography>
+                    <Rating value={averageRating} precision={0.5} readOnly />
+                  </SidebarHeaderRating>
+                  <Typography variant="body1" color="textSecondary">
+                    {totalReviews} ratings
+                  </Typography>
+                </SidebarHeader>
+                <SidebarMain>
+                  <Typography variant="h6" gutterBottom>
+                    Filter Reviews
+                  </Typography>
+                  {reviewsCountByRating
+                    .filter(({ count }) => count > 0) // Only show stars with reviews
+                    .map(({ star, count }) => (
+                      <SidebarItem
+                        key={star}
+                        onClick={() => setSelectedRating(star)}
+                        selected={selectedRating === star}
+                      >
+                        <Rating
+                          value={star}
+                          readOnly
+                          icon={<Star fontSize="inherit" />}
+                          emptyIcon={<StarBorder fontSize="inherit" />}
+                        />
+                        <Typography variant="body2">{`(${count})`}</Typography>
+                      </SidebarItem>
+                    ))}
+                  <Box display="flex" gap={2} mt={2}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => setSelectedRating(null)}
+                    >
+                      Clear Filters
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => navigate("/reviews/create")}
+                    >
+                      Write a Review
+                    </Button>
+                  </Box>
+                </SidebarMain>
+              </Sidebar>
+            </Grid>
 
-        {/* Reviews List */}
-        <Grid item xs={12} md={8}>
-          <StyledList>
-            {paginatedReviews.map((review) => {
-              const service = services.find((s) => s.id === review.serviceType);
-              const barber = barbers.find((b) => b.id === review.barberId);
+            {/* Reviews */}
+            <Grid item xs={12} md={8}>
+              <StyledList>
+                {paginatedReviews.map((review) => {
+                  const service = services.find(
+                    (s) => s.id === review.serviceType
+                  );
+                  const barber = barbers.find((b) => b.id === review.barberId);
 
-              return (
-                <ReviewItem key={review.id}>
-                  <ListItemText
-                    primary={
-                      <>
-                        <ReviewName variant="h5">{review.name}</ReviewName>
-                        <Rating value={review.rating} readOnly />
-                      </>
-                    }
-                    secondary={
-                      <>
-                        <ReviewTitle>{review.title}</ReviewTitle>
-                        <ReviewText variant="body2" gutterBottom>
-                          {review.text}
-                        </ReviewText>
-                        <Typography variant="body2">
-                          Barber:{" "}
-                          <strong>
-                            {barber
-                              ? `${barber.firstName} ${barber.lastName}`
-                              : "Loading..."}
-                          </strong>
-                          , Service:{" "}
-                          <strong>
-                            {service ? service.title : "Loading..."}
-                          </strong>
-                        </Typography>
-                        <Typography variant="caption" color="textSecondary">
-                          {dayjs(review.date).fromNow()}
-                        </Typography>
-                      </>
-                    }
+                  return (
+                    <ReviewItem key={review.id}>
+                      <ListItemText
+                        primary={
+                          <>
+                            <ReviewName variant="h5">{review.name}</ReviewName>
+                            <Rating value={review.rating} readOnly />
+                          </>
+                        }
+                        secondary={
+                          <>
+                            <ReviewTitle>{review.title}</ReviewTitle>
+                            <ReviewText variant="body2" gutterBottom>
+                              {review.text}
+                            </ReviewText>
+                            <Typography variant="body2">
+                              Barber:{" "}
+                              <strong>
+                                {barber
+                                  ? `${barber.firstName} ${barber.lastName}`
+                                  : "Loading..."}
+                              </strong>
+                              , Service:{" "}
+                              <strong>
+                                {service ? service.title : "Loading..."}
+                              </strong>
+                            </Typography>
+                            <Typography variant="caption" color="textSecondary">
+                              {dayjs(review.date).fromNow()}
+                            </Typography>
+                          </>
+                        }
+                      />
+                    </ReviewItem>
+                  );
+                })}
+              </StyledList>
+
+              {/* Pagination */}
+              {filteredReviews.length > reviewsPerPage && (
+                <Box mt={2} display="flex" justifyContent="center">
+                  <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={handleChangePage}
+                    color="primary"
                   />
-                </ReviewItem>
-              );
-            })}
-          </StyledList>
+                </Box>
+              )}
+            </Grid>
+          </>
+        )}
 
-          {/* Pagination */}
-          {filteredReviews.length > reviewsPerPage && (
-            <Box mt={2} display="flex" justifyContent="center">
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={handleChangePage}
-                color="primary"
-              />
-            </Box>
-          )}
-        </Grid>
+        {reviews.length === 0 && (
+          <Grid item xs={12}>
+            <Alert severity="warning">
+              There are no reviews available in the database.
+            </Alert>
+          </Grid>
+        )}
       </Grid>
     </ReviewsSectionContainer>
   );

@@ -5,6 +5,7 @@ import {
   Rating,
   useTheme,
   useMediaQuery,
+  Alert,
 } from "@mui/material";
 import {
   TestimonialsContainer,
@@ -19,35 +20,28 @@ import {
 } from "./TestimonialsSection.styles";
 import ScrollAnimation from "react-animate-on-scroll";
 import { useHandleSectionLink } from "../../utils/navigationUtils";
+import { useFetchReviewsQuery } from "../../services/api/reviewsApi";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 
-const testimonials = [
-  {
-    name: "Richard D.",
-    text: "Luxury Barber",
-    description:
-      "Dignissim per dis dignissim mi nibh a parturient habitasse suspendisse ut a feugiat morbi neque tortor. Tellus volutpat scelerisque tempor.",
-    avatar: "path/to/avatar1.jpg",
-  },
-  {
-    name: "Mark S.",
-    text: "Professional",
-    description:
-      "Dignissim per dis dignissim mi nibh a parturient habitasse suspendisse ut a feugiat morbi neque tortor. Tellus volutpat scelerisque tempor.",
-    avatar: "path/to/avatar2.jpg",
-  },
-  {
-    name: "Alex L.",
-    text: "Great Service",
-    description:
-      "Dignissim per dis dignissim mi nibh a parturient habitasse suspendisse ut a feugiat morbi neque tortor. Tellus volutpat scelerisque tempor.",
-    avatar: "path/to/avatar3.jpg",
-  },
-];
+dayjs.extend(relativeTime);
 
 export default function TestimonialsSection() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const handleCTAClick = useHandleSectionLink();
+
+  // Fetch the reviews from the database
+  const { data: reviews = [], isLoading, isError } = useFetchReviewsQuery();
+
+  // Filter reviews with rating 4 or higher and sort by date (most recent first)
+  const topRatedReviews = reviews
+    .filter((review) => review.rating >= 4)
+    .sort((a, b) => dayjs(b.date).diff(dayjs(a.date)))
+    .slice(0, 3); // Get the three most recent top-rated reviews
+
+  if (isLoading) return <Typography>Loading testimonials...</Typography>;
+  if (isError) return <Typography>Error loading testimonials.</Typography>;
 
   return (
     <TestimonialsContainer>
@@ -70,31 +64,50 @@ export default function TestimonialsSection() {
               product we carry. Read our testimonials from our happy customers.
             </Typography>
           </TitlesContainer>
-          <TestimonialCardsContainer container spacing={4}>
-            {testimonials.map((testimonial, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <TestimonialCard>
-                  <TestimonialNameContent>
-                    <Typography variant="subtitle2">
-                      {testimonial.name}
-                    </Typography>
-                    <TestimonialRatingContainer>
-                      <Rating name="read-only" value={5} readOnly />
-                      <Typography variant="body2" color="textSecondary">
-                        2 weeks ago
-                      </Typography>
-                    </TestimonialRatingContainer>
-                  </TestimonialNameContent>
-                  <TestimonialContent>
-                    <Typography variant="h6">{testimonial.text}</Typography>
-                    <TestimonialDescription variant="body2">
-                      {testimonial.description}
-                    </TestimonialDescription>
-                  </TestimonialContent>
-                </TestimonialCard>
-              </Grid>
-            ))}
-          </TestimonialCardsContainer>
+
+          {/* Check if there are any top-rated reviews */}
+          {topRatedReviews.length > 0 ? (
+            <TestimonialCardsContainer
+              container
+              spacing={4}
+              justifyContent={
+                topRatedReviews.length < 3 ? "center" : "flex-start"
+              }
+            >
+              {topRatedReviews.map((review, index) => (
+                <Grid item xs={12} md={4} key={index}>
+                  <TestimonialCard>
+                    <TestimonialNameContent>
+                      <Typography variant="subtitle2">{review.name}</Typography>
+                      <TestimonialRatingContainer>
+                        <Rating
+                          name="read-only"
+                          value={review.rating}
+                          readOnly
+                        />
+                        <Typography variant="body2" color="textSecondary">
+                          {dayjs(review.date).fromNow()}
+                        </Typography>
+                      </TestimonialRatingContainer>
+                    </TestimonialNameContent>
+                    <TestimonialContent>
+                      <Typography variant="h6">{review.title}</Typography>
+                      <TestimonialDescription variant="body2">
+                        {review.text}
+                      </TestimonialDescription>
+                    </TestimonialContent>
+                  </TestimonialCard>
+                </Grid>
+              ))}
+            </TestimonialCardsContainer>
+          ) : (
+            <Grid item xs={12}>
+              <Alert severity="warning">
+                There are no top-rated reviews available at the moment.
+              </Alert>
+            </Grid>
+          )}
+
           <CTAButton
             onClick={() => handleCTAClick("reviews-section", "/barbers")}
             variant="contained"

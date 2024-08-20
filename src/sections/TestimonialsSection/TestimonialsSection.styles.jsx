@@ -1,6 +1,5 @@
 import { Grid, styled, Typography } from "@mui/material";
 import { Box, Card, Avatar, Button } from "@mui/material";
-import { Link } from "react-router-dom";
 
 export const TestimonialsContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(8, 0),

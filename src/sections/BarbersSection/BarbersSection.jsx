@@ -9,13 +9,16 @@ import {
   ContactIcon,
   ContactInfoInner,
   StyledLink,
+  StyledButton,
 } from "./BarbersSection.styles";
 import { Call } from "@mui/icons-material";
 import GradeIcon from "@mui/icons-material/Grade";
 import ScrollAnimation from "react-animate-on-scroll";
+import { useHandleSectionLink } from "../../utils/navigationUtils";
 
 export default function BarbersSection() {
   const { data: barbers = [], isLoading, isError } = useFetchBarbersQuery();
+  const handleCTAClick = useHandleSectionLink();
 
   // Handle the loading and error states if necessary
   if (isLoading) {
@@ -68,9 +71,13 @@ export default function BarbersSection() {
                             <GradeIcon />
                           </ContactIcon>
                           <Typography variant="body2" color="textSecondary">
-                            <StyledLink to={`/barbers`}>
+                            <StyledButton
+                              onClick={() =>
+                                handleCTAClick("reviews-section", "/barbers")
+                              }
+                            >
                               Rate & Review
-                            </StyledLink>
+                            </StyledButton>
                           </Typography>
                         </ContactInfoInner>
                       </ContactInfo>
