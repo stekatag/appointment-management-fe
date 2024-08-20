@@ -28,6 +28,8 @@ import ReviewsBase from "./reviews/ReviewsBase";
 import ReviewForm from "../forms/ReviewForm";
 import EditReview from "./reviews/EditReview";
 import BarberDashboard from "./BarberDashboard";
+import UserManagement from "./user/UserManagement";
+import ProfileManagement from "./user/ProfileManagement";
 
 export default function Root() {
   return (
@@ -237,6 +239,30 @@ export default function Root() {
             </DashboardLayout>
           }
         />
+      </Route>
+
+      {/* User Management routes */}
+      <Route
+        path="/manage-users"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <Outlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<UserManagement />} />
+      </Route>
+
+      {/* Profile Management routes */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute allowedRoles={["admin", "user", "barber"]}>
+            <Outlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ProfileManagement />} />
       </Route>
 
       <Route path="*" element={<ErrorPage />} />
