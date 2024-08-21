@@ -1,39 +1,33 @@
-import { Link } from "react-router-dom";
-import { Button, Typography, Container, Grid } from "@mui/material";
+import { Typography, Container, Grid } from "@mui/material";
+import DashboardCard from "../components/DashboardCard/DashboardCard";
+import HomeIcon from "@mui/icons-material/Home";
+import WatchLaterIcon from "@mui/icons-material/WatchLater";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 export default function BarberDashboard() {
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Typography
         component="h1"
-        variant="h6"
+        variant="h3"
         color="inherit"
         noWrap
-        sx={{ flexGrow: 1 }}
+        sx={{ flexGrow: 1, mb: 4 }}
       >
-        Barber Dashboard page
+        Barber Dashboard
       </Typography>
-      <Grid container spacing={2}>
-        <Grid item>
-          <Button
-            component={Link}
-            to="/appointments/create"
-            variant="contained"
-            color="primary"
-          >
-            Create Appointment
-          </Button>
-        </Grid>
-        <Grid item>
-          <Button
-            component={Link}
-            to="/appointments/edit/50bb"
-            variant="contained"
-            color="primary"
-          >
-            Edit Appointment
-          </Button>
-        </Grid>
+      <Grid container spacing={4}>
+        <DashboardCard icon={HomeIcon} title="Home Page" to="/" />
+        <DashboardCard
+          icon={WatchLaterIcon}
+          title="Appointments"
+          to="/appointments"
+        />
+        <DashboardCard
+          icon={AccountCircleIcon}
+          title="My Profile"
+          to="/profile"
+        />
       </Grid>
     </Container>
   );
