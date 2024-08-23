@@ -6,7 +6,6 @@ import {
   Button,
   Pagination,
   Box,
-  Alert,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -29,6 +28,7 @@ import { useFetchServicesQuery } from "../../services/api/servicesApi";
 import { useFetchBarbersQuery } from "../../services/api/barbersApi";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import ServerAlert from "../../components/ServerAlert/ServerAlert";
 
 dayjs.extend(relativeTime);
 
@@ -203,10 +203,8 @@ export default function ReviewsSection() {
         )}
 
         {reviews.length === 0 && (
-          <Grid item xs={12}>
-            <Alert severity="warning">
-              There are no reviews available in the database.
-            </Alert>
+          <Grid item>
+            <ServerAlert keyword="reviews" />
           </Grid>
         )}
       </Grid>

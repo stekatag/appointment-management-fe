@@ -1,5 +1,5 @@
 import { useFetchBarbersQuery } from "../../services/api/barbersApi";
-import { Container, Grid, Typography, Alert } from "@mui/material";
+import { Container, Grid, Typography } from "@mui/material";
 import {
   BarbersContainer,
   BarberCard,
@@ -15,6 +15,7 @@ import { Call } from "@mui/icons-material";
 import GradeIcon from "@mui/icons-material/Grade";
 import ScrollAnimation from "react-animate-on-scroll";
 import { useHandleSectionLink } from "../../utils/navigationUtils";
+import ServerAlert from "../../components/ServerAlert/ServerAlert";
 
 export default function BarbersSection() {
   const { data: barbers = [], isLoading, isError } = useFetchBarbersQuery();
@@ -86,10 +87,8 @@ export default function BarbersSection() {
                 </Grid>
               ))
             ) : (
-              <Grid item xs={12}>
-                <Alert severity="warning">
-                  There are no barbers available in the database.
-                </Alert>
+              <Grid item>
+                <ServerAlert keyword="barbers" />
               </Grid>
             )}
           </Grid>

@@ -9,7 +9,6 @@ import {
   Link,
   useTheme,
   useMediaQuery,
-  Alert,
 } from "@mui/material";
 import {
   ServicesContainer,
@@ -22,6 +21,7 @@ import {
   ServiceGrid,
   CustomTabs,
 } from "./ServicesSection.styles";
+import ServerAlert from "../../components/ServerAlert/ServerAlert";
 import ScrollAnimation from "react-animate-on-scroll";
 import { useFetchServicesQuery } from "../../services/api/servicesApi";
 import { useFetchServiceCategoriesQuery } from "../../services/api/serviceCategoriesApi";
@@ -109,9 +109,7 @@ export default function ServicesSection() {
               ))}
             </ServiceTabContent>
           ) : (
-            <Alert severity="warning">
-              There are no services available in the database.
-            </Alert>
+            <ServerAlert keyword="services" />
           )}
         </Container>
       </ScrollAnimation>

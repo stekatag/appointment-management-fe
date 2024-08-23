@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useFetchAppointmentsByDayAndBarberQuery } from "../../services/api/appointmentsApi";
 import { useFetchBarbersQuery } from "../../services/api/barbersApi";
 import {
@@ -10,17 +11,16 @@ import {
   Grid,
   FormControl,
   Fade,
-  Alert,
   CircularProgress,
 } from "@mui/material";
 import dayjs from "dayjs";
 import AppointmentCalendar from "../../components/AppointmentCalendar/AppointmentCalendar";
 import DaySlider from "../../components/DaySlider";
+import ServerAlert from "../../components/ServerAlert/ServerAlert";
 import {
   SectionContainer,
   StyledButton,
 } from "./BookAppointmentSection.styles";
-import { useNavigate } from "react-router-dom";
 
 export default function BookAppointmentSection() {
   const [selectedDay, setSelectedDay] = useState(dayjs());
@@ -86,9 +86,7 @@ export default function BookAppointmentSection() {
                 )}
               </FormControl>
             ) : (
-              <Alert severity="warning">
-                There are no barbers available in the database.
-              </Alert>
+              <ServerAlert keyword="barbers" />
             )}
           </Grid>
         </Grid>
