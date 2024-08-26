@@ -33,11 +33,12 @@ export default function ServiceForm({ serviceToEdit }) {
     control,
     handleSubmit,
     formState: { errors },
+    setValue,
     watch,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      category: serviceToEdit?.category || "",
+      category: serviceToEdit?.category?.id || "", // Use the id from the category object
       title: serviceToEdit?.title || "",
       description: serviceToEdit?.description || "",
       price: serviceToEdit?.price || "",
@@ -47,8 +48,15 @@ export default function ServiceForm({ serviceToEdit }) {
   const navigate = useNavigate();
   const [createService, { isLoading: isCreating }] = useCreateServiceMutation();
   const [updateService, { isLoading: isUpdating }] = useUpdateServiceMutation();
-  const { data: categories = [] } = useFetchServiceCategoriesQuery();
+  const { data: categories, isLoading: categoriesLoading } =
+    useFetchServiceCategoriesQuery();
   const [showFields, setShowFields] = useState(!!serviceToEdit);
+
+  useEffect(() => {
+    if (!categoriesLoading && categories && serviceToEdit) {
+      setValue("category", serviceToEdit.category.id); // Set the category id after categories are loaded
+    }
+  }, [categories, categoriesLoading, serviceToEdit, setValue]);
 
   const onSubmit = async (data) => {
     try {
@@ -75,11 +83,7 @@ export default function ServiceForm({ serviceToEdit }) {
   const selectedCategory = watch("category");
 
   useEffect(() => {
-    if (selectedCategory) {
-      setShowFields(true);
-    } else {
-      setShowFields(false);
-    }
+    setShowFields(!!selectedCategory);
   }, [selectedCategory]);
 
   return (
@@ -97,8 +101,8 @@ export default function ServiceForm({ serviceToEdit }) {
               name="category"
               control={control}
               render={({ field }) => (
-                <Select {...field} label="Category">
-                  {categories.map((category) => (
+                <Select {...field} label="Category" value={field.value || ""}>
+                  {categories?.results.map((category) => (
                     <MenuItem key={category.id} value={category.id}>
                       {category.name}
                     </MenuItem>

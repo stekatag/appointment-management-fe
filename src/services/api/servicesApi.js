@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // const API_URL = "http://localhost:5175";
-const API_URL = "https://appointment-management-json-server.onrender.com/";
+// const API_URL = "https://appointment-management-json-server.onrender.com/";
+const API_URL = "http://localhost:3000/v1";
 
 export const servicesApi = createApi({
   reducerPath: "servicesApi",

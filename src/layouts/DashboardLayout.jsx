@@ -19,6 +19,8 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import DashboardListItems from "../components/DashboardListItems";
 import { useDispatch } from "react-redux";
 import { logout } from "../services/store/authSlice";
+import { useLogoutUserMutation } from "../services/api/usersApi";
+import { getRefreshTokenFromStorage } from "../utils/storage";
 import { useNavigate } from "react-router-dom";
 import { StyledAppBar, StyledDrawer } from "./DashboardLayout.styles";
 
@@ -31,6 +33,7 @@ export default function DashboardLayout({ children }) {
   const navigate = useNavigate();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const [logoutUser] = useLogoutUserMutation(); // Initialize the logout mutation
 
   // Initially set the drawer's open state based on screen size
   const [open, setOpen] = React.useState(!isSmallScreen);
@@ -44,9 +47,17 @@ export default function DashboardLayout({ children }) {
     setOpen(!isSmallScreen);
   }, [isSmallScreen]);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/");
+  const handleLogout = async () => {
+    const refreshToken = getRefreshTokenFromStorage();
+    if (refreshToken) {
+      try {
+        await logoutUser(refreshToken).unwrap();
+        dispatch(logout()); // Remove user from Redux store
+        navigate("/");
+      } catch (err) {
+        console.error("Failed to logout:", err);
+      }
+    }
   };
 
   return (

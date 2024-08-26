@@ -29,23 +29,31 @@ import { useFetchServiceCategoriesQuery } from "../../services/api/serviceCatego
 export default function ServicesSection() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const [selectedTab, setSelectedTab] = useState(0); // Updated to be a number
+  const [selectedTab, setSelectedTab] = useState(0);
   const [servicesByCategory, setServicesByCategory] = useState({});
 
-  const { data: services = [] } = useFetchServicesQuery();
-  const { data: categories = [] } = useFetchServiceCategoriesQuery();
+  const { data: servicesData } = useFetchServicesQuery();
+  const { data: categoriesData } = useFetchServiceCategoriesQuery();
 
   useEffect(() => {
-    if (services.length && categories.length) {
-      const organizedServices = categories.reduce((acc, category) => {
-        acc[category.name] = services.filter(
-          (service) => service.category === category.id
-        );
-        return acc;
-      }, {});
+    if (
+      servicesData &&
+      servicesData.results &&
+      categoriesData &&
+      categoriesData.results
+    ) {
+      const organizedServices = categoriesData.results.reduce(
+        (acc, category) => {
+          acc[category.name] = servicesData.results.filter(
+            (service) => service.category === category.id
+          );
+          return acc;
+        },
+        {}
+      );
       setServicesByCategory(organizedServices);
     }
-  }, [services, categories]);
+  }, [servicesData, categoriesData]);
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
@@ -68,7 +76,7 @@ export default function ServicesSection() {
             </Typography>
           </ServiceTitleContainer>
 
-          {services.length > 0 ? (
+          {servicesData?.results.length > 0 ? (
             <ServiceTabContent>
               <Box
                 sx={{
@@ -79,17 +87,21 @@ export default function ServicesSection() {
               >
                 <CustomTabs>
                   <Tabs value={selectedTab} onChange={handleTabChange} centered>
-                    {Object.keys(servicesByCategory).map((category, index) => (
-                      <Tab key={category} label={category} value={index} />
+                    {categoriesData.results.map((category, index) => (
+                      <Tab
+                        key={category.id}
+                        label={category.name}
+                        value={index}
+                      />
                     ))}
                   </Tabs>
                 </CustomTabs>
               </Box>
 
-              {Object.keys(servicesByCategory).map((category, index) => (
-                <TabPanel key={category} value={selectedTab} index={index}>
+              {categoriesData.results.map((category, index) => (
+                <TabPanel key={category.id} value={selectedTab} index={index}>
                   <ServiceGrid>
-                    {servicesByCategory[category].map((service) => (
+                    {servicesByCategory[category.name]?.map((service) => (
                       <ServiceItem key={service.id}>
                         <ServiceTitle>{service.title}</ServiceTitle>
                         <Typography variant="body2" color="textSecondary">
