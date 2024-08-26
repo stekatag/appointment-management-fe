@@ -1,8 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { usersApi } from "../api/usersApi";
 
-// Initialize user from local storage
-const storedUser = JSON.parse(localStorage.getItem("user"));
+// Initialize user from localStorage or sessionStorage
+const storedUser =
+  JSON.parse(localStorage.getItem("user")) ||
+  JSON.parse(sessionStorage.getItem("user"));
 
 const authSlice = createSlice({
   name: "auth",
@@ -13,7 +15,11 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
       localStorage.removeItem("user");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("refreshToken");
+      sessionStorage.removeItem("user");
       state.user = null;
     },
   },
@@ -22,12 +28,23 @@ const authSlice = createSlice({
       .addMatcher(
         usersApi.endpoints.loginUser.matchFulfilled,
         (state, action) => {
-          state.user = action.payload.length ? action.payload[0] : null;
-          if (state.user) {
-            localStorage.setItem("token", "dummy-token"); // Store a dummy token
-            localStorage.setItem("user", JSON.stringify(state.user)); // Store user info
+          state.user = action.payload.user;
+          const token = action.payload.tokens?.access?.token; // Use optional chaining
+          const refreshToken = action.payload.tokens?.refresh?.token;
+          const userString = JSON.stringify(state.user);
+
+          if (token && refreshToken) {
+            localStorage.setItem("token", token);
+            sessionStorage.setItem("token", token);
+            localStorage.setItem("refreshToken", refreshToken);
+            sessionStorage.setItem("refreshToken", refreshToken);
+            localStorage.setItem("user", userString);
+            sessionStorage.setItem("user", userString);
+          } else {
+            console.error("Token or refresh token is undefined");
           }
-          state.error = action.payload.length ? null : "Invalid credentials";
+
+          state.error = null;
         }
       )
       .addMatcher(
@@ -36,23 +53,17 @@ const authSlice = createSlice({
           state.error = action.error.message;
         }
       )
-      .addMatcher(
-        usersApi.endpoints.addUser.matchFulfilled,
-        (state, action) => {
-          state.user = action.payload;
-          if (state.user) {
-            localStorage.setItem("token", "dummy-token"); // Store a dummy token
-            localStorage.setItem("user", JSON.stringify(state.user)); // Store user info
-          }
-          state.error = null;
-        }
-      )
-      .addMatcher(usersApi.endpoints.addUser.matchRejected, (state, action) => {
-        state.error = action.error.message;
+      .addMatcher(usersApi.endpoints.logoutUser.matchFulfilled, (state) => {
+        state.user = null;
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("user");
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("refreshToken");
+        sessionStorage.removeItem("user");
       });
   },
 });
 
 export const { logout } = authSlice.actions;
-
 export default authSlice.reducer;
