@@ -15,3 +15,12 @@ export const getRefreshTokenFromStorage = () => {
     sessionStorage.getItem("refreshToken")
   );
 };
+
+export const clearStorage = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("user");
+  sessionStorage.removeItem("token");
+  sessionStorage.removeItem("refreshToken");
+  sessionStorage.removeItem("user");
+};

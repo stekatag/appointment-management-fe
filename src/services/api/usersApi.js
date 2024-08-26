@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { getTokenFromStorage } from "../../utils/storage";
+import { handleTokenExpiration } from "../../utils/tokenUtils";
 
 const API_URL = "http://localhost:3000/v1";
 
@@ -8,7 +8,7 @@ export const usersApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: API_URL,
     prepareHeaders: (headers) => {
-      const token = getTokenFromStorage(); // Get the token from storage
+      const token = handleTokenExpiration(); // Check token expiration and handle it
       if (token) {
         headers.set("Authorization", `Bearer ${token}`); // Set the Authorization header
       }
@@ -19,13 +19,7 @@ export const usersApi = createApi({
   endpoints: (builder) => ({
     fetchUsers: builder.query({
       query: () => "/users",
-      providesTags: (result) =>
-        result && Array.isArray(result)
-          ? [
-              ...result.map(({ id }) => ({ type: "User", id })),
-              { type: "Barber" },
-            ]
-          : [{ type: "User" }, { type: "Barber" }],
+      providesTags: ["User", "Barber"],
     }),
     addUser: builder.mutation({
       query: (newUser) => ({
@@ -33,7 +27,7 @@ export const usersApi = createApi({
         method: "POST",
         body: newUser,
       }),
-      invalidatesTags: [{ type: "User" }, { type: "Barber" }],
+      invalidatesTags: ["User", "Barber"],
     }),
     updateUser: builder.mutation({
       query: ({ id, ...patch }) => ({
@@ -41,10 +35,7 @@ export const usersApi = createApi({
         method: "PATCH",
         body: patch,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "User", id },
-        { type: "Barber" },
-      ],
+      invalidatesTags: ["User", "Barber"],
     }),
     loginUser: builder.mutation({
       query: ({ email, password }) => ({

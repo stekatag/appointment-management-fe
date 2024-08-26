@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { getTokenFromStorage } from "../../utils/storage";
+import { handleTokenExpiration } from "../../utils/tokenUtils";
 
 // const API_URL = "http://localhost:5175";
 // const API_URL = "https://appointment-management-json-server.onrender.com/";
@@ -10,7 +10,8 @@ export const barbersApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: API_URL,
     prepareHeaders: (headers) => {
-      const token = getTokenFromStorage(); // Get the token from storage
+      const token = handleTokenExpiration(); // Check token expiration and handle it
+
       if (token) {
         headers.set("Authorization", `Bearer ${token}`); // Set the Authorization header
       }
