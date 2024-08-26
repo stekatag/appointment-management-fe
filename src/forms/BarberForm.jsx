@@ -22,6 +22,7 @@ import {
   useFetchUsersQuery,
 } from "../services/api/usersApi";
 
+// Validation schema for the form
 const schema = yup.object().shape({
   title: yup.string().required("Title is required"),
   image: yup
@@ -52,7 +53,7 @@ export default function BarberForm({ barberToEdit }) {
   const navigate = useNavigate();
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
   const {
-    data: users,
+    data: usersData,
     isLoading: isLoadingUsers,
     refetch,
   } = useFetchUsersQuery();
@@ -68,8 +69,8 @@ export default function BarberForm({ barberToEdit }) {
   useEffect(() => {
     if (barberToEdit) {
       setShowFields(true);
-    } else if (selectedUserId) {
-      const selectedUser = users?.find(
+    } else if (selectedUserId && usersData?.results) {
+      const selectedUser = usersData.results.find(
         (user) => user.id === selectedUserId && user.role === "user"
       );
       if (selectedUser) {
@@ -81,7 +82,7 @@ export default function BarberForm({ barberToEdit }) {
         setShowFields(false);
       }
     }
-  }, [selectedUserId, users, setValue, barberToEdit]);
+  }, [selectedUserId, usersData, setValue, barberToEdit]);
 
   const onSubmit = async (data) => {
     try {
@@ -106,7 +107,7 @@ export default function BarberForm({ barberToEdit }) {
   };
 
   const eligibleUsers =
-    users?.filter((user) =>
+    usersData?.results?.filter((user) =>
       barberToEdit
         ? user.id === barberToEdit.id || user.role === "user"
         : user.role === "user"

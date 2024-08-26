@@ -20,18 +20,23 @@ import { useMediaQuery } from "@mui/material";
 const BarbersBase = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    data: barbers = [],
-    isLoading,
-    isError,
-    refetch,
-  } = useFetchBarbersQuery();
+  const { data, isLoading, isError, refetch } = useFetchBarbersQuery({
+    page: 1,
+    limit: 10,
+  });
   const [updateUser] = useUpdateUserMutation();
   const [selectedBarber, setSelectedBarber] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const [alert, setAlert] = useState(null);
+  const [alert, setAlert] = useState(location.state?.alert || null);
 
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
+
+  useEffect(() => {
+    if (location.state?.alert) {
+      setAlert(location.state.alert);
+      navigate(location.pathname, { replace: true }); // Remove the alert from history after displaying it once
+    }
+  }, [location, navigate]);
 
   const handleEdit = (id) => {
     navigate(`/manage-barbers/edit/${id}`);
@@ -76,12 +81,6 @@ const BarbersBase = () => {
       }
     }
   };
-
-  useEffect(() => {
-    if (location.state?.alert) {
-      setAlert(location.state.alert);
-    }
-  }, [location.state, navigate]);
 
   if (isLoading) {
     return <Typography>Loading...</Typography>;
@@ -161,7 +160,14 @@ const BarbersBase = () => {
             Assign New Barber
           </Button>
         </Box>
-        <DataGrid rows={barbers} columns={columns} pageSize={5} />
+        <DataGrid
+          rows={data.results || []}
+          columns={columns}
+          pageSize={data.limit || 10}
+          rowCount={data.totalResults}
+          paginationMode="server"
+          onPageChange={(newPage) => refetch({ page: newPage + 1 })}
+        />
 
         {/* Confirmation Dialog */}
         <Dialog
