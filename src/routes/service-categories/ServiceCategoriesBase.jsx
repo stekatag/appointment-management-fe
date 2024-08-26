@@ -67,8 +67,11 @@ export default function ServiceCategoriesBase() {
           severity: "success",
         });
       } catch (error) {
+        // Access the error message properly
+        const errorMessage =
+          error.data?.message || error.message || "An error occurred";
         setAlert({
-          message: `Error deleting category: ${error.message}`,
+          message: `Error deleting category: ${errorMessage}`,
           severity: "error",
         });
       }
