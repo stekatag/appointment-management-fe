@@ -41,6 +41,14 @@ export const usersApi = createApi({
       }),
       invalidatesTags: ["User", "Barber"],
     }),
+    changePassword: builder.mutation({
+      query: ({ id, currentPassword, newPassword }) => ({
+        url: `/users/${id}/password`,
+        method: "PATCH",
+        body: { currentPassword, newPassword },
+      }),
+      invalidatesTags: ["User"],
+    }),
     loginUser: builder.mutation({
       query: ({ email, password }) => ({
         url: `/auth/login`, // Login endpoint
@@ -73,6 +81,7 @@ export const {
   useFetchUserByIdQuery,
   useAddUserMutation,
   useUpdateUserMutation,
+  useChangePasswordMutation,
   useLoginUserMutation,
   useLogoutUserMutation,
 } = usersApi;
