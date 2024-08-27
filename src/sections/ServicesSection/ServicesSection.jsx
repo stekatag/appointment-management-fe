@@ -9,6 +9,8 @@ import {
   Link,
   useTheme,
   useMediaQuery,
+  Alert,
+  Button,
 } from "@mui/material";
 import {
   ServicesContainer,
@@ -32,16 +34,12 @@ export default function ServicesSection() {
   const [selectedTab, setSelectedTab] = useState(0);
   const [servicesByCategory, setServicesByCategory] = useState({});
 
-  const { data: servicesData } = useFetchServicesQuery();
-  const { data: categoriesData } = useFetchServiceCategoriesQuery();
+  const { data: servicesData, error: servicesError } = useFetchServicesQuery();
+  const { data: categoriesData, error: categoriesError } =
+    useFetchServiceCategoriesQuery();
 
   useEffect(() => {
-    if (
-      servicesData &&
-      servicesData.results &&
-      categoriesData &&
-      categoriesData.results
-    ) {
+    if (servicesData?.results && categoriesData?.results) {
       const organizedServices = categoriesData.results.reduce(
         (acc, category) => {
           acc[category.name] = servicesData.results.filter(
@@ -58,6 +56,28 @@ export default function ServicesSection() {
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
+
+  if (servicesError || categoriesError) {
+    return (
+      <ServicesContainer id="services-section">
+        <Container maxWidth="lg">
+          <Alert severity="error">
+            <Typography variant="h6">
+              An error occurred while loading services.
+            </Typography>
+            <Typography>Please try refreshing the page.</Typography>
+            <Button
+              variant="contained"
+              onClick={() => window.location.reload()}
+              sx={{ mt: 2 }}
+            >
+              Refresh Page
+            </Button>
+          </Alert>
+        </Container>
+      </ServicesContainer>
+    );
+  }
 
   return (
     <ServicesContainer id="services-section">
@@ -76,7 +96,7 @@ export default function ServicesSection() {
             </Typography>
           </ServiceTitleContainer>
 
-          {servicesData?.results.length > 0 ? (
+          {servicesData?.results?.length > 0 ? (
             <ServiceTabContent>
               <Box
                 sx={{
@@ -87,7 +107,7 @@ export default function ServicesSection() {
               >
                 <CustomTabs>
                   <Tabs value={selectedTab} onChange={handleTabChange} centered>
-                    {categoriesData.results.map((category, index) => (
+                    {categoriesData?.results?.map((category, index) => (
                       <Tab
                         key={category.id}
                         label={category.name}
@@ -98,7 +118,7 @@ export default function ServicesSection() {
                 </CustomTabs>
               </Box>
 
-              {categoriesData.results.map((category, index) => (
+              {categoriesData?.results?.map((category, index) => (
                 <TabPanel key={category.id} value={selectedTab} index={index}>
                   <ServiceGrid>
                     {servicesByCategory[category.name]?.map((service) => (

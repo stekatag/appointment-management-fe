@@ -123,7 +123,7 @@ const BarbersBase = () => {
             size="small"
             onClick={() => handleOpenDialog(params.row)}
           >
-            Delete
+            Unassign
           </Button>
         </Box>
       ),

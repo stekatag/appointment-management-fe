@@ -40,8 +40,8 @@ export default function ReviewsSection() {
 
   // Fetch reviews, services, and barbers from the database
   const { data: reviews = [], isLoading, isError } = useFetchReviewsQuery();
-  const { data: services = [] } = useFetchServicesQuery();
-  const { data: barbers = [] } = useFetchBarbersQuery();
+  const { data: services } = useFetchServicesQuery();
+  const { data: barbers } = useFetchBarbersQuery();
 
   // Average rating
   const totalReviews = reviews.length;
@@ -144,10 +144,12 @@ export default function ReviewsSection() {
             <Grid item xs={12} md={8}>
               <StyledList>
                 {paginatedReviews.map((review) => {
-                  const service = services.find(
+                  const service = services?.results.find(
                     (s) => s.id === review.serviceType
                   );
-                  const barber = barbers.find((b) => b.id === review.barberId);
+                  const barber = barbers?.results.find(
+                    (b) => b.id === review.barberId
+                  );
 
                   return (
                     <ReviewItem key={review.id}>

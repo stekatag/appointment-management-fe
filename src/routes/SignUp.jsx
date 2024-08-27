@@ -2,12 +2,8 @@ import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import {
-  useAddUserMutation,
-  useFetchUsersQuery,
-} from "../services/api/usersApi";
+import { useAddUserMutation } from "../services/api/usersApi";
 import useRedirectByRole from "../utils/redirectByRole";
-import { validateEmail } from "../utils/validateEmail";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -62,7 +58,6 @@ function Copyright(props) {
 
 export default function SignUp() {
   const [addUser] = useAddUserMutation();
-  const { data: users } = useFetchUsersQuery();
   const redirectByRole = useRedirectByRole();
   const [alert, setAlert] = useState({ type: "", message: "" });
 
@@ -75,12 +70,6 @@ export default function SignUp() {
   });
 
   const onSubmit = async (formData) => {
-    const emailError = validateEmail(formData.email, users);
-    if (emailError) {
-      setAlert({ type: "error", message: emailError });
-      return;
-    }
-
     const role = formData.isAdmin ? "admin" : "user";
     const { isAdmin, ...userData } = formData;
 
@@ -88,15 +77,21 @@ export default function SignUp() {
       const result = await addUser({ ...userData, role }).unwrap();
 
       if (result) {
-        localStorage.setItem("token", "dummy-token");
-        localStorage.setItem("user", JSON.stringify(result));
-        redirectByRole(result.role);
+        const { tokens, user } = result;
+
+        // Save the tokens and user information to localStorage
+        localStorage.setItem("token", tokens.access.token);
+        localStorage.setItem("refreshToken", tokens.refresh.token);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        // Redirect based on user role
+        redirectByRole(user.role);
         setAlert({ type: "success", message: "User registered successfully!" });
       }
     } catch (error) {
       setAlert({
         type: "error",
-        message: `Registration failed: ${error.data.message || error.message}`,
+        message: `Registration failed: ${error.data?.message || error.message}`,
       });
     }
   };

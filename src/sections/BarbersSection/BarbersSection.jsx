@@ -18,7 +18,7 @@ import { useHandleSectionLink } from "../../utils/navigationUtils";
 import ServerAlert from "../../components/ServerAlert/ServerAlert";
 
 export default function BarbersSection() {
-  const { data: barbers = [], isLoading, isError } = useFetchBarbersQuery();
+  const { data: barbers, isLoading, isError } = useFetchBarbersQuery();
   const handleCTAClick = useHandleSectionLink();
 
   // Handle the loading and error states if necessary
@@ -42,8 +42,8 @@ export default function BarbersSection() {
             color, and shave services.
           </Typography>
           <Grid container spacing={4} sx={{ marginTop: 4 }}>
-            {barbers.length > 0 ? (
-              barbers.map((barber) => (
+            {barbers?.results.length > 0 ? (
+              barbers?.results.map((barber) => (
                 <Grid item xs={12} md={6} key={barber.id}>
                   <BarberCard>
                     <BarberImage>
