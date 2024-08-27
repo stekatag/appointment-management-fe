@@ -1,22 +1,9 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { handleTokenExpiration } from "../../utils/tokenUtils";
-
-// const API_URL = "http://localhost:5175";
-// const API_URL = "https://appointment-management-json-server.onrender.com/";
-const API_URL = "http://localhost:3000/v1";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithAuth } from "../../utils/apiUtils";
 
 export const reviewsApi = createApi({
   reducerPath: "reviewsApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: API_URL,
-    prepareHeaders: (headers) => {
-      const token = handleTokenExpiration(); // Check token expiration and handle it
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`); // Set the Authorization header
-      }
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithAuth,
   tagTypes: ["Review"],
   endpoints: (builder) => ({
     fetchReviews: builder.query({

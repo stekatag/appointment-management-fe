@@ -67,7 +67,9 @@ const ReviewForm = ({ reviewToEdit }) => {
   );
   const availableAppointments =
     pastAppointments.results?.filter(
-      (appointment) => !reviewedAppointmentIds.includes(appointment.id)
+      (appointment) =>
+        !reviewedAppointmentIds.includes(appointment.id) &&
+        appointment.status === "Past"
     ) || [];
 
   useEffect(() => {
