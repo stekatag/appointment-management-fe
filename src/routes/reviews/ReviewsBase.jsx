@@ -18,7 +18,7 @@ import {
   useDeleteReviewMutation,
 } from "../../services/api/reviewsApi";
 import { useFetchServiceByIdQuery } from "../../services/api/servicesApi";
-import { useFetchBarberByIdQuery } from "../../services/api/barbersApi";
+import { useFetchUserByIdQuery } from "../../services/api/usersApi"; // Using User API to fetch both user and barber data
 import FadeAlert from "../../components/FadeAlert/FadeAlert";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useSelector } from "react-redux";
@@ -36,7 +36,7 @@ const ReviewsBase = () => {
   const [alert, setAlert] = useState(null);
 
   const {
-    data: reviews = [],
+    data: reviews = { results: [] },
     isLoading,
     isError,
     refetch,
@@ -87,17 +87,21 @@ const ReviewsBase = () => {
     }
   };
 
-  const filteredReviews =
-    user?.role === "admin"
-      ? reviews
-      : reviews.filter((review) => review.userId === user.id);
-
   const columns = [
     {
       field: "name",
-      headerName: "User",
+      headerName: "Reviewer",
       width: 200,
       renderCell: (params) => params.row.name,
+    },
+    {
+      field: "barberId",
+      headerName: "Barber",
+      width: 200,
+      renderCell: (params) => {
+        const { data: barber } = useFetchUserByIdQuery(params.row.barberId);
+        return barber ? `${barber.firstName} ${barber.lastName}` : "Loading...";
+      },
     },
     {
       field: "serviceType",
@@ -108,15 +112,6 @@ const ReviewsBase = () => {
           params.row.serviceType
         );
         return service ? service.title : "Loading...";
-      },
-    },
-    {
-      field: "barberId",
-      headerName: "Barber",
-      width: 150,
-      renderCell: (params) => {
-        const { data: barber } = useFetchBarberByIdQuery(params.row.barberId);
-        return barber ? `${barber.firstName} ${barber.lastName}` : "Loading...";
       },
     },
     {
@@ -167,6 +162,11 @@ const ReviewsBase = () => {
     return <Typography>Error loading reviews</Typography>;
   }
 
+  const filteredReviews =
+    user?.role === "admin"
+      ? reviews.results
+      : reviews.results.filter((review) => review.userId === user.id);
+
   return (
     <DashboardLayout>
       {alert && (
@@ -211,7 +211,7 @@ const ReviewsBase = () => {
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
               Are you sure you want to delete the review for{" "}
-              {selectedReview?.name}?
+              {selectedReview?.title}?
             </DialogContentText>
           </DialogContent>
           <DialogActions>

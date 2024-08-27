@@ -21,6 +21,10 @@ export const usersApi = createApi({
       query: () => "/users",
       providesTags: ["User", "Barber"],
     }),
+    fetchUserById: builder.query({
+      query: (id) => `/users/${id}`,
+      providesTags: ["User", "Barber"],
+    }),
     addUser: builder.mutation({
       query: (newUser) => ({
         url: "/auth/register", // Register endpoint for new users
@@ -66,6 +70,7 @@ export const usersApi = createApi({
 
 export const {
   useFetchUsersQuery,
+  useFetchUserByIdQuery,
   useAddUserMutation,
   useUpdateUserMutation,
   useLoginUserMutation,

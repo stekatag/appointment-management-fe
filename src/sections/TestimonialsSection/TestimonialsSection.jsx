@@ -35,8 +35,8 @@ export default function TestimonialsSection() {
   const { data: reviews = [], isLoading, isError } = useFetchReviewsQuery();
 
   // Filter reviews with rating 4 or higher and sort by date (most recent first)
-  const topRatedReviews = reviews
-    .filter((review) => review.rating >= 4)
+  const topRatedReviews = reviews?.results
+    ?.filter((review) => review.rating >= 4)
     .sort((a, b) => dayjs(b.date).diff(dayjs(a.date)))
     .slice(0, 3); // Get the three most recent top-rated reviews
 

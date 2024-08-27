@@ -1,11 +1,21 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { handleTokenExpiration } from "../../utils/tokenUtils";
 
 // Update the API URL to match your Node.js API
 const API_URL = "http://localhost:3000/v1"; // Replace with your actual Node.js API URL
 
 export const appointmentsApi = createApi({
   reducerPath: "appointmentsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: API_URL }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: API_URL,
+    prepareHeaders: (headers) => {
+      const token = handleTokenExpiration(); // Check token expiration and handle it
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`); // Set the Authorization header
+      }
+      return headers;
+    },
+  }),
   tagTypes: ["Appointment"],
   endpoints: (builder) => ({
     createAppointment: builder.mutation({

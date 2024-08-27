@@ -52,57 +52,67 @@ const ReviewForm = ({ reviewToEdit }) => {
     },
   });
 
-  const { data: reviews = [] } = useFetchReviewsQuery();
-  const { data: pastAppointments = [], isLoading: isLoadingAppointments } =
+  const { data: reviewsData = {} } = useFetchReviewsQuery();
+  const { data: pastAppointments = {}, isLoading: isLoadingAppointments } =
     useFetchAppointmentsByUserQuery(user?.id);
+
   const [createReview, { isLoading: isCreating }] = useCreateReviewMutation();
   const [updateReview, { isLoading: isUpdating }] = useUpdateReviewMutation();
 
+  const reviews = reviewsData.results || [];
+
+  // Filter out already reviewed appointments
+  const reviewedAppointmentIds = reviews.map(
+    (review) => review.appointmentId.id || review.appointmentId
+  );
+  const availableAppointments =
+    pastAppointments.results?.filter(
+      (appointment) => !reviewedAppointmentIds.includes(appointment.id)
+    ) || [];
+
   useEffect(() => {
-    if (reviewToEdit) {
-      const selectedAppointmentData = pastAppointments.find(
-        (appointment) => appointment.id === reviewToEdit.appointmentId
+    if (reviewToEdit && pastAppointments?.results) {
+      const appointmentIdFromReview =
+        reviewToEdit.appointmentId.id || reviewToEdit.appointmentId;
+
+      const selectedAppointmentData = pastAppointments.results.find(
+        (appointment) => appointment.id === appointmentIdFromReview
       );
+
       setAppointmentData(selectedAppointmentData);
 
       if (selectedAppointmentData) {
-        // Prefill form fields if editing
         setValue("rating", reviewToEdit.rating);
         setValue("title", reviewToEdit.title);
         setValue("text", reviewToEdit.text);
         setSelectedAppointmentId(selectedAppointmentData.id);
       }
-    } else if (selectedAppointmentId) {
-      const selectedAppointmentData = pastAppointments.find(
+    } else if (selectedAppointmentId && pastAppointments?.results) {
+      const selectedAppointmentData = pastAppointments.results.find(
         (appointment) => appointment.id === selectedAppointmentId
       );
       setAppointmentData(selectedAppointmentData);
     }
-  }, [selectedAppointmentId, pastAppointments, setValue, reviewToEdit]);
+  }, [
+    selectedAppointmentId,
+    pastAppointments?.results,
+    setValue,
+    reviewToEdit,
+  ]);
 
   const onSubmit = async (data) => {
-    // Check if a review for this appointment already exists
-    const existingReview = reviews.find(
-      (review) => review.appointmentId === selectedAppointmentId
-    );
-
-    if (existingReview && !reviewToEdit) {
+    if (!appointmentData) {
       setAlert({
         type: "error",
-        message: "A review for this appointment already exists.",
+        message: "Please select a valid appointment.",
       });
       return;
     }
 
     const reviewData = {
-      userId: user.id,
-      name: `${user.firstName} ${user.lastName}`,
-      barberId: appointmentData.preferredHairdresser,
-      serviceType: appointmentData.serviceType,
-      appointmentDateTime: appointmentData.appointmentDateTime,
-      date: new Date().toISOString(),
-      appointmentId: selectedAppointmentId, // Include the appointmentId
-      ...data,
+      rating: data.rating,
+      title: data.title,
+      text: data.text,
     };
 
     try {
@@ -115,7 +125,17 @@ const ReviewForm = ({ reviewToEdit }) => {
         }).unwrap();
         alertMessage = "Review updated successfully!";
       } else {
-        await createReview(reviewData).unwrap();
+        const fullReviewData = {
+          userId: user.id,
+          name: `${user.firstName} ${user.lastName}`,
+          barberId: appointmentData.preferredHairdresser,
+          serviceType: appointmentData.serviceType,
+          appointmentDateTime: appointmentData.appointmentDateTime,
+          date: new Date().toISOString(),
+          appointmentId: selectedAppointmentId, // Include the appointmentId
+          ...reviewData,
+        };
+        await createReview(fullReviewData).unwrap();
         alertMessage = "Review created successfully!";
       }
 
@@ -128,7 +148,25 @@ const ReviewForm = ({ reviewToEdit }) => {
     }
   };
 
-  if (!user || isLoadingAppointments) return <CircularProgress disableShrink />;
+  if (isLoadingAppointments) return <CircularProgress disableShrink />;
+
+  if (!Array.isArray(pastAppointments?.results)) {
+    return (
+      <Alert severity="error">
+        <AlertTitle>Error</AlertTitle>
+        Failed to load past appointments.
+      </Alert>
+    );
+  }
+
+  if (availableAppointments.length === 0 && !reviewToEdit) {
+    return (
+      <Alert severity="warning">
+        <AlertTitle>No Available Appointments</AlertTitle>
+        You have no past appointments available for review.
+      </Alert>
+    );
+  }
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
@@ -148,41 +186,39 @@ const ReviewForm = ({ reviewToEdit }) => {
             </Alert>
           </Grid>
         )}
-        <Grid item xs={12}>
-          <FormControl fullWidth required error={!!errors.appointment}>
-            <InputLabel>Select Past Appointment</InputLabel>
-            <Controller
-              name="appointment"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  label="Select Past Appointment"
-                  value={selectedAppointmentId}
-                  onChange={(e) => setSelectedAppointmentId(e.target.value)}
-                  disabled={!!reviewToEdit}
-                >
-                  {pastAppointments
-                    .filter((appointment) =>
-                      dayjs(appointment.appointmentDateTime).isBefore(dayjs())
-                    )
-                    .map((appointment) => (
+        {!reviewToEdit && availableAppointments.length > 0 && (
+          <Grid item xs={12}>
+            <FormControl fullWidth required error={!!errors.appointment}>
+              <InputLabel>Select Past Appointment</InputLabel>
+              <Controller
+                name="appointment"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label="Select Past Appointment"
+                    value={selectedAppointmentId}
+                    onChange={(e) => setSelectedAppointmentId(e.target.value)}
+                    disabled={!!reviewToEdit}
+                  >
+                    {availableAppointments.map((appointment) => (
                       <MenuItem key={appointment.id} value={appointment.id}>
                         {dayjs(appointment.appointmentDateTime).format(
                           "DD/MM/YYYY HH:mm"
                         )}
                       </MenuItem>
                     ))}
-                </Select>
+                  </Select>
+                )}
+              />
+              {errors.appointment && (
+                <Typography color="error">
+                  {errors.appointment.message}
+                </Typography>
               )}
-            />
-            {errors.appointment && (
-              <Typography color="error">
-                {errors.appointment.message}
-              </Typography>
-            )}
-          </FormControl>
-        </Grid>
+            </FormControl>
+          </Grid>
+        )}
         {appointmentData && (
           <>
             <Grid item xs={12}>

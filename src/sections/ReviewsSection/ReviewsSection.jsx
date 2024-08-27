@@ -39,14 +39,20 @@ export default function ReviewsSection() {
   const reviewsPerPage = 5;
 
   // Fetch reviews, services, and barbers from the database
-  const { data: reviews = [], isLoading, isError } = useFetchReviewsQuery();
-  const { data: services } = useFetchServicesQuery();
-  const { data: barbers } = useFetchBarbersQuery();
+  const { data: reviewsData = {}, isLoading, isError } = useFetchReviewsQuery();
+  const { data: servicesData = {} } = useFetchServicesQuery();
+  const { data: barbersData = {} } = useFetchBarbersQuery();
+
+  const reviews = reviewsData.results || [];
+  const services = servicesData.results || [];
+  const barbers = barbersData.results || [];
 
   // Average rating
   const totalReviews = reviews.length;
   const averageRating =
-    reviews.reduce((acc, review) => acc + review.rating, 0) / totalReviews;
+    totalReviews > 0
+      ? reviews.reduce((acc, review) => acc + review.rating, 0) / totalReviews
+      : 0;
 
   // Filter reviews based on selected rating
   const filteredReviews = selectedRating
@@ -84,9 +90,9 @@ export default function ReviewsSection() {
   return (
     <ReviewsSectionContainer maxWidth="lg" id="reviews-section">
       <Grid container spacing={4}>
-        {reviews.length > 0 && (
+        {totalReviews > 0 && (
           <>
-            {/* Sidebar for filterint */}
+            {/* Sidebar for filtering */}
             <Grid item xs={12} md={4}>
               <Sidebar>
                 <SidebarHeader>
@@ -144,12 +150,10 @@ export default function ReviewsSection() {
             <Grid item xs={12} md={8}>
               <StyledList>
                 {paginatedReviews.map((review) => {
-                  const service = services?.results.find(
+                  const service = services.find(
                     (s) => s.id === review.serviceType
                   );
-                  const barber = barbers?.results.find(
-                    (b) => b.id === review.barberId
-                  );
+                  const barber = barbers.find((b) => b.id === review.barberId);
 
                   return (
                     <ReviewItem key={review.id}>
@@ -204,7 +208,7 @@ export default function ReviewsSection() {
           </>
         )}
 
-        {reviews.length === 0 && (
+        {totalReviews === 0 && (
           <Grid item>
             <ServerAlert keyword="reviews" />
           </Grid>
