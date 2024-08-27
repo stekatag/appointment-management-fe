@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Box,
   Button,
@@ -23,8 +23,7 @@ import {
   useUpdateAppointmentMutation,
 } from "../../services/api/appointmentsApi";
 import { useFetchServiceByIdQuery } from "../../services/api/servicesApi";
-import { useFetchBarberByIdQuery } from "../../services/api/barbersApi";
-import { useFetchStatusByIdQuery } from "../../services/api/statusesApi";
+import { useFetchBarbersQuery } from "../../services/api/barbersApi";
 import FadeAlert from "../../components/FadeAlert/FadeAlert";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useSelector } from "react-redux";
@@ -36,27 +35,45 @@ const AppointmentsBase = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = useSelector((state) => state.auth.user);
+  const userId = user?.id?.toString();
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
 
   const [selectedDay, setSelectedDay] = useState(dayjs());
+  const [page, setPage] = useState(1); // Manage pagination state
+  const [alert, setAlert] = useState(location.state?.alert || null);
 
   const [deleteAppointment] = useDeleteAppointmentMutation();
   const [updateAppointment] = useUpdateAppointmentMutation();
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const [alert, setAlert] = useState(null);
+
+  const { data: barbersData } = useFetchBarbersQuery();
+
+  const barbers = useMemo(() => barbersData?.results || [], [barbersData]);
+
+  const getBarberName = (barberId) => {
+    const barber = barbers.find((b) => b.id === barberId);
+    return barber ? `${barber.firstName} ${barber.lastName}` : "Loading...";
+  };
+
+  useEffect(() => {
+    if (location.state?.alert) {
+      setAlert(location.state.alert);
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, navigate]);
 
   let appointmentsQuery;
 
   switch (user?.role) {
     case "admin":
-      appointmentsQuery = useFetchAllAppointmentsQuery();
+      appointmentsQuery = useFetchAllAppointmentsQuery({ page, limit: 10 });
       break;
     case "barber":
-      appointmentsQuery = useFetchAppointmentsByBarberQuery(user?.id);
+      appointmentsQuery = useFetchAppointmentsByBarberQuery(userId);
       break;
     case "user":
-      appointmentsQuery = useFetchAppointmentsByUserQuery(user?.id);
+      appointmentsQuery = useFetchAppointmentsByUserQuery(userId);
       break;
     default:
       appointmentsQuery = {
@@ -64,25 +81,33 @@ const AppointmentsBase = () => {
         isLoading: false,
         isError: true,
         refetch: () => {},
-      }; // Fallback in case the user role is undefined
+      };
       break;
   }
 
   const {
-    data: appointments = [],
+    data: appointmentsData,
     isLoading,
     isError,
     refetch,
   } = appointmentsQuery;
+  const appointments = useMemo(
+    () => appointmentsData?.results || [],
+    [appointmentsData]
+  );
+  const totalResults = appointmentsData?.totalResults || 0;
 
-  const { data: dayAppointments = [] } =
+  // Fetch all appointments for the barber
+  const { data: dayAppointments = { results: [] } } =
     useFetchAppointmentsByDayAndBarberQuery(
-      {
-        day: selectedDay.format("YYYY-MM-DD"),
-        barber: user?.id, // Currently logged barber
-      },
-      { skip: !selectedDay || user?.role !== "barber" }
+      { barberId: user?.id },
+      { skip: !user?.id }
     );
+
+  // Filter the appointments by the selected day
+  const filteredAppointments = dayAppointments.results.filter((appointment) =>
+    dayjs(appointment.appointmentDateTime).isSame(selectedDay, "day")
+  );
 
   useEffect(() => {
     const updatePastAppointments = async () => {
@@ -92,12 +117,11 @@ const AppointmentsBase = () => {
         for (const appointment of appointments) {
           const appointmentDate = dayjs(appointment.appointmentDateTime);
 
-          if (appointmentDate.isBefore(now) && appointment.statusId !== "2") {
+          if (appointmentDate.isBefore(now) && appointment.status !== "Past") {
             try {
-              // Update only the statusId while preserving other data
               await updateAppointment({
-                ...appointment,
-                statusId: "2", // "Past" status
+                id: appointment.id,
+                status: "Past",
               }).unwrap();
             } catch (error) {
               console.error("Failed to update appointment status", error);
@@ -105,18 +129,12 @@ const AppointmentsBase = () => {
           }
         }
 
-        refetch(); // Refetch after updates
+        refetch();
       }
     };
 
     updatePastAppointments();
   }, [appointments, updateAppointment, refetch]);
-
-  useEffect(() => {
-    if (location.state?.alert) {
-      setAlert(location.state.alert);
-    }
-  }, [location.state, navigate]);
 
   const handleEdit = (id) => {
     navigate(`/appointments/edit/${id}`);
@@ -140,10 +158,8 @@ const AppointmentsBase = () => {
     if (selectedAppointment) {
       try {
         await deleteAppointment(selectedAppointment.id).unwrap();
-
         setOpenDialog(false);
         refetch();
-
         setAlert({
           message: "Appointment deleted successfully!",
           severity: "success",
@@ -161,13 +177,11 @@ const AppointmentsBase = () => {
     if (selectedAppointment) {
       try {
         await updateAppointment({
-          ...selectedAppointment,
-          statusId: "3", // "Cancelled" status
+          id: selectedAppointment.id,
+          status: "Cancelled",
         }).unwrap();
-
         setOpenDialog(false);
         refetch();
-
         setAlert({
           message: "Appointment cancelled successfully!",
           severity: "success",
@@ -186,9 +200,7 @@ const AppointmentsBase = () => {
       field: "fullName",
       headerName: "Full Name",
       width: 200,
-      renderCell: (params) => {
-        return `${params.row.firstName} ${params.row.lastName}`;
-      },
+      renderCell: (params) => `${params.row.firstName} ${params.row.lastName}`,
     },
     {
       field: "serviceType",
@@ -205,12 +217,7 @@ const AppointmentsBase = () => {
       field: "preferredHairdresser",
       headerName: "Barber",
       width: 150,
-      renderCell: (params) => {
-        const { data: barber } = useFetchBarberByIdQuery(
-          params.row.preferredHairdresser
-        );
-        return barber ? `${barber.firstName} ${barber.lastName}` : "Loading...";
-      },
+      renderCell: (params) => getBarberName(params.row.preferredHairdresser),
     },
     {
       field: "price",
@@ -234,16 +241,13 @@ const AppointmentsBase = () => {
       field: "status",
       headerName: "Status",
       width: 120,
-      renderCell: (params) => {
-        const { data: status } = useFetchStatusByIdQuery(params.row.statusId);
-        return (
-          <Badge
-            badgeContent={status?.name}
-            color={status?.name === "Upcoming" ? "primary" : "secondary"}
-            sx={{ padding: "5px 20px" }} // Adjust padding to fit within the column
-          />
-        );
-      },
+      renderCell: (params) => (
+        <Badge
+          badgeContent={params.row.status}
+          color={params.row.status === "Upcoming" ? "primary" : "secondary"}
+          sx={{ padding: "5px 20px" }}
+        />
+      ),
     },
     {
       field: "actions",
@@ -258,8 +262,8 @@ const AppointmentsBase = () => {
             onClick={() => handleEdit(params.row.id)}
             sx={{ mr: 1 }}
             disabled={
-              params.row.statusId === "2" || params.row.statusId === "3"
-            } // Disable edit if status is "Past" or "Cancelled"
+              params.row.status === "Past" || params.row.status === "Cancelled"
+            }
           >
             Edit
           </Button>
@@ -270,8 +274,9 @@ const AppointmentsBase = () => {
               size="small"
               onClick={() => handleOpenDialog(params.row)}
               disabled={
-                params.row.statusId === "2" || params.row.statusId === "3"
-              } // Disable delete if status is "Past" or "Cancelled"
+                params.row.status === "Past" ||
+                params.row.status === "Cancelled"
+              }
             >
               Delete
             </Button>
@@ -282,8 +287,9 @@ const AppointmentsBase = () => {
               size="small"
               onClick={() => handleOpenDialog(params.row)}
               disabled={
-                params.row.statusId === "2" || params.row.statusId === "3"
-              } // Disable cancel if status is "Past" or "Cancelled"
+                params.row.status === "Past" ||
+                params.row.status === "Cancelled"
+              }
             >
               Cancel
             </Button>
@@ -315,13 +321,12 @@ const AppointmentsBase = () => {
         {user?.role === "admin" ? "Manage All Appointments" : "My Appointments"}
       </Typography>
 
-      {/* Conditionally render Appointment Calendar for Barbers */}
       {user?.role === "barber" && (
         <Box mb={4}>
           <DaySlider currentDay={selectedDay} setCurrentDay={setSelectedDay} />
           <AppointmentCalendar
-            appointments={dayAppointments}
-            onSlotSelect={() => {}} // Disable slot selection
+            appointments={filteredAppointments}
+            onSlotSelect={() => {}}
             selectedDay={selectedDay}
             selectedBarber={user?.id}
             initialSlot={null}
@@ -346,9 +351,16 @@ const AppointmentsBase = () => {
             Create New Appointment
           </Button>
         </Box>
-        <DataGrid rows={appointments} columns={columns} pageSize={5} />
+        <DataGrid
+          rows={appointments}
+          columns={columns}
+          pageSize={10}
+          rowCount={totalResults}
+          paginationMode="server"
+          onPageChange={(newPage) => setPage(newPage + 1)}
+          disableSelectionOnClick
+        />
 
-        {/* Confirmation Dialog */}
         <Dialog
           open={openDialog}
           onClose={handleCloseDialog}

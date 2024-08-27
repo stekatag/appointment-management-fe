@@ -12,7 +12,6 @@ import {
 import { useFetchServiceCategoriesQuery } from "../services/api/serviceCategoriesApi";
 import { useFetchServicesQuery } from "../services/api/servicesApi";
 import { useFetchBarbersQuery } from "../services/api/barbersApi";
-import { useFetchStatusesQuery } from "../services/api/statusesApi";
 import {
   Box,
   TextField,
@@ -29,7 +28,6 @@ import {
   Fade,
 } from "@mui/material";
 import dayjs from "dayjs";
-import "dayjs/locale/en-gb";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import AppointmentCalendar from "../components/AppointmentCalendar/AppointmentCalendar";
@@ -107,20 +105,28 @@ const AppointmentForm = ({ appointmentToEdit }) => {
   const { data: categories = [] } = useFetchServiceCategoriesQuery();
   const { data: services = [] } = useFetchServicesQuery();
   const { data: barbers = [] } = useFetchBarbersQuery();
-  const { data: statuses = [] } = useFetchStatusesQuery();
 
   const [createAppointment, { isLoading: isCreating }] =
     useCreateAppointmentMutation();
   const [updateAppointment, { isLoading: isUpdating }] =
     useUpdateAppointmentMutation();
-  const { data: userAppointments, isLoading: isLoadingUserAppointments } =
-    useFetchAppointmentsByUserQuery(user ? user.id : null);
+  const {
+    data: userAppointments = { results: [] },
+    isLoading: isLoadingUserAppointments,
+  } = useFetchAppointmentsByUserQuery(user ? user.id : null);
 
-  const { data: dayAppointments, refetch: refetchDayAppointments } =
-    useFetchAppointmentsByDayAndBarberQuery(
-      { day: selectedDay.format("YYYY-MM-DD"), barber: barber },
-      { skip: !selectedDay || !barber }
-    );
+  const {
+    data: dayAppointments = { results: [] },
+    refetch: refetchDayAppointments,
+  } = useFetchAppointmentsByDayAndBarberQuery(
+    { barberId: barber },
+    { skip: !barber }
+  );
+
+  // Filter the appointments by the selected day
+  const filteredAppointments = dayAppointments.results.filter((appointment) =>
+    dayjs(appointment.appointmentDateTime).isSame(selectedDay, "day")
+  );
 
   useEffect(() => {
     if (selectedDay && barber) {
@@ -163,7 +169,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
 
   useEffect(() => {
     if (selectedCategory) {
-      const filtered = services.filter(
+      const filtered = services?.results?.filter(
         (service) => service.category === selectedCategory
       );
       setFilteredServices(filtered);
@@ -198,24 +204,10 @@ const AppointmentForm = ({ appointmentToEdit }) => {
     }
   };
 
-  const determineStatusId = (appointmentDateTime) => {
-    if (!statuses || statuses.length === 0) return null;
-
-    const now = dayjs();
-    const isPast = dayjs(appointmentDateTime).isBefore(now);
-
-    const statusName = isPast ? "Past" : "Upcoming";
-    const status = statuses.find((status) => status.name === statusName);
-
-    return status ? status.id : null;
-  };
-
   const onSubmit = async (data) => {
-    const statusId = determineStatusId(slot);
     const appointmentData = {
       ...data,
       appointmentDateTime: slot,
-      statusId, // Set status ID based on appointment date
     };
 
     try {
@@ -267,8 +259,8 @@ const AppointmentForm = ({ appointmentToEdit }) => {
   }
 
   const appointments = [
-    ...(userAppointments || []),
-    ...(dayAppointments || []),
+    ...(userAppointments.results || []),
+    ...filteredAppointments,
   ];
 
   return (
@@ -302,7 +294,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
                   value={barber}
                   onChange={(e) => handleBarberChange(e.target.value)}
                 >
-                  {barbers.map((barber) => (
+                  {barbers?.results?.map((barber) => (
                     <MenuItem key={barber.id} value={barber.id}>
                       {`${barber.firstName} ${barber.lastName}`}
                     </MenuItem>
@@ -334,7 +326,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
                     value={selectedCategory}
                     onChange={(e) => handleCategoryChange(e.target.value)}
                   >
-                    {categories.map((category) => (
+                    {categories?.results?.map((category) => (
                       <MenuItem key={category.id} value={category.id}>
                         {category.name}
                       </MenuItem>
