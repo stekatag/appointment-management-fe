@@ -29,20 +29,25 @@ export default function BookAppointmentSection() {
 
   const navigate = useNavigate();
 
-  const { data: barbers = [], isLoading: isLoadingBarbers } =
-    useFetchBarbersQuery();
+  const {
+    data: barbers,
+    isLoading: isLoadingBarbers,
+    error: barberError,
+  } = useFetchBarbersQuery();
 
-  const { data: dayAppointments, refetch: refetchDayAppointments } =
-    useFetchAppointmentsByDayAndBarberQuery(
-      {
-        day: selectedDay.format("YYYY-MM-DD"),
-        barber: selectedBarber,
-      },
-      { skip: !selectedDay || !selectedBarber }
-    );
+  const {
+    data: dayAppointments = { results: [] },
+    refetch: refetchDayAppointments,
+    isLoading: isLoadingAppointments,
+    error: appointmentError,
+  } = useFetchAppointmentsByDayAndBarberQuery(
+    { barberId: selectedBarber },
+    { skip: !selectedBarber }
+  );
 
+  // Refetch appointments when selectedDay or selectedBarber changes
   useEffect(() => {
-    if (selectedDay && selectedBarber) {
+    if (selectedBarber) {
       refetchDayAppointments();
     }
   }, [selectedDay, selectedBarber, refetchDayAppointments]);
@@ -66,33 +71,31 @@ export default function BookAppointmentSection() {
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
-            {barbers.length > 0 ? (
+            {isLoadingBarbers ? (
+              <CircularProgress />
+            ) : barberError ? (
+              <ServerAlert keyword="barbers" />
+            ) : (
               <FormControl fullWidth required>
                 <InputLabel>Preferred Hairdresser</InputLabel>
-                {isLoadingBarbers ? (
-                  <CircularProgress />
-                ) : (
-                  <Select
-                    label="Preferred Hairdresser"
-                    value={selectedBarber}
-                    onChange={(e) => handleBarberChange(e.target.value)}
-                  >
-                    {barbers.map((barber) => (
-                      <MenuItem key={barber.id} value={barber.id}>
-                        {`${barber.firstName} ${barber.lastName}`}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                )}
+                <Select
+                  label="Preferred Hairdresser"
+                  value={selectedBarber}
+                  onChange={(e) => handleBarberChange(e.target.value)}
+                >
+                  {barbers?.results?.map((barber) => (
+                    <MenuItem key={barber.id} value={barber.id}>
+                      {`${barber.firstName} ${barber.lastName}`}
+                    </MenuItem>
+                  ))}
+                </Select>
               </FormControl>
-            ) : (
-              <ServerAlert keyword="barbers" />
             )}
           </Grid>
         </Grid>
         {/* Conditionally render DaySlider and AppointmentCalendar with a fade transition */}
         {selectedBarber && (
-          <Fade in={selectedBarber !== ""}>
+          <Fade in={Boolean(selectedBarber)}>
             <Grid container spacing={2} sx={{ mt: 1 }}>
               <Grid item xs={12}>
                 <DaySlider
@@ -101,15 +104,21 @@ export default function BookAppointmentSection() {
                 />
               </Grid>
               <Grid item xs={12}>
-                <AppointmentCalendar
-                  appointments={dayAppointments || []}
-                  onSlotSelect={handleSlotSelect}
-                  selectedDay={selectedDay}
-                  selectedBarber={selectedBarber}
-                  initialSlot={
-                    selectedSlot ? dayjs(selectedSlot).format("HH:mm") : null
-                  }
-                />
+                {isLoadingAppointments ? (
+                  <CircularProgress />
+                ) : appointmentError ? (
+                  <ServerAlert keyword="appointments" />
+                ) : (
+                  <AppointmentCalendar
+                    appointments={dayAppointments.results}
+                    onSlotSelect={handleSlotSelect}
+                    selectedDay={selectedDay}
+                    selectedBarber={selectedBarber}
+                    initialSlot={
+                      selectedSlot ? dayjs(selectedSlot).format("HH:mm") : null
+                    }
+                  />
+                )}
               </Grid>
               <Grid item xs={12}>
                 <StyledButton
