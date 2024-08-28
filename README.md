@@ -30,6 +30,7 @@ Welcome to the Barbershop Management System, a web application designed to help 
 Check out the live demo of the application:
 
 - **Frontend**: [Barbershop Management System](https://appointment-management-fe.vercel.app/)
+- **Backend Repository**: [Barbershop API](https://github.com/stekatag/barbershop-api)
 
 > **Note**: The backend API is deployed on a free-tier service, which may go to sleep after periods of inactivity. If the API is asleep, the frontend will show a notification allowing you to wake the server manually.
 
