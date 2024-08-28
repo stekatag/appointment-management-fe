@@ -1,5 +1,5 @@
 import { useFetchBarbersQuery } from "../../services/api/barbersApi";
-import { Container, Grid, Typography } from "@mui/material";
+import { CircularProgress, Container, Grid, Typography } from "@mui/material";
 import {
   BarbersContainer,
   BarberCard,
@@ -18,17 +18,8 @@ import { useHandleSectionLink } from "../../utils/navigationUtils";
 import ServerAlert from "../../components/ServerAlert/ServerAlert";
 
 export default function BarbersSection() {
-  const { data: barbers, isLoading, isError } = useFetchBarbersQuery();
+  const { data: barbers, isLoading } = useFetchBarbersQuery();
   const handleCTAClick = useHandleSectionLink();
-
-  // Handle the loading and error states if necessary
-  if (isLoading) {
-    return <Typography>Loading...</Typography>;
-  }
-
-  if (isError) {
-    return <Typography>Error loading barbers data.</Typography>;
-  }
 
   return (
     <BarbersContainer>
@@ -89,6 +80,11 @@ export default function BarbersSection() {
             ) : (
               <Grid item>
                 <ServerAlert keyword="barbers" />
+              </Grid>
+            )}
+            {isLoading && (
+              <Grid item>
+                <CircularProgress />
               </Grid>
             )}
           </Grid>

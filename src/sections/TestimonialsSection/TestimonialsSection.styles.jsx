@@ -3,21 +3,14 @@ import { Box, Card, Avatar, Button } from "@mui/material";
 
 export const TestimonialsContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(8, 0),
-  backgroundImage:
-    "url('https://www.keydesign-themes.com/etalon/barber/wp-content/uploads/sites/26/2020/12/slide1-2-1.jpg')",
+  backgroundImage: `linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.35),
+    rgba(0, 0, 0, 0.55)
+  ),url('https://www.keydesign-themes.com/etalon/barber/wp-content/uploads/sites/26/2020/12/slide1-2-1.jpg')`,
   backgroundSize: "cover",
   backgroundPosition: "center",
   backgroundRepeat: "no-repeat",
-  position: "relative",
-  "&::before": {
-    content: '""',
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark overlay
-  },
 }));
 
 export const TitlesContainer = styled(Box)(({ theme }) => ({

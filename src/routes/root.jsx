@@ -30,6 +30,7 @@ import EditReview from "./reviews/EditReview";
 import BarberDashboard from "./BarberDashboard";
 import UserManagement from "./user/UserManagement";
 import ProfileManagement from "./user/ProfileManagement";
+import BootServer from "../components/BootServer/BootServer";
 
 export default function Root() {
   return (
@@ -40,6 +41,7 @@ export default function Root() {
       <Route path="/contact" element={<ContactUs />} />
       <Route path="/login" element={<SignIn />} />
       <Route path="/register" element={<SignUp />} />
+      <Route path="/boot-server" element={<BootServer />} />
 
       {/* Admin routes */}
       <Route

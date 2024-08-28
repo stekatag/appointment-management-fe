@@ -6,6 +6,7 @@ import {
   Button,
   Pagination,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -84,8 +85,13 @@ export default function ReviewsSection() {
     count: reviews.filter((review) => review.rating === star).length,
   }));
 
-  if (isLoading) return <Typography>Loading reviews...</Typography>;
-  if (isError) return <Typography>Error loading reviews.</Typography>;
+  if (isError) {
+    return (
+      <ReviewsSectionContainer maxWidth="lg">
+        <ServerAlert keyword="reviews" />
+      </ReviewsSectionContainer>
+    );
+  }
 
   return (
     <ReviewsSectionContainer maxWidth="lg" id="reviews-section">
@@ -211,6 +217,11 @@ export default function ReviewsSection() {
         {totalReviews === 0 && (
           <Grid item>
             <ServerAlert keyword="reviews" />
+          </Grid>
+        )}
+        {isLoading && (
+          <Grid item>
+            <CircularProgress />
           </Grid>
         )}
       </Grid>

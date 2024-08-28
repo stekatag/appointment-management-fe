@@ -9,8 +9,6 @@ import {
   Link,
   useTheme,
   useMediaQuery,
-  Alert,
-  Button,
 } from "@mui/material";
 import {
   ServicesContainer,
@@ -34,9 +32,8 @@ export default function ServicesSection() {
   const [selectedTab, setSelectedTab] = useState(0);
   const [servicesByCategory, setServicesByCategory] = useState({});
 
-  const { data: servicesData, error: servicesError } = useFetchServicesQuery();
-  const { data: categoriesData, error: categoriesError } =
-    useFetchServiceCategoriesQuery();
+  const { data: servicesData } = useFetchServicesQuery();
+  const { data: categoriesData } = useFetchServiceCategoriesQuery();
 
   useEffect(() => {
     if (servicesData?.results && categoriesData?.results) {
@@ -56,28 +53,6 @@ export default function ServicesSection() {
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
   };
-
-  if (servicesError || categoriesError) {
-    return (
-      <ServicesContainer id="services-section">
-        <Container maxWidth="lg">
-          <Alert severity="error">
-            <Typography variant="h6">
-              An error occurred while loading services.
-            </Typography>
-            <Typography>Please try refreshing the page.</Typography>
-            <Button
-              variant="contained"
-              onClick={() => window.location.reload()}
-              sx={{ mt: 2 }}
-            >
-              Refresh Page
-            </Button>
-          </Alert>
-        </Container>
-      </ServicesContainer>
-    );
-  }
 
   return (
     <ServicesContainer id="services-section">
