@@ -1,11 +1,9 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-// const API_URL = "http://localhost:5175";
-const API_URL = "https://appointment-management-json-server.onrender.com/";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithAuth } from "../../utils/apiUtils";
 
 export const servicesApi = createApi({
   reducerPath: "servicesApi",
-  baseQuery: fetchBaseQuery({ baseUrl: API_URL }),
+  baseQuery: baseQueryWithAuth,
   tagTypes: ["Service"],
   endpoints: (builder) => ({
     fetchServices: builder.query({

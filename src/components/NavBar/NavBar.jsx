@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useHandleSectionLink } from "../../utils/navigationUtils";
+import { useLogoutUserMutation } from "../../services/api/usersApi";
 import { logout } from "../../services/store/authSlice";
 import { scroller } from "react-scroll";
 import {
@@ -22,6 +23,7 @@ import {
   StyledDrawer,
   StyledListItemText,
 } from "./NavBar.styles";
+import { getRefreshTokenFromStorage } from "../../utils/storage";
 
 export default function Navbar() {
   const dispatch = useDispatch();
@@ -32,8 +34,18 @@ export default function Navbar() {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const [logoutUser] = useLogoutUserMutation(); // Initialize the logout mutation
+
+  const handleLogout = async () => {
+    const refreshToken = getRefreshTokenFromStorage();
+    if (refreshToken) {
+      try {
+        await logoutUser(refreshToken).unwrap();
+        dispatch(logout()); // Remove user from Redux store
+      } catch (err) {
+        console.error("Failed to logout:", err);
+      }
+    }
   };
 
   // Access the user from the Redux store

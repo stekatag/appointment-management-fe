@@ -6,6 +6,7 @@ import {
   Button,
   Pagination,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -39,14 +40,20 @@ export default function ReviewsSection() {
   const reviewsPerPage = 5;
 
   // Fetch reviews, services, and barbers from the database
-  const { data: reviews = [], isLoading, isError } = useFetchReviewsQuery();
-  const { data: services = [] } = useFetchServicesQuery();
-  const { data: barbers = [] } = useFetchBarbersQuery();
+  const { data: reviewsData = {}, isLoading, isError } = useFetchReviewsQuery();
+  const { data: servicesData = {} } = useFetchServicesQuery();
+  const { data: barbersData = {} } = useFetchBarbersQuery();
+
+  const reviews = reviewsData.results || [];
+  const services = servicesData.results || [];
+  const barbers = barbersData.results || [];
 
   // Average rating
   const totalReviews = reviews.length;
   const averageRating =
-    reviews.reduce((acc, review) => acc + review.rating, 0) / totalReviews;
+    totalReviews > 0
+      ? reviews.reduce((acc, review) => acc + review.rating, 0) / totalReviews
+      : 0;
 
   // Filter reviews based on selected rating
   const filteredReviews = selectedRating
@@ -78,15 +85,20 @@ export default function ReviewsSection() {
     count: reviews.filter((review) => review.rating === star).length,
   }));
 
-  if (isLoading) return <Typography>Loading reviews...</Typography>;
-  if (isError) return <Typography>Error loading reviews.</Typography>;
+  if (isError) {
+    return (
+      <ReviewsSectionContainer maxWidth="lg">
+        <ServerAlert keyword="reviews" />
+      </ReviewsSectionContainer>
+    );
+  }
 
   return (
     <ReviewsSectionContainer maxWidth="lg" id="reviews-section">
       <Grid container spacing={4}>
-        {reviews.length > 0 && (
+        {totalReviews > 0 && (
           <>
-            {/* Sidebar for filterint */}
+            {/* Sidebar for filtering */}
             <Grid item xs={12} md={4}>
               <Sidebar>
                 <SidebarHeader>
@@ -202,9 +214,14 @@ export default function ReviewsSection() {
           </>
         )}
 
-        {reviews.length === 0 && (
+        {totalReviews === 0 && (
           <Grid item>
             <ServerAlert keyword="reviews" />
+          </Grid>
+        )}
+        {isLoading && (
+          <Grid item>
+            <CircularProgress />
           </Grid>
         )}
       </Grid>

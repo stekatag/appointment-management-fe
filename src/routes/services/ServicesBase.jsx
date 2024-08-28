@@ -23,12 +23,10 @@ import { ButtonsContainer } from "./ServiceBase.styles";
 const ServicesBase = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    data: services = [],
-    isLoading,
-    isError,
-    refetch,
-  } = useFetchServicesQuery();
+  const { data, isLoading, isError, refetch } = useFetchServicesQuery({
+    page: 1,
+    limit: 10,
+  }); // Adjust as needed for pagination
   const [deleteService] = useDeleteServiceMutation();
   const [selectedService, setSelectedService] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -155,7 +153,14 @@ const ServicesBase = () => {
             Manage Categories
           </Button>
         </ButtonsContainer>
-        <DataGrid rows={services} columns={columns} pageSize={10} />
+        <DataGrid
+          rows={data.results || []}
+          columns={columns}
+          pageSize={data.limit || 10}
+          rowCount={data.totalResults}
+          paginationMode="server"
+          onPageChange={(newPage) => refetch({ page: newPage + 1 })}
+        />
         <Dialog open={openDialog} onClose={handleCloseDialog}>
           <DialogTitle>Delete Service</DialogTitle>
           <DialogContent>

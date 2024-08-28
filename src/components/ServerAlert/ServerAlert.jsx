@@ -9,14 +9,8 @@ export default function ServerAlert({ keyword }) {
         <Alert severity="warning">
           There are no {keyword} available in the database or the database is
           not connected. Please, click on the button below to boot the server.
-          If you have already booted the server, refresh this page.
           <StyledButton variant="contained">
-            <StyledLink
-              target="_blank"
-              href={"https://appointment-management-json-server.onrender.com/"}
-            >
-              Boot server
-            </StyledLink>
+            <StyledLink href="/boot-server">Boot server</StyledLink>
           </StyledButton>
         </Alert>
       </Grid>

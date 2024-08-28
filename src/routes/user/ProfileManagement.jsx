@@ -13,6 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {
   useUpdateUserMutation,
+  useChangePasswordMutation,
   useFetchUsersQuery,
 } from "../../services/api/usersApi";
 import DashboardLayout from "../../layouts/DashboardLayout";
@@ -31,7 +32,7 @@ const passwordSchema = yup.object().shape({
   currentPassword: yup.string().required("Current Password is required"),
   newPassword: yup
     .string()
-    .min(3, "Password must be at least 3 characters")
+    .min(8, "Password must be at least 8 characters")
     .required("New Password is required"),
   confirmPassword: yup
     .string()
@@ -42,6 +43,8 @@ const passwordSchema = yup.object().shape({
 const ProfileManagement = () => {
   const user = useSelector((state) => state.auth.user);
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
+  const [changePassword, { isLoading: isChangingPassword }] =
+    useChangePasswordMutation();
   const {
     data: users,
     refetch,
@@ -107,13 +110,12 @@ const ProfileManagement = () => {
   };
 
   const onSubmitPassword = async (data) => {
-    if (data.currentPassword !== user.password) {
-      setAlert({ type: "error", message: "Current password is incorrect." });
-      return;
-    }
-
     try {
-      await updateUser({ id: user.id, password: data.newPassword }).unwrap();
+      await changePassword({
+        id: user.id,
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+      }).unwrap();
       setPasswordSuccess(true);
       resetPassword(); // Reset the password form
     } catch (error) {
@@ -269,7 +271,7 @@ const ProfileManagement = () => {
           variant="contained"
           color="primary"
           sx={{ mt: 3 }}
-          disabled={isUpdating}
+          disabled={isChangingPassword}
         >
           Change Password
         </Button>

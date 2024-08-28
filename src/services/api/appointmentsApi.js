@@ -1,11 +1,9 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-// const API_URL = "http://localhost:5175";
-const API_URL = "https://appointment-management-json-server.onrender.com/";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithAuth } from "../../utils/apiUtils";
 
 export const appointmentsApi = createApi({
   reducerPath: "appointmentsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: API_URL }),
+  baseQuery: baseQueryWithAuth,
   tagTypes: ["Appointment"],
   endpoints: (builder) => ({
     createAppointment: builder.mutation({
@@ -19,7 +17,7 @@ export const appointmentsApi = createApi({
     updateAppointment: builder.mutation({
       query: ({ id, ...updatedAppointment }) => ({
         url: `/appointments/${id}`,
-        method: "PUT",
+        method: "PATCH", // Changed from PUT to PATCH as per REST best practices
         body: updatedAppointment,
       }),
       invalidatesTags: ["Appointment"],
@@ -40,11 +38,11 @@ export const appointmentsApi = createApi({
       providesTags: ["Appointment"],
     }),
     fetchAppointmentsByBarber: builder.query({
-      query: (barber) => `/appointments?preferredHairdresser=${barber}`,
+      query: (barberId) => `/appointments?preferredHairdresser=${barberId}`,
       providesTags: ["Appointment"],
     }),
     fetchAppointmentsByDayAndBarber: builder.query({
-      query: ({ day, barber }) => `/appointments?day=${day}&barber=${barber}`,
+      query: ({ barberId }) => `/appointments?preferredHairdresser=${barberId}`,
       providesTags: ["Appointment"],
     }),
     fetchAppointmentById: builder.query({

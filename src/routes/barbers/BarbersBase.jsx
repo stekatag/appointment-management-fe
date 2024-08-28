@@ -11,8 +11,10 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useFetchBarbersQuery } from "../../services/api/barbersApi";
-import { useUpdateUserMutation } from "../../services/api/usersApi";
+import {
+  useFetchBarbersQuery,
+  useUnassignBarberMutation,
+} from "../../services/api/barbersApi";
 import FadeAlert from "../../components/FadeAlert/FadeAlert";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useMediaQuery } from "@mui/material";
@@ -20,18 +22,25 @@ import { useMediaQuery } from "@mui/material";
 const BarbersBase = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    data: barbers = [],
-    isLoading,
-    isError,
-    refetch,
-  } = useFetchBarbersQuery();
-  const [updateUser] = useUpdateUserMutation();
+  const { data, isLoading, isError, refetch } = useFetchBarbersQuery({
+    page: 1,
+    limit: 10,
+  });
   const [selectedBarber, setSelectedBarber] = useState(null);
+  const [unassignBarber] = useUnassignBarberMutation();
   const [openDialog, setOpenDialog] = useState(false);
-  const [alert, setAlert] = useState(null);
+  const [alert, setAlert] = useState(location.state?.alert || null);
 
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
+
+  // Refetch barbers when location state changes
+  useEffect(() => {
+    if (location.state?.alert) {
+      setAlert(location.state.alert);
+      navigate(location.pathname, { replace: true });
+      refetch();
+    }
+  }, [location, navigate, refetch]);
 
   const handleEdit = (id) => {
     navigate(`/manage-barbers/edit/${id}`);
@@ -54,12 +63,7 @@ const BarbersBase = () => {
   const handleDelete = async () => {
     if (selectedBarber) {
       try {
-        await updateUser({
-          id: selectedBarber.id,
-          role: "user",
-          title: "", // Reset title
-          image: "", // Reset image
-        }).unwrap();
+        await unassignBarber(selectedBarber.id).unwrap(); // Use unassignBarber
 
         setOpenDialog(false); // Close the dialog
         refetch(); // Refetch the barbers after deleting
@@ -70,18 +74,12 @@ const BarbersBase = () => {
         });
       } catch (error) {
         setAlert({
-          message: `Error deleting barber: ${error.message}`,
+          message: `Error unassigning barber: ${error.message}`,
           severity: "error",
         });
       }
     }
   };
-
-  useEffect(() => {
-    if (location.state?.alert) {
-      setAlert(location.state.alert);
-    }
-  }, [location.state, navigate]);
 
   if (isLoading) {
     return <Typography>Loading...</Typography>;
@@ -125,7 +123,7 @@ const BarbersBase = () => {
             size="small"
             onClick={() => handleOpenDialog(params.row)}
           >
-            Delete
+            Unassign
           </Button>
         </Box>
       ),
@@ -161,7 +159,15 @@ const BarbersBase = () => {
             Assign New Barber
           </Button>
         </Box>
-        <DataGrid rows={barbers} columns={columns} pageSize={5} />
+        <DataGrid
+          rows={data?.results || []}
+          columns={columns}
+          pageSize={data?.limit || 10}
+          rowCount={data?.totalResults || 0}
+          paginationMode="server"
+          onPageChange={(newPage) => refetch({ page: newPage + 1 })}
+          getRowId={(row) => row.id || row._id} // Ensure unique key
+        />
 
         {/* Confirmation Dialog */}
         <Dialog

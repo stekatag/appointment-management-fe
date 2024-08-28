@@ -6,6 +6,7 @@ import {
   useTheme,
   useMediaQuery,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import {
   TestimonialsContainer,
@@ -23,6 +24,7 @@ import { useHandleSectionLink } from "../../utils/navigationUtils";
 import { useFetchReviewsQuery } from "../../services/api/reviewsApi";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import ServerAlert from "../../components/ServerAlert/ServerAlert";
 
 dayjs.extend(relativeTime);
 
@@ -35,13 +37,20 @@ export default function TestimonialsSection() {
   const { data: reviews = [], isLoading, isError } = useFetchReviewsQuery();
 
   // Filter reviews with rating 4 or higher and sort by date (most recent first)
-  const topRatedReviews = reviews
-    .filter((review) => review.rating >= 4)
+  const topRatedReviews = reviews?.results
+    ?.filter((review) => review.rating >= 4)
     .sort((a, b) => dayjs(b.date).diff(dayjs(a.date)))
     .slice(0, 3); // Get the three most recent top-rated reviews
 
-  if (isLoading) return <Typography>Loading testimonials...</Typography>;
-  if (isError) return <Typography>Error loading testimonials.</Typography>;
+  if (isError) {
+    return (
+      <TestimonialsContainer>
+        <Container maxWidth="lg">
+          <ServerAlert keyword="reviews" />
+        </Container>
+      </TestimonialsContainer>
+    );
+  }
 
   return (
     <TestimonialsContainer>
@@ -66,7 +75,7 @@ export default function TestimonialsSection() {
           </TitlesContainer>
 
           {/* Check if there are any top-rated reviews */}
-          {topRatedReviews.length > 0 ? (
+          {topRatedReviews?.length > 0 ? (
             <TestimonialCardsContainer
               container
               spacing={4}
@@ -105,6 +114,11 @@ export default function TestimonialsSection() {
               <Alert severity="warning">
                 There are no top-rated reviews available at the moment.
               </Alert>
+            </Grid>
+          )}
+          {isLoading && (
+            <Grid item xs={12}>
+              <CircularProgress />
             </Grid>
           )}
 

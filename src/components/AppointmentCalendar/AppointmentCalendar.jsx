@@ -72,7 +72,7 @@ export default function AppointmentCalendar({
           "minute"
         ) &&
         appt.preferredHairdresser === selectedBarber &&
-        appt.statusId !== "3"
+        appt.status !== "Cancelled"
     );
   };
 

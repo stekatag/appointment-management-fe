@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import useRedirectByRole from "../utils/redirectByRole";
-import { useLoginUserQuery } from "../services/api/usersApi";
+import { useLoginUserMutation } from "../services/api/usersApi";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -36,41 +36,25 @@ export default function SignIn() {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const [alert, setAlert] = useState({ type: "", message: "" });
-  const [loginQueryArgs, setLoginQueryArgs] = useState(null);
 
-  const { data, error, isLoading } = useLoginUserQuery(
-    loginQueryArgs ? { email: loginQueryArgs.email } : {},
-    {
-      skip: !loginQueryArgs,
-    }
-  );
+  const [alert, setAlert] = useState({ type: "", message: "" });
+  const [rememberMe, setRememberMe] = useState(false); // State for Remember Me checkbox
+
+  const [loginUser, { data, error, isLoading }] = useLoginUserMutation();
 
   useEffect(() => {
-    if (data && Array.isArray(data) && data.length === 1) {
-      const user = data[0];
-      if (loginQueryArgs && user.password === loginQueryArgs.password) {
-        localStorage.setItem("token", "dummy-token");
-        localStorage.setItem("user", JSON.stringify(user));
-        redirectByRole(user.role);
-      } else {
-        setAlert({ type: "error", message: "Incorrect password." });
-      }
-    } else if (data && Array.isArray(data) && data.length > 1) {
-      setAlert({
-        type: "error",
-        message: "Multiple accounts found with the same email.",
-      });
-    } else if (error || (data && data.length === 0)) {
+    if (data) {
+      redirectByRole(data.user.role);
+    } else if (error) {
       setAlert({
         type: "error",
         message: "Invalid credentials or user not found.",
       });
     }
-  }, [data, error, redirectByRole, loginQueryArgs]);
+  }, [data, error, redirectByRole]);
 
   const onSubmit = (formData) => {
-    setLoginQueryArgs(formData);
+    loginUser({ ...formData, rememberMe });
   };
 
   return (
@@ -140,7 +124,13 @@ export default function SignIn() {
             )}
           />
           <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
+            control={
+              <Checkbox
+                value="remember"
+                color="primary"
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+            }
             label="Remember me"
           />
           <Button

@@ -1,26 +1,39 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-// const API_URL = "http://localhost:5175";
-const API_URL = "https://appointment-management-json-server.onrender.com/";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import { baseQueryWithAuth } from "../../utils/apiUtils";
 
 export const barbersApi = createApi({
   reducerPath: "barbersApi",
-  baseQuery: fetchBaseQuery({ baseUrl: API_URL }),
+  baseQuery: baseQueryWithAuth,
   tagTypes: ["Barber"],
   endpoints: (builder) => ({
     fetchBarbers: builder.query({
-      query: () => "/users?role=barber",
+      query: () => "/barbers", // Updated endpoint
       providesTags: ["Barber"],
     }),
     fetchBarberById: builder.query({
       query: (id) => `/users/${id}`,
       providesTags: ["Barber"],
     }),
-    createBarber: builder.mutation({
-      query: (newBarber) => ({
-        url: "/users",
-        method: "POST",
-        body: { ...newBarber, role: "barber" },
+    assignBarber: builder.mutation({
+      query: ({ id, ...barberData }) => ({
+        url: `/barbers/${id}/assign`,
+        method: "PATCH",
+        body: barberData,
+      }),
+      invalidatesTags: ["Barber"],
+    }),
+    updateBarber: builder.mutation({
+      query: ({ id, ...barberData }) => ({
+        url: `/barbers/${id}/update`,
+        method: "PATCH",
+        body: barberData,
+      }),
+      invalidatesTags: ["Barber"],
+    }),
+    unassignBarber: builder.mutation({
+      query: (id) => ({
+        url: `/barbers/${id}/unassign`,
+        method: "PATCH",
       }),
       invalidatesTags: ["Barber"],
     }),
@@ -30,5 +43,7 @@ export const barbersApi = createApi({
 export const {
   useFetchBarbersQuery,
   useFetchBarberByIdQuery,
-  useCreateBarberMutation,
+  useAssignBarberMutation,
+  useUpdateBarberMutation,
+  useUnassignBarberMutation,
 } = barbersApi;

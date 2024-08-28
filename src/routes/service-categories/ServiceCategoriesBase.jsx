@@ -22,12 +22,10 @@ import { ButtonsContainer } from "../services/ServiceBase.styles";
 export default function ServiceCategoriesBase() {
   const navigate = useNavigate();
   const location = useLocation();
-  const {
-    data: categories = [],
-    isLoading,
-    isError,
-    refetch,
-  } = useFetchServiceCategoriesQuery();
+  const { data, isLoading, isError, refetch } = useFetchServiceCategoriesQuery({
+    page: 1,
+    limit: 10,
+  }); // Adjust as needed for pagination
   const [deleteServiceCategory] = useDeleteServiceCategoryMutation();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -35,7 +33,7 @@ export default function ServiceCategoriesBase() {
 
   useEffect(() => {
     if (location.state?.alert) {
-      // Clear the alert state after it's shown once
+      setAlert(location.state.alert);
       navigate(location.pathname, { replace: true });
     }
   }, [location, navigate]);
@@ -64,14 +62,16 @@ export default function ServiceCategoriesBase() {
         await deleteServiceCategory(selectedCategory.id).unwrap();
         setOpenDialog(false);
         refetch();
-
         setAlert({
           message: "Service category deleted successfully!",
           severity: "success",
         });
       } catch (error) {
+        // Access the error message properly
+        const errorMessage =
+          error.data?.message || error.message || "An error occurred";
         setAlert({
-          message: `Error deleting category: ${error.message}`,
+          message: `Error deleting category: ${errorMessage}`,
           severity: "error",
         });
       }
@@ -147,8 +147,14 @@ export default function ServiceCategoriesBase() {
             Manage Services
           </Button>
         </ButtonsContainer>
-        <DataGrid rows={categories} columns={columns} pageSize={5} />
-
+        <DataGrid
+          rows={data.results || []}
+          columns={columns}
+          pageSize={data.limit || 10}
+          rowCount={data.totalResults}
+          paginationMode="server"
+          onPageChange={(newPage) => refetch({ page: newPage + 1 })}
+        />
         <Dialog
           open={openDialog}
           onClose={handleCloseDialog}
