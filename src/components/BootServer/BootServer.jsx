@@ -61,7 +61,7 @@ export default function BootServer() {
         <>
           <CircularProgress />
           <Typography variant="h4" sx={{ mt: 2 }}>
-            Waking up the server, please wait...
+            Waking up the server may take up to a minute. Please wait...
           </Typography>
         </>
       )}
