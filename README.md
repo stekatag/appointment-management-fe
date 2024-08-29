@@ -46,7 +46,7 @@ Check out the live demo of the application:
 
 ### Proposed Features
 
-- **Forgot Password**: Add a forgot password feature to reset user passwords via email.
+- **Forgot Password**: Add a forgot password feature to reset user passwords via email. ✅
 - **Email and in-app notifications**: Send email and in-app notifications for appointment reminders and confirmations.
 - **PWA Support**: Add support for Progressive Web Apps to enable offline access and push notifications.
 
