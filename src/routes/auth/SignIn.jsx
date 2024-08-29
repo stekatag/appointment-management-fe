@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import useRedirectByRole from "../utils/redirectByRole";
-import { useLoginUserMutation } from "../services/api/usersApi";
+import useRedirectByRole from "../../utils/redirectByRole";
+import { useLoginUserMutation } from "../../services/api/authApi";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -17,6 +16,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
+import { StyledAuthLink } from "./SignIn.styles";
 
 // Define Yup validation schema
 const schema = yup.object().shape({
@@ -144,9 +144,14 @@ export default function SignIn() {
           </Button>
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item>
-              <Link href="register" variant="body2">
+              <StyledAuthLink to="/register">
                 {"Don't have an account? Sign Up"}
-              </Link>
+              </StyledAuthLink>
+            </Grid>
+            <Grid item>
+              <StyledAuthLink to="/forgot-password">
+                Forgot password?
+              </StyledAuthLink>
             </Grid>
           </Grid>
         </Box>

@@ -19,7 +19,7 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import DashboardListItems from "../components/DashboardListItems";
 import { useDispatch } from "react-redux";
 import { logout } from "../services/store/authSlice";
-import { useLogoutUserMutation } from "../services/api/usersApi";
+import { useLogoutUserMutation } from "../services/api/authApi";
 import { getRefreshTokenFromStorage } from "../utils/storage";
 import { useNavigate } from "react-router-dom";
 import { StyledAppBar, StyledDrawer } from "./DashboardLayout.styles";

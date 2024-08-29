@@ -3,14 +3,15 @@ import HomePage from "./HomePage";
 import AboutUs from "./AboutUs";
 import Barbers from "./Barbers";
 import ContactUs from "./ContactUs";
-import SignIn from "./SignIn";
-import SignUp from "./SignUp";
+import SignIn from "./auth/SignIn";
+import SignUp from "./auth/SignUp";
 import ErrorPage from "./ErrorPage";
 import ProtectedRoute from "../auth/ProtectedRoute";
 import DashboardLayout from "../layouts/DashboardLayout";
 
-import AdminDashboard from "./AdminDashboard";
-import UserDashboard from "./UserDashboard";
+import AdminDashboard from "./dashboards/AdminDashboard";
+import UserDashboard from "./dashboards/UserDashboard";
+import BarberDashboard from "./dashboards/BarberDashboard";
 
 import AppointmentsBase from "./appointments/AppointmentsBase";
 import AppointmentForm from "../forms/AppointmentForm";
@@ -27,10 +28,11 @@ import EditServiceCategory from "./service-categories/EditServiceCategory";
 import ReviewsBase from "./reviews/ReviewsBase";
 import ReviewForm from "../forms/ReviewForm";
 import EditReview from "./reviews/EditReview";
-import BarberDashboard from "./BarberDashboard";
 import UserManagement from "./user/UserManagement";
 import ProfileManagement from "./user/ProfileManagement";
-import BootServer from "../components/BootServer/BootServer";
+import BootServer from "./auth/BootServer";
+import ForgotPassword from "./auth/ForgotPassword";
+import ResetPassword from "./auth/ResetPassword";
 
 export default function Root() {
   return (
@@ -41,6 +43,8 @@ export default function Root() {
       <Route path="/contact" element={<ContactUs />} />
       <Route path="/login" element={<SignIn />} />
       <Route path="/register" element={<SignUp />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/boot-server" element={<BootServer />} />
 
       {/* Admin routes */}

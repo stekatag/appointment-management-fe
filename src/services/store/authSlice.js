@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { usersApi } from "../api/usersApi";
+import { authApi } from "../api/authApi";
 
 // Initialize user from localStorage or sessionStorage
 const storedUser =
@@ -26,7 +26,7 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addMatcher(
-        usersApi.endpoints.loginUser.matchFulfilled,
+        authApi.endpoints.loginUser.matchFulfilled,
         (state, action) => {
           state.user = action.payload.user;
           const token = action.payload.tokens?.access?.token; // Use optional chaining
@@ -48,12 +48,12 @@ const authSlice = createSlice({
         }
       )
       .addMatcher(
-        usersApi.endpoints.loginUser.matchRejected,
+        authApi.endpoints.loginUser.matchRejected,
         (state, action) => {
           state.error = action.error.message;
         }
       )
-      .addMatcher(usersApi.endpoints.logoutUser.matchFulfilled, (state) => {
+      .addMatcher(authApi.endpoints.logoutUser.matchFulfilled, (state) => {
         state.user = null;
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");

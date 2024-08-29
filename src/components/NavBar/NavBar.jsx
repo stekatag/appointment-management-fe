@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useHandleSectionLink } from "../../utils/navigationUtils";
-import { useLogoutUserMutation } from "../../services/api/usersApi";
+import { useLogoutUserMutation } from "../../services/api/authApi";
 import { logout } from "../../services/store/authSlice";
 import { scroller } from "react-scroll";
 import {
@@ -60,6 +60,8 @@ export default function Navbar() {
       return "/admin/dashboard";
     } else if (user?.role === "user") {
       return "/user/dashboard";
+    } else if (user?.role === "barber") {
+      return "/barber/dashboard";
     }
     return "/";
   };

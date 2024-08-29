@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useAddUserMutation } from "../services/api/usersApi";
-import useRedirectByRole from "../utils/redirectByRole";
+import { useRegisterUserMutation } from "../../services/api/authApi";
+import useRedirectByRole from "../../utils/redirectByRole";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -17,6 +17,7 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
+import { StyledAuthLink } from "./SignIn.styles";
 
 // Define Yup validation schema
 const schema = yup.object().shape({
@@ -57,7 +58,7 @@ function Copyright(props) {
 }
 
 export default function SignUp() {
-  const [addUser] = useAddUserMutation();
+  const [registerUser] = useRegisterUserMutation();
   const redirectByRole = useRedirectByRole();
   const [alert, setAlert] = useState({ type: "", message: "" });
 
@@ -74,7 +75,7 @@ export default function SignUp() {
     const { isAdmin, ...userData } = formData;
 
     try {
-      const result = await addUser({ ...userData, role }).unwrap();
+      const result = await registerUser({ ...userData, role }).unwrap();
 
       if (result) {
         const { tokens, user } = result;
@@ -241,13 +242,9 @@ export default function SignUp() {
           >
             Sign Up
           </Button>
-          <Grid container justifyContent="flex-end">
-            <Grid item>
-              <Link href="login" variant="body2">
-                Already have an account? Sign in
-              </Link>
-            </Grid>
-          </Grid>
+          <StyledAuthLink to="/login">
+            Already have an account? Sign in
+          </StyledAuthLink>
         </Box>
       </Box>
       <Copyright sx={{ mt: 5 }} />
