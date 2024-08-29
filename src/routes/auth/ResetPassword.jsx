@@ -8,17 +8,19 @@ import {
   Box,
   Container,
   Avatar,
+  CircularProgress,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useResetPasswordMutation } from "../../services/api/authApi";
-import { Link } from "react-router-dom";
 
 export default function ResetPassword() {
   const location = useLocation();
-  const { control, handleSubmit } = useForm();
+  const { control, handleSubmit, watch } = useForm();
   const [alert, setAlert] = useState(null);
-  const [resetPassword] = useResetPasswordMutation();
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
+
+  const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
 
   const onSubmit = async (data) => {
     const query = new URLSearchParams(location.search);
@@ -38,6 +40,9 @@ export default function ResetPassword() {
     }
   };
 
+  // Watch the password field for matching with the confirm password field
+  const password = watch("password");
+
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -54,7 +59,7 @@ export default function ResetPassword() {
           Reset Password
         </Typography>
         {alert && (
-          <Alert fullWidth="true" severity={alert.type}>
+          <Alert sx={{ width: "100%" }} severity={alert.type}>
             {alert.message}
           </Alert>
         )}
@@ -74,14 +79,47 @@ export default function ResetPassword() {
               />
             )}
           />
+          <Controller
+            name="confirmPassword"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Confirm Password"
+                type="password"
+                fullWidth
+                required
+                margin="normal"
+                onChange={(e) => {
+                  field.onChange(e);
+                  setConfirmPasswordTouched(true);
+                }}
+                error={confirmPasswordTouched && field.value !== password}
+                helperText={
+                  confirmPasswordTouched && field.value !== password
+                    ? "Passwords do not match"
+                    : ""
+                }
+              />
+            )}
+          />
           <Button
             type="submit"
             variant="contained"
             color="primary"
             fullWidth
             sx={{ mt: 1 }}
+            disabled={
+              isLoading ||
+              (confirmPasswordTouched && watch("confirmPassword") !== password)
+            }
           >
-            Reset Password
+            {isLoading ? (
+              <CircularProgress size="1.5rem" color="inherit" />
+            ) : (
+              "Reset Password"
+            )}
           </Button>
           {alert?.type === "success" && (
             <Link to="/login">

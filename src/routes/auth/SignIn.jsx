@@ -4,18 +4,22 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import useRedirectByRole from "../../utils/redirectByRole";
 import { useLoginUserMutation } from "../../services/api/authApi";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
+import {
+  Avatar,
+  Button,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Grid,
+  Box,
+  Typography,
+  Container,
+  Alert,
+  AlertTitle,
+  CircularProgress,
+} from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
+import Copyright from "../../components/Copyright/Copyright";
 import { StyledAuthLink } from "./SignIn.styles";
 
 // Define Yup validation schema
@@ -140,7 +144,11 @@ export default function SignIn() {
             sx={{ mt: 3, mb: 2 }}
             disabled={isLoading}
           >
-            {isLoading ? "Signing in..." : "Sign In"}
+            {isLoading ? (
+              <CircularProgress size="1.5rem" color="inherit" />
+            ) : (
+              "Sing In"
+            )}
           </Button>
           <Grid container alignItems="center" justifyContent="space-between">
             <Grid item>
@@ -156,6 +164,7 @@ export default function SignIn() {
           </Grid>
         </Box>
       </Box>
+      <Copyright sx={{ mt: 5 }} />
     </Container>
   );
 }

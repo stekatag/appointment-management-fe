@@ -4,19 +4,22 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useRegisterUserMutation } from "../../services/api/authApi";
 import useRedirectByRole from "../../utils/redirectByRole";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
+import {
+  Avatar,
+  Button,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Grid,
+  Box,
+  Typography,
+  Container,
+  Alert,
+  AlertTitle,
+  CircularProgress,
+} from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
+import Copyright from "../../components/Copyright/Copyright";
 import { StyledAuthLink } from "./SignIn.styles";
 
 // Define Yup validation schema
@@ -28,6 +31,10 @@ const schema = yup.object().shape({
     .email("Invalid email format")
     .required("Email is required"),
   password: yup.string().required("Password is required"),
+  confirmPassword: yup
+    .string()
+    .required("Confirm password is required")
+    .oneOf([yup.ref("password")], "Passwords do not match"),
   contactNumber: yup
     .string()
     .trim()
@@ -39,40 +46,25 @@ const schema = yup.object().shape({
   isAdmin: yup.boolean(),
 });
 
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
 export default function SignUp() {
-  const [registerUser] = useRegisterUserMutation();
+  const [registerUser, { isLoading }] = useRegisterUserMutation();
   const redirectByRole = useRedirectByRole();
+  const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
   const [alert, setAlert] = useState({ type: "", message: "" });
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm({
     resolver: yupResolver(schema),
   });
 
   const onSubmit = async (formData) => {
     const role = formData.isAdmin ? "admin" : "user";
-    const { isAdmin, ...userData } = formData;
+    // eslint-disable-next-line no-unused-vars
+    const { isAdmin, confirmPassword, ...userData } = formData; // Omit confirmPassword
 
     try {
       const result = await registerUser({ ...userData, role }).unwrap();
@@ -96,6 +88,8 @@ export default function SignUp() {
       });
     }
   };
+
+  const password = watch("password");
 
   return (
     <Container component="main" maxWidth="xs">
@@ -219,6 +213,35 @@ export default function SignUp() {
                 )}
               />
             </Grid>
+            <Grid item xs={12}>
+              <Controller
+                name="confirmPassword"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Confirm Password"
+                    type="password"
+                    fullWidth
+                    required
+                    onChange={(e) => {
+                      field.onChange(e);
+                      setConfirmPasswordTouched(true);
+                    }}
+                    error={
+                      (confirmPasswordTouched && field.value !== password) ||
+                      !!errors.confirmPassword
+                    }
+                    helperText={
+                      confirmPasswordTouched && field.value !== password
+                        ? "Passwords do not match"
+                        : "" || errors.confirmPassword?.message
+                    }
+                  />
+                )}
+              />
+            </Grid>
 
             <Grid item xs={12}>
               <Controller
@@ -239,8 +262,16 @@ export default function SignUp() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={
+              isLoading ||
+              (confirmPasswordTouched && watch("confirmPassword") !== password)
+            }
           >
-            Sign Up
+            {isLoading ? (
+              <CircularProgress size="1.5rem" color="inherit" />
+            ) : (
+              "Sign Up"
+            )}
           </Button>
           <StyledAuthLink to="/login">
             Already have an account? Sign in

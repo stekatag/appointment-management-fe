@@ -8,6 +8,7 @@ import {
   Box,
   Container,
   Avatar,
+  CircularProgress,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useForgotPasswordMutation } from "../../services/api/authApi";
@@ -15,7 +16,7 @@ import { useForgotPasswordMutation } from "../../services/api/authApi";
 export default function ForgotPassword() {
   const { control, handleSubmit } = useForm();
   const [alert, setAlert] = useState(null);
-  const [forgotPassword] = useForgotPasswordMutation();
+  const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
   const onSubmit = async (data) => {
     try {
@@ -48,7 +49,7 @@ export default function ForgotPassword() {
           Forgot Password
         </Typography>
         {alert && (
-          <Alert fullWidth="true" severity={alert.type}>
+          <Alert sx={{ width: "100%" }} severity={alert.type}>
             {alert.message}
           </Alert>
         )}
@@ -74,8 +75,13 @@ export default function ForgotPassword() {
             color="primary"
             fullWidth
             sx={{ mt: 1 }}
+            disabled={isLoading}
           >
-            Send Reset Link
+            {isLoading ? (
+              <CircularProgress size="1.5rem" color="inherit" />
+            ) : (
+              "Send Reset Link"
+            )}
           </Button>
         </form>
       </Box>
