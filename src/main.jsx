@@ -7,6 +7,7 @@ import Root from "./routes/root.jsx";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "./styles/theme.js";
+import { registerNotifications } from "./utils/notificationUtils.js";
 import "./styles/index.css";
 
 // Define your router configuration
@@ -21,3 +22,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </ThemeProvider>
   </Provider>
 );
+
+// Register notifications when the app is loaded
+registerNotifications();

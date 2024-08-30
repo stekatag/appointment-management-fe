@@ -33,6 +33,7 @@ import ProfileManagement from "./user/ProfileManagement";
 import BootServer from "./auth/BootServer";
 import ForgotPassword from "./auth/ForgotPassword";
 import ResetPassword from "./auth/ResetPassword";
+import NotificationManagement from "./user/NotificationManagement";
 
 export default function Root() {
   return (
@@ -269,6 +270,7 @@ export default function Root() {
         }
       >
         <Route index element={<ProfileManagement />} />
+        <Route path="notifications" element={<NotificationManagement />} />
       </Route>
 
       <Route path="*" element={<ErrorPage />} />
