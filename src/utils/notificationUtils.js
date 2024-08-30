@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export async function registerNotifications() {
   const vapidPublicKey = import.meta.env.VITE_PUBLIC_VAPID_KEY;
 
@@ -20,4 +22,19 @@ export async function registerNotifications() {
   } catch (err) {
     console.log("Failed to subscribe the user: ", err);
   }
+}
+
+export async function sendAppointmentNotification(type, appointmentDetails) {
+  const formattedDateTime = dayjs(
+    appointmentDetails.appointmentDateTime
+  ).format("dddd, MMMM D, YYYY h:mm A");
+
+  const notificationOptions = {
+    body: `Your appointment on ${formattedDateTime} has been ${type}.`,
+    icon: "/android/android-launchericon-192-192.png",
+    data: appointmentDetails,
+  };
+
+  const registration = await navigator.serviceWorker.ready;
+  registration.showNotification(`Appointment ${type}`, notificationOptions);
 }

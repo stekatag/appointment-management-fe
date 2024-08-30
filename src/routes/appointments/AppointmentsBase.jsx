@@ -30,6 +30,7 @@ import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 import AppointmentCalendar from "../../components/AppointmentCalendar/AppointmentCalendar";
 import DaySlider from "../../components/DaySlider";
+import { sendAppointmentNotification } from "../../utils/notificationUtils";
 
 const AppointmentsBase = () => {
   const navigate = useNavigate();
@@ -164,6 +165,7 @@ const AppointmentsBase = () => {
           message: "Appointment deleted successfully!",
           severity: "success",
         });
+        await sendAppointmentNotification("deleted", selectedAppointment);
       } catch (error) {
         setAlert({
           message: `Error deleting appointment: ${error.message}`,
@@ -186,6 +188,7 @@ const AppointmentsBase = () => {
           message: "Appointment cancelled successfully!",
           severity: "success",
         });
+        await sendAppointmentNotification("cancelled", selectedAppointment);
       } catch (error) {
         setAlert({
           message: `Error cancelling appointment: ${error.message}`,

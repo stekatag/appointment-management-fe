@@ -32,6 +32,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import AppointmentCalendar from "../components/AppointmentCalendar/AppointmentCalendar";
 import DaySlider from "../components/DaySlider";
+import { sendAppointmentNotification } from "../utils/notificationUtils";
 
 // Validation schema
 const schema = yup.object().shape({
@@ -219,9 +220,11 @@ const AppointmentForm = ({ appointmentToEdit }) => {
           ...appointmentData,
         }).unwrap();
         alertMessage = "Appointment updated successfully!";
+        await sendAppointmentNotification("updated", appointmentData);
       } else {
         await createAppointment(appointmentData).unwrap();
         alertMessage = "Appointment booked successfully!";
+        await sendAppointmentNotification("booked", appointmentData);
       }
 
       // Navigate to the appointments route with the alert message
@@ -351,7 +354,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
                   control={control}
                   render={({ field }) => (
                     <Select {...field} label="Type of Service">
-                      {filteredServices.map((service) => (
+                      {filteredServices?.map((service) => (
                         <MenuItem key={service.id} value={service.id}>
                           {service.title} (${service.price})
                         </MenuItem>
