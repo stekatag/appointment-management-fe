@@ -48,7 +48,7 @@ Check out the live demo of the application:
 
 - **Forgot Password**: Add a forgot password feature to reset user passwords via email. ✅
 - **Email and in-app notifications**: Send email and in-app notifications for appointment reminders and confirmations.
-- **PWA Support**: Add support for Progressive Web Apps to enable offline access and push notifications.
+- **PWA Support**: Add support for Progressive Web Apps to enable offline access and push notifications. ✅
 
 ## Tech Stack
 
@@ -127,6 +127,13 @@ Before you begin, ensure you have met the following requirements:
      ```
 
 2. **Frontend**:
+
+   - Create a `.env` file in the `appointment-management-fe` directory or copy the `.env.example` file:
+
+     ```bash
+      # Use your own API URL for the VITE_API_URL variable. If you started the barbershop API locally, you can use the second line. If you deployed the API to another service, replace the URL with the correct one.
+      VITE_API_URL="http://localhost:3000/v1"
+     ```
 
    - Start the frontend application:
 
