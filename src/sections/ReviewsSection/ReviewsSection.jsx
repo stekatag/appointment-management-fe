@@ -6,7 +6,6 @@ import {
   Button,
   Pagination,
   Box,
-  CircularProgress,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -40,7 +39,7 @@ export default function ReviewsSection() {
   const reviewsPerPage = 5;
 
   // Fetch reviews, services, and barbers from the database
-  const { data: reviewsData = {}, isLoading, isError } = useFetchReviewsQuery();
+  const { data: reviewsData = {}, isError } = useFetchReviewsQuery();
   const { data: servicesData = {} } = useFetchServicesQuery();
   const { data: barbersData = {} } = useFetchBarbersQuery();
 
@@ -217,11 +216,6 @@ export default function ReviewsSection() {
         {totalReviews === 0 && (
           <Grid item>
             <ServerAlert keyword="reviews" />
-          </Grid>
-        )}
-        {isLoading && (
-          <Grid item>
-            <CircularProgress />
           </Grid>
         )}
       </Grid>

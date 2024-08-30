@@ -29,11 +29,7 @@ export default function BookAppointmentSection() {
 
   const navigate = useNavigate();
 
-  const {
-    data: barbers,
-    isLoading: isLoadingBarbers,
-    error: barberError,
-  } = useFetchBarbersQuery();
+  const { data: barbers, error: barberError } = useFetchBarbersQuery();
 
   const {
     data: dayAppointments = { results: [] },
@@ -71,9 +67,7 @@ export default function BookAppointmentSection() {
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
-            {isLoadingBarbers ? (
-              <CircularProgress />
-            ) : barberError ? (
+            {barberError ? (
               <ServerAlert keyword="barbers" />
             ) : (
               <FormControl fullWidth required>

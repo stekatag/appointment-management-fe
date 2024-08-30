@@ -6,7 +6,6 @@ import {
   useTheme,
   useMediaQuery,
   Alert,
-  CircularProgress,
 } from "@mui/material";
 import {
   TestimonialsContainer,
@@ -34,7 +33,7 @@ export default function TestimonialsSection() {
   const handleCTAClick = useHandleSectionLink();
 
   // Fetch the reviews from the database
-  const { data: reviews = [], isLoading, isError } = useFetchReviewsQuery();
+  const { data: reviews = [], isError } = useFetchReviewsQuery();
 
   // Filter reviews with rating 4 or higher and sort by date (most recent first)
   const topRatedReviews = reviews?.results
@@ -116,12 +115,6 @@ export default function TestimonialsSection() {
               </Alert>
             </Grid>
           )}
-          {isLoading && (
-            <Grid item xs={12}>
-              <CircularProgress />
-            </Grid>
-          )}
-
           <CTAButton
             onClick={() => handleCTAClick("reviews-section", "/barbers")}
             variant="contained"

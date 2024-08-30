@@ -1,8 +1,7 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { handleTokenExpiration } from "./tokenUtils";
 
-// export const API_URL = "http://localhost:3000/v1";
-export const API_URL = "https://barbershop-api-uz70.onrender.com/v1";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export const baseQueryWithAuth = fetchBaseQuery({
   baseUrl: API_URL,
