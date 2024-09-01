@@ -13,18 +13,22 @@ import {
   useUpdateUserMutation,
 } from "../../services/api/usersApi";
 import DashboardLayout from "../../layouts/DashboardLayout";
-import { registerNotifications } from "../../utils/notificationUtils";
+import {
+  registerNotifications,
+  unsubscribeNotifications,
+} from "../../utils/notificationUtils";
 
 const NotificationManagement = () => {
   const authUser = useSelector((state) => state.auth.user);
-  const userId = authUser?.id?.toString();
-
+  const userId = authUser?.id;
+  console.log("authUserId", userId);
   const {
     data: user,
     isLoading: isUserLoading,
     isError,
     error,
   } = useFetchUserByIdQuery(userId);
+  console.log("user", user);
 
   const [updateUser] = useUpdateUserMutation();
 
@@ -37,7 +41,6 @@ const NotificationManagement = () => {
     if (user) {
       setEmailNotifications(user.emailNotificationsEnabled || false);
       setPushNotifications(user.pushNotificationsEnabled || false);
-      registerNotifications();
     }
   }, [user]);
 
@@ -67,44 +70,47 @@ const NotificationManagement = () => {
   const handlePushNotificationsChange = async (event) => {
     const enabled = event.target.checked;
 
-    if (enabled) {
-      setIsLoading(true);
-      try {
-        await registerNotifications();
-        setPushNotifications(true);
-        await updateUser({
-          id: userId,
-          pushNotificationsEnabled: true,
-        }).unwrap();
-        setAlert({
-          type: "success",
-          message: "Push notifications enabled successfully!",
-        });
-      } catch (error) {
-        setAlert({
-          type: "error",
-          message: "Failed to enable push notifications.",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
-      setPushNotifications(false);
-      try {
+    setIsLoading(true);
+    try {
+      if (enabled) {
+        const subscription = await registerNotifications();
+        if (subscription) {
+          await updateUser({
+            id: userId,
+            pushNotificationsEnabled: true,
+            pushSubscription: subscription, // Save the subscription to the user if necessary
+          }).unwrap();
+          setPushNotifications(true);
+          setAlert({
+            type: "success",
+            message: "Push notifications enabled successfully!",
+          });
+        } else {
+          setAlert({
+            type: "error",
+            message: "Failed to enable push notifications.",
+          });
+        }
+      } else {
+        await unsubscribeNotifications();
         await updateUser({
           id: userId,
           pushNotificationsEnabled: false,
+          pushSubscription: {},
         }).unwrap();
+        setPushNotifications(false);
         setAlert({
           type: "success",
           message: "Push notifications disabled successfully!",
         });
-      } catch (error) {
-        setAlert({
-          type: "error",
-          message: "Failed to disable push notifications.",
-        });
       }
+    } catch (error) {
+      setAlert({
+        type: "error",
+        message: "Failed to update push notifications.",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 

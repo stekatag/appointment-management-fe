@@ -9,9 +9,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      // devOptions: {
-      //   enabled: true,
-      // },
+      devOptions: {
+        enabled: true,
+      },
       includeAssets: ["favicon.ico", "apple-touch-icon.png"],
       manifest: {
         name: "Barbershop App",
