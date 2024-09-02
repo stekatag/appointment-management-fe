@@ -30,19 +30,27 @@ export const appointmentsApi = createApi({
       invalidatesTags: ["Appointment"],
     }),
     fetchAllAppointments: builder.query({
-      query: () => "/appointments",
+      query: ({ page, limit }) => ({
+        url: `/appointments?page=${page}&limit=${limit}`,
+      }),
       providesTags: ["Appointment"],
     }),
     fetchAppointmentsByUser: builder.query({
-      query: (userId) => `/appointments?userId=${userId}`,
+      query: ({ userId, page, limit }) => ({
+        url: `/appointments?userId=${userId}&page=${page}&limit=${limit}`,
+      }),
       providesTags: ["Appointment"],
     }),
     fetchAppointmentsByBarber: builder.query({
-      query: (barberId) => `/appointments?preferredHairdresser=${barberId}`,
+      query: ({ barberId, page, limit }) => ({
+        url: `/appointments?preferredHairdresser=${barberId}&page=${page}&limit=${limit}`,
+      }),
       providesTags: ["Appointment"],
     }),
     fetchAppointmentsByDayAndBarber: builder.query({
-      query: ({ barberId }) => `/appointments?preferredHairdresser=${barberId}`,
+      query: ({ barberId, page, limit }) => ({
+        url: `/appointments?preferredHairdresser=${barberId}&page=${page}&limit=${limit}`,
+      }),
       providesTags: ["Appointment"],
     }),
     fetchAppointmentById: builder.query({

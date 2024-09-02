@@ -113,13 +113,17 @@ const AppointmentForm = ({ appointmentToEdit }) => {
   const {
     data: userAppointments = { results: [] },
     isLoading: isLoadingUserAppointments,
-  } = useFetchAppointmentsByUserQuery(user ? user.id : null);
+  } = useFetchAppointmentsByUserQuery({
+    userId: user ? user.id : null,
+    page: 1,
+    limit: 1000,
+  });
 
   const {
     data: dayAppointments = { results: [] },
     refetch: refetchDayAppointments,
   } = useFetchAppointmentsByDayAndBarberQuery(
-    { barberId: barber },
+    { barberId: barber, page: 1, limit: 1000 },
     { skip: !barber }
   );
 
@@ -208,6 +212,8 @@ const AppointmentForm = ({ appointmentToEdit }) => {
     const appointmentData = {
       ...data,
       appointmentDateTime: slot,
+      // Preserve the original userId when editing an existing appointment
+      userId: appointmentToEdit ? appointmentToEdit.userId : user.id,
     };
 
     try {
@@ -351,7 +357,7 @@ const AppointmentForm = ({ appointmentToEdit }) => {
                   control={control}
                   render={({ field }) => (
                     <Select {...field} label="Type of Service">
-                      {filteredServices.map((service) => (
+                      {filteredServices?.map((service) => (
                         <MenuItem key={service.id} value={service.id}>
                           {service.title} (${service.price})
                         </MenuItem>

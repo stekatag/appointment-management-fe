@@ -11,6 +11,7 @@ import WatchLaterIcon from "@mui/icons-material/WatchLater";
 import StarIcon from "@mui/icons-material/Star";
 import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 
 export default function DashboardListItems() {
   const userRole = useSelector((state) => state.auth.user?.role);
@@ -72,6 +73,12 @@ export default function DashboardListItems() {
           </ListItemButton>
         </>
       )}
+      <ListItemButton component={Link} to="/profile/notifications">
+        <ListItemIcon>
+          <NotificationsActiveIcon />
+        </ListItemIcon>
+        <ListItemText primary="Notifications" />
+      </ListItemButton>
       <ListItemButton component={Link} to="/profile">
         <ListItemIcon>
           <AccountCircleIcon />

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import {
   Box,
   Button,
@@ -39,7 +39,11 @@ const AppointmentsBase = () => {
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("md"));
 
   const [selectedDay, setSelectedDay] = useState(dayjs());
-  const [page, setPage] = useState(1); // Manage pagination state
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
+  const rowCountRef = useRef(0);
   const [alert, setAlert] = useState(location.state?.alert || null);
 
   const [deleteAppointment] = useDeleteAppointmentMutation();
@@ -48,7 +52,6 @@ const AppointmentsBase = () => {
   const [openDialog, setOpenDialog] = useState(false);
 
   const { data: barbersData } = useFetchBarbersQuery();
-
   const barbers = useMemo(() => barbersData?.results || [], [barbersData]);
 
   const getBarberName = (barberId) => {
@@ -67,13 +70,24 @@ const AppointmentsBase = () => {
 
   switch (user?.role) {
     case "admin":
-      appointmentsQuery = useFetchAllAppointmentsQuery({ page, limit: 10 });
+      appointmentsQuery = useFetchAllAppointmentsQuery({
+        page: paginationModel.page + 1,
+        limit: paginationModel.pageSize,
+      });
       break;
     case "barber":
-      appointmentsQuery = useFetchAppointmentsByBarberQuery(userId);
+      appointmentsQuery = useFetchAppointmentsByBarberQuery({
+        barberId: userId,
+        page: paginationModel.page + 1,
+        limit: paginationModel.pageSize,
+      });
       break;
     case "user":
-      appointmentsQuery = useFetchAppointmentsByUserQuery(userId);
+      appointmentsQuery = useFetchAppointmentsByUserQuery({
+        userId,
+        page: paginationModel.page + 1,
+        limit: paginationModel.pageSize,
+      });
       break;
     default:
       appointmentsQuery = {
@@ -91,16 +105,23 @@ const AppointmentsBase = () => {
     isError,
     refetch,
   } = appointmentsQuery;
+
   const appointments = useMemo(
     () => appointmentsData?.results || [],
     [appointmentsData]
   );
-  const totalResults = appointmentsData?.totalResults || 0;
+
+  const rowCount = useMemo(() => {
+    if (appointmentsData?.totalResults !== undefined) {
+      rowCountRef.current = appointmentsData.totalResults;
+    }
+    return rowCountRef.current;
+  }, [appointmentsData?.totalResults]);
 
   // Fetch all appointments for the barber
   const { data: dayAppointments = { results: [] } } =
     useFetchAppointmentsByDayAndBarberQuery(
-      { barberId: user?.id },
+      { barberId: user?.id, page: 1, limit: 1000 },
       { skip: !user?.id }
     );
 
@@ -111,7 +132,7 @@ const AppointmentsBase = () => {
 
   useEffect(() => {
     const updatePastAppointments = async () => {
-      if (appointments.length > 0) {
+      if (appointments?.length > 0) {
         const now = dayjs();
 
         for (const appointment of appointments) {
@@ -354,13 +375,14 @@ const AppointmentsBase = () => {
         <DataGrid
           rows={appointments}
           columns={columns}
-          pageSize={10}
-          rowCount={totalResults}
+          rowCount={rowCount}
+          loading={isLoading}
           paginationMode="server"
-          onPageChange={(newPage) => setPage(newPage + 1)}
+          pageSizeOptions={[10, 20, 50]}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
           disableSelectionOnClick
         />
-
         <Dialog
           open={openDialog}
           onClose={handleCloseDialog}
