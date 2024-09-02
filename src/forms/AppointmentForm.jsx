@@ -113,13 +113,17 @@ const AppointmentForm = ({ appointmentToEdit }) => {
   const {
     data: userAppointments = { results: [] },
     isLoading: isLoadingUserAppointments,
-  } = useFetchAppointmentsByUserQuery(user ? user.id : null);
+  } = useFetchAppointmentsByUserQuery({
+    userId: user ? user.id : null,
+    page: 1,
+    limit: 1000,
+  });
 
   const {
     data: dayAppointments = { results: [] },
     refetch: refetchDayAppointments,
   } = useFetchAppointmentsByDayAndBarberQuery(
-    { barberId: barber },
+    { barberId: barber, page: 1, limit: 1000 },
     { skip: !barber }
   );
 
