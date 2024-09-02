@@ -212,6 +212,8 @@ const AppointmentForm = ({ appointmentToEdit }) => {
     const appointmentData = {
       ...data,
       appointmentDateTime: slot,
+      // Preserve the original userId when editing an existing appointment
+      userId: appointmentToEdit ? appointmentToEdit.userId : user.id,
     };
 
     try {
