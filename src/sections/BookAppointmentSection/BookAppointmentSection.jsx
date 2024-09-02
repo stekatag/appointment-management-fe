@@ -37,7 +37,7 @@ export default function BookAppointmentSection() {
     isLoading: isLoadingAppointments,
     error: appointmentError,
   } = useFetchAppointmentsByDayAndBarberQuery(
-    { barberId: selectedBarber },
+    { barberId: selectedBarber, page: 1, limit: 1000 },
     { skip: !selectedBarber }
   );
 

@@ -9,6 +9,8 @@ import {
   useCreateReviewMutation,
   useUpdateReviewMutation,
 } from "../services/api/reviewsApi";
+import { useFetchBarberByIdQuery } from "../services/api/barbersApi";
+import { useFetchServiceByIdQuery } from "../services/api/servicesApi";
 import {
   Box,
   TextField,
@@ -54,7 +56,7 @@ const ReviewForm = ({ reviewToEdit }) => {
 
   const { data: reviewsData = {} } = useFetchReviewsQuery();
   const { data: pastAppointments = {}, isLoading: isLoadingAppointments } =
-    useFetchAppointmentsByUserQuery(user?.id);
+    useFetchAppointmentsByUserQuery({ userId: user?.id, page: 1, limit: 1000 });
 
   const [createReview, { isLoading: isCreating }] = useCreateReviewMutation();
   const [updateReview, { isLoading: isUpdating }] = useUpdateReviewMutation();
@@ -101,6 +103,20 @@ const ReviewForm = ({ reviewToEdit }) => {
     setValue,
     reviewToEdit,
   ]);
+
+  // Fetch barber and service data when appointment data changes
+  const { data: barberData } = useFetchBarberByIdQuery(
+    appointmentData?.preferredHairdresser,
+    {
+      skip: !appointmentData?.preferredHairdresser,
+    }
+  );
+  const { data: serviceData } = useFetchServiceByIdQuery(
+    appointmentData?.serviceType,
+    {
+      skip: !appointmentData?.serviceType,
+    }
+  );
 
   const onSubmit = async (data) => {
     if (!appointmentData) {
@@ -223,6 +239,26 @@ const ReviewForm = ({ reviewToEdit }) => {
         )}
         {appointmentData && (
           <>
+            <Grid item xs={12} md={6}>
+              <TextField
+                label="Barber Name"
+                value={
+                  barberData
+                    ? `${barberData.firstName} ${barberData.lastName}`
+                    : "Loading..."
+                }
+                fullWidth
+                disabled
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                label="Service"
+                value={serviceData ? serviceData.title : "Loading..."}
+                fullWidth
+                disabled
+              />
+            </Grid>
             <Grid item xs={12}>
               <Controller
                 name="rating"
