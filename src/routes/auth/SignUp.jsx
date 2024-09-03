@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useRegisterUserMutation } from "../../services/api/authApi";
+import { useFetchUserByIdQuery } from "../../services/api/usersApi";
 import useRedirectByRole from "../../utils/redirectByRole";
 import {
   Avatar,
@@ -52,6 +53,14 @@ export default function SignUp() {
   const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
   const [alert, setAlert] = useState({ type: "", message: "" });
 
+  // State to store the userId after registration
+  const [userId, setUserId] = useState(null);
+
+  // Using the hook to fetch user data by ID, it will automatically refetch when userId changes
+  const { data: updatedUser } = useFetchUserByIdQuery(userId, {
+    skip: !userId, // Skip fetching if userId is null
+  });
+
   const {
     control,
     handleSubmit,
@@ -77,9 +86,8 @@ export default function SignUp() {
         localStorage.setItem("refreshToken", tokens.refresh.token);
         localStorage.setItem("user", JSON.stringify(user));
 
-        // Redirect based on user role
-        redirectByRole(user.role);
-        setAlert({ type: "success", message: "User registered successfully!" });
+        // Set the userId state to trigger useFetchUserByIdQuery
+        setUserId(user.id);
       }
     } catch (error) {
       setAlert({
@@ -88,6 +96,13 @@ export default function SignUp() {
       });
     }
   };
+
+  useEffect(() => {
+    if (updatedUser) {
+      redirectByRole(updatedUser.role);
+      setAlert({ type: "success", message: "User registered successfully!" });
+    }
+  }, [updatedUser, redirectByRole]);
 
   const password = watch("password");
 

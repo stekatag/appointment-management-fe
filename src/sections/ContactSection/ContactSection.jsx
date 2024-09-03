@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -9,6 +10,9 @@ import {
   Alert,
   AlertTitle,
   TextField,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
 import {
   ContactContainer,
@@ -22,6 +26,7 @@ import {
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { useSelector } from "react-redux";
 import { useFetchUserByIdQuery } from "../../services/api/usersApi";
 
@@ -58,10 +63,10 @@ export default function ContactSection() {
     resolver: yupResolver(schema),
     defaultValues: {
       access_key: ACCESS_KEY,
-      from_name: "",
-      name: userData ? `${user.firstName} ${user.lastName}` : "",
-      phone: userData ? user.contactNumber : "",
-      email: userData ? user.email : "",
+      from_name: userData ? `${user?.firstName} ${user?.lastName}` : "Guest",
+      name: "",
+      phone: "",
+      email: "",
       subject: "",
       message: "",
     },
@@ -121,8 +126,10 @@ export default function ContactSection() {
             How to find us
           </ContactTitle>
           <Typography variant="subtitle1" color="textSecondary" gutterBottom>
-            Our goal is to provide the best customer service and to answer all
-            of your questions in a timely manner.
+            Located in the heart of Plovdiv, The Barber Shop is easily
+            accessible by car, public transport, or on foot. Whether you're a
+            local resident or visiting from out of town, our convenient location
+            makes it easy to drop by for a fresh cut or a relaxing shave.
           </Typography>
 
           <ContactInfoItem>
@@ -147,6 +154,29 @@ export default function ContactSection() {
               13 Bulgaria Blvd. Plovdiv, Bulgaria
             </Typography>
           </ContactInfoItem>
+
+          {/* Opening Hours */}
+          <ContactInfoItem>
+            <ContactIcon alignSelf="flex-start">
+              <AccessTimeIcon />
+            </ContactIcon>
+            <Box>
+              <Typography variant="body1" gutterBottom>
+                Opening Hours:
+              </Typography>
+              <List dense disablePadding>
+                <ListItem disableGutters>
+                  <ListItemText primary="Monday" secondary="Closed" />
+                </ListItem>
+                <ListItem disableGutters>
+                  <ListItemText
+                    primary="Tuesday - Sunday"
+                    secondary="10:00 - 19:00"
+                  />
+                </ListItem>
+              </List>
+            </Box>
+          </ContactInfoItem>
         </ContactInfoContainer>
 
         {/* Contact Form */}
@@ -165,6 +195,14 @@ export default function ContactSection() {
                 {alert.type === "success" ? "Success" : "Error"}
               </AlertTitle>
               {alert.message}
+            </Alert>
+          )}
+
+          {!user && (
+            <Alert severity="warning">
+              <AlertTitle>Note</AlertTitle>
+              You are not logged in. Please ensure that you enter accurate
+              contact information so we can reach you.
             </Alert>
           )}
 
@@ -282,7 +320,7 @@ export default function ContactSection() {
                   color="primary"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Sending..." : "Submit"}
+                  {isSubmitting ? "Sending..." : "Send Message"}
                 </ContactButton>
               </Grid>
             </Grid>
