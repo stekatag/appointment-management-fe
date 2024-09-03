@@ -47,7 +47,7 @@ Check out the live demo of the application:
 ### Proposed Features
 
 - **Forgot Password**: Add a forgot password feature to reset user passwords via email. ✅
-- **Email and in-app notifications**: Send email and in-app notifications for appointment reminders and confirmations.
+- **Email and in-app notifications**: Send email and in-app notifications for appointment reminders and confirmations. ✅
 - **PWA Support**: Add support for Progressive Web Apps to enable offline access and push notifications. ✅
 
 ## Tech Stack
@@ -112,12 +112,15 @@ Before you begin, ensure you have met the following requirements:
 
 1. **Backend**:
 
-   - Create a `.env` file in the `barbershop-api` directory with the following variables:
+   - Create a `.env` file in the `barbershop-api` directory (from the barbershop-api repository) with the following variables:
 
      ```bash
      PORT=3000
      MONGODB_URL=mongodb://localhost:27017/barbershop
+     BASE_API_URL=your_production_api_url
      JWT_SECRET=your_jwt_secret
+
+     # For more .env variables, check the .env.example file in the backend repository.
      ```
 
    - Start the backend server:
@@ -133,6 +136,9 @@ Before you begin, ensure you have met the following requirements:
      ```bash
       # Use your own API URL for the VITE_API_URL variable. If you started the barbershop API locally, you can use the second line. If you deployed the API to another service, replace the URL with the correct one.
       VITE_API_URL="http://localhost:3000/v1"
+
+      # Use your own VAPID key for the VITE_PUBLIC_VAPID_KEY variable. You can generate a new key pair using the web-push-libs library. The key pair is used to send push notifications to the client. You can use the following command to generate a new key pair:
+      VITE_PUBLIC_VAPID_KEY="your_vapid_key"
      ```
 
    - Start the frontend application:
