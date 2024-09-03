@@ -21,14 +21,12 @@ import {
 const NotificationManagement = () => {
   const authUser = useSelector((state) => state.auth.user);
   const userId = authUser?.id;
-  console.log("authUserId", userId);
   const {
     data: user,
     isLoading: isUserLoading,
     isError,
     error,
   } = useFetchUserByIdQuery(userId);
-  console.log("user", user);
 
   const [updateUser] = useUpdateUserMutation();
 

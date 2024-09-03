@@ -106,9 +106,14 @@ export default function Navbar() {
           <StyledListItemText primary="Contact Us" />
         </ListItem>
         {user ? (
-          <ListItem button component={Link} to={getDashboardRoute()}>
-            <StyledListItemText primary="Dashboard" />
-          </ListItem>
+          <>
+            <ListItem button component={Link} to={getDashboardRoute()}>
+              <StyledListItemText primary="Dashboard" />
+            </ListItem>
+            <ListItem button onClick={handleLogout}>
+              <StyledListItemText primary="Sign Out" />
+            </ListItem>
+          </>
         ) : (
           <>
             <ListItem button component={Link} to="/login">

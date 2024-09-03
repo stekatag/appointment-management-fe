@@ -23,6 +23,8 @@ import { useLogoutUserMutation } from "../services/api/authApi";
 import { getRefreshTokenFromStorage } from "../utils/storage";
 import { useNavigate } from "react-router-dom";
 import { StyledAppBar, StyledDrawer } from "./DashboardLayout.styles";
+import { Home } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 
 DashboardLayout.propTypes = {
   children: PropTypes.node,
@@ -89,6 +91,11 @@ export default function DashboardLayout({ children }) {
           >
             Dashboard
           </Typography>
+          <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+            <IconButton color="inherit">
+              <Home />
+            </IconButton>
+          </Link>
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
               <NotificationsIcon />

@@ -5,7 +5,6 @@ export async function registerNotifications() {
   // Request permission for notifications
   const permission = await Notification.requestPermission();
   if (permission !== "granted") {
-    console.log("Permission not granted for Notification");
     return null;
   }
 
@@ -17,10 +16,8 @@ export async function registerNotifications() {
       applicationServerKey: vapidPublicKey,
     });
 
-    console.log("User is subscribed:", subscription);
     return subscription; // Return the subscription object
   } catch (err) {
-    console.log("Failed to subscribe the user: ", err);
     return null;
   }
 }
@@ -33,9 +30,8 @@ export async function unsubscribeNotifications() {
 
     if (subscription) {
       await subscription.unsubscribe();
-      console.log("User is unsubscribed from notifications");
     }
   } catch (err) {
-    console.log("Failed to unsubscribe the user: ", err);
+    console.error("Failed to unsubscribe from notifications:", err);
   }
 }
