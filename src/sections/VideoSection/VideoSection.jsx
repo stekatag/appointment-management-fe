@@ -1,11 +1,6 @@
 import { useState } from "react";
-import {
-  Container,
-  Link,
-  Typography,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
+import { useHandleSectionLink } from "../../utils/navigationUtils";
+import { Container, Typography, useTheme, useMediaQuery } from "@mui/material";
 import {
   VideoSectionContainer,
   TextContent,
@@ -25,6 +20,7 @@ import ScrollAnimation from "react-animate-on-scroll";
 export default function VideoSection() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const handleCTAClick = useHandleSectionLink();
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -63,9 +59,12 @@ export default function VideoSection() {
                 highly trained barbers are very versatile and cut all hair types
                 and styles.
               </Typography>
-              <Link href="#services-section" underline="none">
-                <CTAButton variant="contained">Get Started</CTAButton>
-              </Link>
+              <CTAButton
+                variant="contained"
+                onClick={() => handleCTAClick("services-section", "/")}
+              >
+                Get Started
+              </CTAButton>
             </TextContent>
             <VideoThumbnailCard onClick={handleClickOpen}>
               <VideoThumbnailCardInner>

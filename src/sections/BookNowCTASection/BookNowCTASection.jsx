@@ -1,4 +1,6 @@
-import { Grid, Link } from "@mui/material";
+import PropTypes from "prop-types";
+import { useHandleSectionLink } from "../../utils/navigationUtils";
+import { Box, Grid } from "@mui/material";
 import {
   ViewServicesButton,
   BookNowBox,
@@ -8,29 +10,45 @@ import {
   BookNowContainer,
 } from "./BookNowCTASection.styles";
 
-export default function BookNowCTASection() {
+BookNowCTASection.propTypes = {
+  backgroundColor: PropTypes.string,
+};
+
+export default function BookNowCTASection({ backgroundColor = "default" }) {
+  const handleCTAClick = useHandleSectionLink();
+
   return (
-    <BookNowContainer maxWidth="lg">
-      <BookNowBox>
-        <BookNowGridContainer container>
-          <Grid item>
-            <BookNowTitle variant="h4" component="h4" gutterBottom>
-              Book an appointment today
-            </BookNowTitle>
-            <BookNowSubtitle variant="subtitle1">
-              Booking an appointment online is the quickest and easiest way to
-              schedule.
-            </BookNowSubtitle>
-          </Grid>
-          <Grid item>
-            <Link href="#booking-section" underline="none">
-              <ViewServicesButton variant="contained">
+    <Box
+      sx={{
+        backgroundColor:
+          backgroundColor === "default"
+            ? (theme) => theme.palette.background.default
+            : backgroundColor,
+      }}
+    >
+      <BookNowContainer maxWidth="lg">
+        <BookNowBox>
+          <BookNowGridContainer container>
+            <Grid item>
+              <BookNowTitle variant="h4" component="h4" gutterBottom>
+                Book an appointment today
+              </BookNowTitle>
+              <BookNowSubtitle variant="subtitle1">
+                Booking an appointment online is the quickest and easiest way to
+                schedule.
+              </BookNowSubtitle>
+            </Grid>
+            <Grid item>
+              <ViewServicesButton
+                variant="contained"
+                onClick={() => handleCTAClick("booking-section", "/")}
+              >
                 Book Now
               </ViewServicesButton>
-            </Link>
-          </Grid>
-        </BookNowGridContainer>
-      </BookNowBox>
-    </BookNowContainer>
+            </Grid>
+          </BookNowGridContainer>
+        </BookNowBox>
+      </BookNowContainer>
+    </Box>
   );
 }
