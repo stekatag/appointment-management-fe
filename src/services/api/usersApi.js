@@ -36,6 +36,7 @@ export const usersApi = createApi({
 export const {
   useFetchUsersQuery,
   useFetchUserByIdQuery,
+  useLazyFetchUserByIdQuery,
   useUpdateUserMutation,
   useChangePasswordMutation,
 } = usersApi;
