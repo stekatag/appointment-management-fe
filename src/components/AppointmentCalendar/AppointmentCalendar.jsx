@@ -28,6 +28,25 @@ for (let hour = 10; hour <= 19; hour++) {
   }
 }
 
+const isSlotBooked = (time, appointments, selectedDay, selectedBarber) => {
+  return appointments.some(
+    (appt) =>
+      dayjs(appt.appointmentDateTime).isSame(
+        dayjs(selectedDay).hour(time.split(":")[0]).minute(time.split(":")[1]),
+        "minute"
+      ) &&
+      appt.preferredHairdresser === selectedBarber &&
+      appt.status !== "Cancelled"
+  );
+};
+
+const isSlotInPast = (time, selectedDay) => {
+  const slotDateTime = dayjs(selectedDay)
+    .hour(time.split(":")[0])
+    .minute(time.split(":")[1]);
+  return slotDateTime.isBefore(dayjs());
+};
+
 export default function AppointmentCalendar({
   appointments,
   onSlotSelect,
@@ -62,29 +81,13 @@ export default function AppointmentCalendar({
     }
   }, [initialSlot]);
 
-  const isSlotBooked = (time) => {
-    return appointments.some(
-      (appt) =>
-        dayjs(appt.appointmentDateTime).isSame(
-          dayjs(selectedDay)
-            .hour(time.split(":")[0])
-            .minute(time.split(":")[1]),
-          "minute"
-        ) &&
-        appt.preferredHairdresser === selectedBarber &&
-        appt.status !== "Cancelled"
-    );
-  };
-
-  const isSlotInPast = (time) => {
-    const slotDateTime = dayjs(selectedDay)
-      .hour(time.split(":")[0])
-      .minute(time.split(":")[1]);
-    return slotDateTime.isBefore(dayjs());
-  };
-
   const handleSlotClick = (time) => {
-    if (!readOnly && !isSlotBooked(time) && !isSlotInPast(time) && !isDayOff) {
+    if (
+      !readOnly &&
+      !isSlotBooked(time, appointments, selectedDay, selectedBarber) &&
+      !isSlotInPast(time, selectedDay) &&
+      !isDayOff
+    ) {
       setSelectedSlot(time);
       onSlotSelect(
         dayjs(selectedDay)
@@ -99,10 +102,10 @@ export default function AppointmentCalendar({
     if (isDayOff) {
       return "Day Off";
     }
-    if (isSlotBooked(time)) {
+    if (isSlotBooked(time, appointments, selectedDay, selectedBarber)) {
       return "Booked";
     }
-    if (isSlotInPast(time)) {
+    if (isSlotInPast(time, selectedDay)) {
       return "Past Slot";
     }
     return "Open Slot";
@@ -114,7 +117,12 @@ export default function AppointmentCalendar({
         <Grid item xs={12} sm={6} lg={3} key={time}>
           <StyledSlot
             elevation={3}
-            isBooked={isSlotBooked(time)}
+            isBooked={isSlotBooked(
+              time,
+              appointments,
+              selectedDay,
+              selectedBarber
+            )}
             isSelected={selectedSlot === time}
           >
             <Button
@@ -122,7 +130,10 @@ export default function AppointmentCalendar({
               variant="text"
               onClick={() => handleSlotClick(time)}
               disabled={
-                readOnly || isSlotBooked(time) || isSlotInPast(time) || isDayOff
+                readOnly ||
+                isSlotBooked(time, appointments, selectedDay, selectedBarber) ||
+                isSlotInPast(time, selectedDay) ||
+                isDayOff
               }
             >
               <Typography mr={1} variant="h6">
